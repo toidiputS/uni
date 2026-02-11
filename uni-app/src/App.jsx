@@ -6,6 +6,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { auth, db } from './lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 import Welcome from './pages/Welcome';
 import Auth from './pages/Auth';
@@ -217,6 +218,7 @@ export default function App() {
             )}
 
             <audio ref={audioRef} src={currentSong} loop />
+            <SpeedInsights />
         </div>
     );
 }
