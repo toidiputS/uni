@@ -4,11 +4,13 @@
     },
     "buildCommand": "cd uni-app && npm install && npm run build",
     "outputDirectory": "uni-app/dist",
-    "framework": "vite",
-    "rewrites": [
+    "routes": [
         {
-            "source": "/(.*)",
-            "destination": "/index.html"
+            "handle": "filesystem"
+        },
+        {
+            "src": "/.*",
+            "dest": "/index.html"
         }
     ]
 }
