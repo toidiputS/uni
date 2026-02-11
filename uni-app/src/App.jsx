@@ -3,6 +3,7 @@
 // State flow: Welcome → Auth → Pairing → Onboarding → Chat
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { auth, db } from './lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
@@ -217,6 +218,7 @@ export default function App() {
             )}
 
             <audio ref={audioRef} src={currentSong} loop />
+            <SpeedInsights />
         </div>
     );
 }
