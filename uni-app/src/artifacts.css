@@ -1,0 +1,135 @@
+/* ─── Artifact System (Physical Artifacts) ─── */
+.artifact-overlay {
+    z-index: 10000;
+    perspective: 2000px;
+}
+
+.artifact-frame {
+    max-width: 500px;
+    width: 90%;
+    padding: 0;
+    background: none;
+    animation: artifact-rise 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.artifact-paper {
+    background: #fdfdfc;
+    /* Bone / Antique Paper */
+    padding: 60px 40px;
+    color: #1a1a1a;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.1);
+    position: relative;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+}
+
+.artifact-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 60px;
+    color: #999;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+}
+
+.artifact-uni-dot {
+    width: 5px;
+    height: 5px;
+    background: #1a1a1a;
+    border-radius: 50%;
+}
+
+.artifact-title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    margin-bottom: 30px;
+    color: #1a1a1a;
+}
+
+.artifact-divider {
+    width: 40px;
+    height: 1px;
+    background: #ddd;
+    margin-bottom: 40px;
+}
+
+.artifact-lyrics {
+    font-family: serif;
+    font-size: 18px;
+    line-height: 1.8;
+    color: #333;
+    flex: 1;
+    white-space: pre-line;
+}
+
+.artifact-footer {
+    margin-top: 60px;
+    border-top: 1px solid #eee;
+    padding-top: 30px;
+}
+
+.artifact-names {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.artifact-names span {
+    color: #999;
+    font-weight: 400;
+    margin: 0 4px;
+}
+
+.artifact-date {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 12px;
+}
+
+.artifact-serial {
+    font-family: monospace;
+    font-size: 9px;
+    color: #ccc;
+    letter-spacing: 0.1em;
+}
+
+.artifact-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+@keyframes artifact-rise {
+    0% {
+        transform: translateY(100px) rotateX(20deg) scale(0.9);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0) rotateX(0deg) scale(1);
+        opacity: 1;
+    }
+}
+
+@media print {
+
+    .artifact-actions,
+    .atmosphere-canvas,
+    .chat-page,
+    .presence-pulse,
+    .audio-toggle {
+        display: none !important;
+    }
+
+    .artifact-paper {
+        box-shadow: none;
+        padding: 0;
+        min-height: auto;
+    }
+}

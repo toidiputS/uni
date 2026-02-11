@@ -1,0 +1,1749 @@
+/* •UNI• Design System v3.0 — CGEI */
+/* Visual Hierarchy Doctrine */
+/* Rule: The dot is the highest form of intelligence on every screen. */
+/* Pure white (#FFFFFF) is reserved for Bell. Everything else is subordinate. */
+
+:root {
+  /* Core palette — the void */
+  --uni-void: #050508;
+  --uni-deep: #0a0a12;
+  --uni-surface: #0f0f1a;
+  --uni-surface-2: #141420;
+
+  /* Glass — barely there */
+  --uni-glass: rgba(255, 255, 255, 0.03);
+  --uni-glass-border: rgba(255, 255, 255, 0.06);
+  --uni-glass-hover: rgba(255, 255, 255, 0.08);
+  --uni-glass-strong: rgba(255, 255, 255, 0.1);
+
+  /* TIER 2 — Reality Layer (user content) */
+  /* Softer whites — pure white is reserved for intelligence */
+  --uni-text: #EAEAEA;
+  --uni-text-dim: rgba(234, 234, 234, 0.55);
+  --uni-text-muted: rgba(234, 234, 234, 0.3);
+
+  /* TIER 3 — Interface Chrome (should almost disappear) */
+  --uni-chrome: #7A7A7A;
+  --uni-chrome-dim: #6A6A6A;
+
+  /* Accent — monochrome for now. When color appears, it's an EVENT. */
+  --uni-accent-1: #EAEAEA;
+  --uni-accent-2: #AAAAAA;
+  --uni-gradient: linear-gradient(135deg, var(--uni-accent-1), var(--uni-accent-2));
+
+  /* Emotion palette — held in reserve. Color = scarcity = impact. */
+  --emo-happy: #ffd700;
+  --emo-happy-bg: rgba(255, 215, 0, 0.06);
+  --emo-sad: #5b86e5;
+  --emo-sad-bg: rgba(91, 134, 229, 0.06);
+  --emo-love: #ff6b9d;
+  --emo-love-bg: rgba(255, 107, 157, 0.06);
+  --emo-angry: #ff4444;
+  --emo-angry-bg: rgba(255, 68, 68, 0.06);
+  --emo-excited: #36d1dc;
+  --emo-excited-bg: rgba(54, 209, 220, 0.06);
+  --emo-playful: #a8e063;
+  --emo-playful-bg: rgba(168, 224, 99, 0.06);
+  --emo-tender: #c084fc;
+  --emo-tender-bg: rgba(192, 132, 252, 0.06);
+  --emo-neutral: #888888;
+  --emo-neutral-bg: rgba(136, 136, 136, 0.04);
+
+  /* Sizing */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  /* Transitions */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* Font */
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 'Space Grotesk', var(--font);
+
+  /* Scene colors — dynamically updated by JS */
+  --scene-1: #0d0d18;
+  --scene-2: #0a0f1a;
+
+  /* Bell dim — the billion-dollar detail */
+  --bell-dim: 1;
+}
+
+/* ─── Reset ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-family: var(--font);
+  background: var(--uni-void);
+  color: var(--uni-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Keyframe Animations ─── */
+
+@keyframes breathe {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.02);
+    opacity: 0.92;
+  }
+}
+
+/* 72bpm Sync: 4 beats = 3.333s */
+.breathe-sync {
+  animation: breathe 3.333s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px var(--glow-color, rgba(255, 215, 0, 0.2));
+  }
+
+  50% {
+    box-shadow: 0 0 40px var(--glow-color, rgba(255, 215, 0, 0.4)), 0 0 80px var(--glow-color, rgba(255, 215, 0, 0.15));
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes heartbeat {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  14% {
+    transform: scale(1.06);
+  }
+
+  28% {
+    transform: scale(1);
+  }
+
+  42% {
+    transform: scale(1.04);
+  }
+
+  56% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10% {
+    transform: translateX(-2px);
+  }
+
+  20% {
+    transform: translateX(2px);
+  }
+
+  30% {
+    transform: translateX(-2px);
+  }
+
+  40% {
+    transform: translateX(2px);
+  }
+
+  50% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes aurora {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg) translateX(120px) rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg) translateX(120px) rotate(-360deg);
+  }
+}
+
+@keyframes wordmarkGlow {
+
+  0%,
+  100% {
+    text-shadow: 0 0 30px rgba(102, 126, 234, 0.3), 0 0 60px rgba(118, 75, 162, 0.15);
+  }
+
+  50% {
+    text-shadow: 0 0 50px rgba(102, 126, 234, 0.5), 0 0 100px rgba(118, 75, 162, 0.25);
+  }
+}
+
+@keyframes typePulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ─── BellDot: The Living Indicator ─── */
+/* The Cosmic Dot is Bell's body language in the interface */
+
+@keyframes bell-breathe {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@keyframes bell-think {
+
+  0%,
+  100% {
+    transform: scale(0.9);
+  }
+
+  50% {
+    transform: scale(1.4);
+  }
+}
+
+@keyframes bell-orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bell-listen-pulse {
+
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes bell-glow-burst {
+  0% {
+    transform: scale(1);
+    stroke-opacity: 0;
+    stroke-width: 2px;
+  }
+
+  20% {
+    transform: scale(1.2);
+    stroke-opacity: 0.8;
+    stroke-width: 3px;
+  }
+
+  100% {
+    transform: scale(3);
+    stroke-opacity: 0;
+    stroke-width: 0.5px;
+  }
+}
+
+.bell-dot-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.bell-dot-svg {
+  overflow: visible;
+}
+
+.bell-orbit {
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+  transform-origin: 60px 60px;
+}
+
+.bell-glow-ring {
+  stroke-opacity: 0;
+  transform-origin: 60px 60px;
+}
+
+.bell-core {
+  transition: all 0.6s var(--ease);
+  transform-origin: 60px 60px;
+}
+
+/* idle → subtle breathe (72bpm) */
+.bell-idle .bell-core {
+  animation: bell-breathe 3.333s ease-in-out infinite;
+}
+
+/* thinking → slow expand */
+.bell-thinking .bell-core {
+  animation: bell-think 3s ease-in-out infinite;
+}
+
+/* generating → orbit activates */
+.bell-generating .bell-core {
+  animation: bell-breathe 2s ease-in-out infinite;
+}
+
+.bell-generating .bell-orbit {
+  opacity: 0.12;
+  animation: bell-orbit-spin 8s linear infinite;
+  transform-origin: 60px 60px;
+}
+
+/* listening → faint pulse */
+.bell-listening .bell-core {
+  animation: bell-listen-pulse 2s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+/* glow → single bright glow (memory saved) */
+.bell-glow .bell-core {
+  animation: bell-breathe 2s ease-in-out infinite;
+}
+
+.bell-glow .bell-glow-ring {
+  animation: bell-glow-burst 1.5s ease-out forwards;
+}
+
+/* Header sizing */
+.bell-dot-header {
+  width: 36px;
+  height: 36px;
+  margin: -8px -4px;
+  display: inline-flex;
+}
+
+.bell-dot-header .bell-dot-wrap {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.bell-dot-header .bell-dot-svg {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+/* Inline (next to Bell's name in bubbles) */
+.bell-dot-inline {
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.bell-dot-inline .bell-dot-wrap {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.bell-dot-inline .bell-dot-svg {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* ─── App Shell ─── */
+.app {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  transition: filter 0.8s var(--ease);
+}
+
+/* THE BILLION-DOLLAR DETAIL */
+/* When Bell activates, dim the entire UI by 3-5% */
+/* Users won't perceive it consciously. */
+/* But their brain will shift attention to the dot instantly. */
+.app.bell-active {
+  filter: brightness(0.95);
+}
+
+/* ─── Scene Background ─── */
+/* Background: TIER 2 — nearly static but alive. */
+/* User should read the tone without reading words. */
+.scene-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(135deg, var(--scene-1), var(--uni-void), var(--scene-2));
+  background-size: 400% 400%;
+  animation: aurora 40s ease infinite;
+  /* SLOW — gravitational, not decorative */
+  transition: --scene-1 5s var(--ease), --scene-2 5s var(--ease);
+}
+
+.scene-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 20%, rgba(102, 126, 234, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse at 70% 80%, rgba(118, 75, 162, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* ─── CGEI Atmosphere Canvas ─── */
+/* The emotional weather layer — particles, rain, hearts, lightning */
+/* Sits between scene gradient and UI */
+.atmosphere-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ─── Welcome Page ─── */
+.welcome {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  padding: 24px;
+  animation: fadeIn 1s var(--ease);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 10vw, 80px);
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  background: var(--uni-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: wordmarkGlow 4s ease-in-out infinite, breathe 6s ease-in-out infinite;
+  margin-bottom: 8px;
+  user-select: none;
+}
+
+.tagline {
+  font-size: clamp(13px, 2.5vw, 16px);
+  color: var(--uni-text-dim);
+  text-align: center;
+  max-width: 420px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  margin-bottom: 48px;
+  animation: fadeSlideUp 1s var(--ease) 0.3s both;
+}
+
+.tagline em {
+  color: var(--uni-accent-1);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* ─── Buttons ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 36px;
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.03em;
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.btn:hover::before {
+  opacity: 1;
+}
+
+.btn-primary {
+  background: var(--uni-gradient);
+  color: white;
+  box-shadow: 0 4px 24px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.5);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-glass {
+  background: var(--uni-glass);
+  color: var(--uni-text);
+  border: 1px solid var(--uni-glass-border);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.btn-glass:hover {
+  background: var(--uni-glass-hover);
+  border-color: var(--uni-glass-strong);
+  transform: translateY(-1px);
+}
+
+.btn-sm {
+  padding: 10px 20px;
+  font-size: 13px;
+}
+
+.btn-icon {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 18px;
+}
+
+.welcome-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  animation: fadeSlideUp 1s var(--ease) 0.6s both;
+}
+
+/* ─── Glass Card ─── */
+.glass-card {
+  background: var(--uni-glass);
+  border: 1px solid var(--uni-glass-border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 32px;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* ─── Auth Page ─── */
+.auth-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  padding: 24px;
+  animation: fadeSlideUp 0.6s var(--ease);
+}
+
+.auth-page .wordmark {
+  font-size: 36px;
+  margin-bottom: 4px;
+}
+
+.auth-subtitle {
+  color: var(--uni-text-muted);
+  font-size: 13px;
+  margin-bottom: 32px;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 24px;
+  background: var(--uni-glass);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  border: 1px solid var(--uni-glass-border);
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px 24px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--uni-text-muted);
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+}
+
+.auth-tab.active {
+  background: var(--uni-gradient);
+  color: white;
+  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* ─── Input Fields ─── */
+.input-group {
+  margin-bottom: 16px;
+}
+
+.input-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--uni-text-dim);
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--uni-glass-border);
+  border-radius: var(--radius-md);
+  color: var(--uni-text);
+  font-family: var(--font);
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s var(--ease);
+}
+
+.input:focus {
+  border-color: var(--uni-accent-1);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.input::placeholder {
+  color: var(--uni-text-muted);
+}
+
+.error-msg {
+  color: var(--emo-angry);
+  font-size: 13px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+/* ─── Pairing Page ─── */
+.pairing-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  padding: 24px;
+  animation: fadeSlideUp 0.6s var(--ease);
+}
+
+.my-code {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: 0.3em;
+  background: var(--uni-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 12px 0 8px;
+  user-select: all;
+}
+
+.code-hint {
+  font-size: 13px;
+  color: var(--uni-text-muted);
+  margin-bottom: 32px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 400px;
+  margin: 24px 0;
+  color: var(--uni-text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--uni-glass-border);
+}
+
+/* ─── Chat Page ─── */
+.chat-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 1;
+}
+
+/* Header — chrome layer, quiet */
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(5, 5, 8, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  z-index: 10;
+  position: relative;
+}
+
+/* PLACEMENT LAW: Bell lives top center. Not cornered. */
+.bell-dot-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 11;
+}
+
+.chat-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chat-back {
+  background: none;
+  border: none;
+  color: var(--uni-chrome);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.3s;
+}
+
+.chat-back:hover {
+  color: var(--uni-text);
+}
+
+.chat-partner-name {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--uni-text-dim);
+}
+
+/* Mood dot removed — Bell IS the mood indicator now */
+.chat-mood-dot {
+  display: none;
+}
+
+.chat-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ─── Messages ─── */
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  scroll-behavior: smooth;
+}
+
+.messages-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.messages-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background: var(--uni-glass-border);
+  border-radius: 4px;
+}
+
+.msg-row {
+  display: flex;
+  animation: fadeSlideUp 0.4s var(--ease-bounce);
+  max-width: 85%;
+}
+
+.msg-row.sent {
+  align-self: flex-end;
+  justify-content: flex-end;
+}
+
+.msg-row.received {
+  align-self: flex-start;
+  justify-content: flex-start;
+}
+
+.msg-row.uni-msg {
+  align-self: center;
+  max-width: 70%;
+}
+
+/* ─── Bubble ─── */
+/* The screen holds the conversation. Bubbles are whispers, not shouts. */
+.bubble {
+  padding: 12px 16px;
+  border-radius: 20px;
+  position: relative;
+  max-width: 100%;
+  word-wrap: break-word;
+  line-height: 1.6;
+  font-size: 15px;
+  color: var(--uni-text);
+  transition: all 0.5s var(--ease);
+}
+
+/* Sent — glass, monochrome, slightly more present */
+.bubble.sent {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom-right-radius: 6px;
+}
+
+/* Received — quieter, yields to sent */
+.bubble.received {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom-left-radius: 6px;
+}
+
+/* Bell's quips — she speaks from the center, softly */
+.bubble.uni {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-style: italic;
+  color: var(--uni-chrome);
+  padding: 8px 20px;
+  text-align: center;
+}
+
+.bubble.uni::before {
+  content: none;
+  /* Bell doesn't need a label. The dot speaks for her. */
+}
+
+/* Bubble emotion effects */
+.bubble {
+  /* Aura Foundation */
+  --aura-color: transparent;
+  --aura-intensity: 0.2;
+}
+
+.bubble[data-sentiment="happy"] {
+  --aura-color: var(--emo-happy);
+}
+
+.bubble[data-sentiment="sad"] {
+  --aura-color: var(--emo-sad);
+}
+
+.bubble[data-sentiment="love"] {
+  --aura-color: var(--emo-love);
+}
+
+.bubble[data-sentiment="angry"] {
+  --aura-color: var(--emo-angry);
+}
+
+.bubble[data-sentiment="excited"] {
+  --aura-color: var(--emo-excited);
+}
+
+.bubble[data-sentiment="playful"] {
+  --aura-color: var(--emo-playful);
+}
+
+.bubble[data-sentiment="tender"] {
+  --aura-color: var(--emo-tender);
+}
+
+.bubble::after {
+  content: '';
+  position: absolute;
+  inset: -15px;
+  background: var(--aura-color);
+  opacity: 0;
+  filter: blur(30px);
+  z-index: -1;
+  border-radius: inherit;
+  transition: opacity 1s var(--ease), transform 1s var(--ease);
+  pointer-events: none;
+}
+
+/* Aura Activation */
+.bubble[data-effect="glow"]::after,
+.bubble[data-effect="pulse"]::after,
+.bubble[data-effect="float"]::after,
+.bubble[data-effect="heartbeat"]::after,
+.bubble[data-effect="ripple"]::after,
+.bubble[data-effect="breathe"]::after {
+  opacity: var(--aura-intensity);
+}
+
+.bubble[data-effect="glow"]::after {
+  animation: glow-pulse 4s ease-in-out infinite;
+}
+
+.bubble[data-effect="pulse"]::after {
+  animation: aura-expand 3s ease-in-out infinite;
+}
+
+.bubble[data-effect="heartbeat"]::after {
+  animation: heartbeat 1.5s ease-in-out infinite;
+  --aura-intensity: 0.35;
+}
+
+.bubble[data-effect="shake"] {
+  animation: shake 0.6s ease-in-out;
+}
+
+@keyframes aura-expand {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: var(--aura-intensity);
+  }
+
+  50% {
+    transform: scale(1.4);
+    opacity: calc(var(--aura-intensity) * 1.5);
+  }
+}
+
+.bubble[data-effect="float"] {
+  animation: float 4s ease-in-out infinite;
+}
+
+.bubble[data-effect="breathe"]::after {
+  animation: breathe 5s ease-in-out infinite;
+  --aura-intensity: 0.15;
+}
+
+/* Emotion-specific bubble tints — REMOVED */
+/* Color Doctrine: Stay monochrome. When color finally appears, it's an EVENT. */
+/* Color appears ONLY through the scene background and Bell's glow. */
+
+.msg-time {
+  font-size: 10px;
+  color: var(--uni-chrome-dim);
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.msg-row.sent .msg-time {
+  text-align: right;
+}
+
+/* Input bar — interface chrome, nearly invisible */
+.input-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(5, 5, 8, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.input-bar .input {
+  flex: 1;
+  border-radius: var(--radius-full);
+  padding: 12px 20px;
+}
+
+.send-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--uni-chrome);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s var(--ease);
+  flex-shrink: 0;
+}
+
+.send-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--uni-text);
+}
+
+.send-btn:active {
+  transform: scale(0.95);
+}
+
+.send-btn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ─── Memory Card Modal ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.3s var(--ease);
+  padding: 24px;
+}
+
+.memory-card {
+  width: 100%;
+  max-width: 360px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  animation: slideUp 0.5s var(--ease-bounce);
+  position: relative;
+}
+
+.memory-card-inner {
+  background: linear-gradient(160deg, var(--scene-1, #1a1a2e), var(--uni-void), var(--scene-2, #16213e));
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.memory-card-header {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--uni-text-muted);
+  margin-bottom: 24px;
+}
+
+.memory-card-quote {
+  font-size: 18px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--uni-text);
+  margin-bottom: 24px;
+  font-style: italic;
+}
+
+.memory-card-date {
+  font-size: 12px;
+  color: var(--uni-text-muted);
+}
+
+.memory-card-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  background: var(--uni-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.memory-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  justify-content: center;
+}
+
+/* ─── Empty State ─── */
+.empty-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--uni-text-muted);
+  gap: 12px;
+  animation: fadeIn 1s var(--ease);
+  padding: 24px;
+  text-align: center;
+}
+
+.empty-chat .wordmark {
+  font-size: 32px;
+  opacity: 0.4;
+}
+
+/* ─── Loading Spinner ─── */
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--uni-glass-border);
+  border-top-color: var(--uni-accent-1);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* ─── Typing Indicator ─── */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 8px 16px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--uni-text-muted);
+  animation: typePulse 1.4s ease-in-out infinite;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* ─── Toast ─── */
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--uni-surface-2);
+  border: 1px solid var(--uni-glass-border);
+  padding: 12px 24px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  color: var(--uni-text-dim);
+  z-index: 200;
+  animation: fadeSlideUp 0.4s var(--ease-bounce);
+  backdrop-filter: blur(12px);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 480px) {
+  .glass-card {
+    padding: 24px 20px;
+  }
+
+  .msg-row {
+    max-width: 90%;
+  }
+
+  .bubble {
+    font-size: 14px;
+    padding: 10px 14px;
+  }
+
+  .wordmark {
+    font-size: clamp(40px, 12vw, 60px);
+  }
+}
+
+/* ─── Scrollbar global ─── */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--uni-glass-border);
+  border-radius: 4px;
+}
+
+/* ─── Selection ─── */
+/* ─── Bell Onboarding ─── */
+
+.onboarding-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.onboarding-dot {
+  padding-top: 60px;
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.onboarding-messages {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 480px;
+  padding: 0 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.onboarding-msg {
+  text-align: center;
+  animation: fadeSlideUp 0.8s var(--ease) both;
+}
+
+.onboarding-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--uni-chrome);
+  margin-bottom: 6px;
+}
+
+.onboarding-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--uni-text);
+  font-weight: 300;
+}
+
+.onboarding-future {
+  text-align: center;
+  animation: fadeSlideUp 0.8s var(--ease) both;
+  margin-top: 8px;
+}
+
+.onboarding-future-title {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--uni-chrome);
+  margin-bottom: 12px;
+}
+
+.onboarding-future-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.onboarding-future-card {
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  color: var(--uni-text-dim);
+  animation: fadeSlideUp 0.6s var(--ease) both;
+}
+
+.onboarding-actions {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.onboarding-skip {
+  background: none;
+  border: none;
+  color: var(--uni-chrome-dim);
+  font-size: 12px;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  transition: color 0.3s;
+}
+
+.onboarding-skip:hover {
+  color: var(--uni-text-dim);
+}
+
+/* ─── Valentine's Day Launch Edition ─── */
+
+@keyframes heart-float {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 0.6;
+  }
+
+  90% {
+    opacity: 0.3;
+  }
+
+  100% {
+    transform: translateY(-100vh) scale(0.5) rotate(45deg);
+    opacity: 0;
+  }
+}
+
+.hearts-float {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.heart {
+  position: absolute;
+  bottom: -20px;
+  color: var(--emo-love);
+  font-size: 20px;
+  animation: heart-float linear infinite;
+  filter: blur(2px);
+  opacity: 0.15;
+  /* Valentine's as a whisper, not a shout */
+}
+
+.h1 {
+  left: 10%;
+  animation-duration: 12s;
+  animation-delay: 0s;
+  font-size: 16px;
+}
+
+.h2 {
+  left: 30%;
+  animation-duration: 15s;
+  animation-delay: -3s;
+  font-size: 22px;
+}
+
+.h3 {
+  left: 55%;
+  animation-duration: 11s;
+  animation-delay: -7s;
+  font-size: 14px;
+}
+
+.h4 {
+  left: 75%;
+  animation-duration: 14s;
+  animation-delay: -2s;
+  font-size: 18px;
+}
+
+.h5 {
+  left: 90%;
+  animation-duration: 13s;
+  animation-delay: -5s;
+  font-size: 12px;
+}
+
+.welcome-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 1s var(--ease);
+  position: relative;
+  z-index: 2;
+}
+
+.welcome-content.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.vday-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  background: rgba(255, 107, 157, 0.1);
+  border: 1px solid rgba(255, 107, 157, 0.2);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--emo-love);
+  letter-spacing: 0.05em;
+  margin-bottom: 28px;
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.vday-timer {
+  display: flex;
+  gap: 16px;
+  margin: 32px 0 12px;
+  animation: fadeSlideUp 1s var(--ease) 0.8s both;
+}
+
+.timer-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 48px;
+}
+
+.timer-val {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--uni-text);
+  line-height: 1;
+}
+
+.timer-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--uni-chrome);
+  margin-top: 4px;
+}
+
+.btn-glow {
+  box-shadow: 0 4px 24px rgba(255, 107, 157, 0.15), 0 0 60px rgba(255, 107, 157, 0.06);
+}
+
+.btn-glow:hover {
+  box-shadow: 0 8px 40px rgba(255, 107, 157, 0.25), 0 0 80px rgba(255, 107, 157, 0.1);
+}
+
+.welcome-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 32px;
+  max-width: 480px;
+  animation: fadeSlideUp 1s var(--ease) 1s both;
+}
+
+.feature-pill {
+  padding: 8px 16px;
+  background: var(--uni-glass);
+  border: 1px solid var(--uni-glass-border);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  color: var(--uni-text-dim);
+  white-space: nowrap;
+  transition: all 0.3s var(--ease);
+}
+
+.feature-pill:hover {
+  background: var(--uni-glass-hover);
+  color: var(--uni-text);
+  transform: translateY(-1px);
+}
+
+/* ─── Selection ─── */
+::selection {
+  background: rgba(102, 126, 234, 0.3);
+  color: var(--uni-text);
+}
+
+/* Resonance Player UI */
+.audio-toggle {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: var(--uni-glass);
+  border: 1px solid var(--uni-glass-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.3s var(--ease);
+  animation: fadeIn 1s var(--ease) 1.5s both;
+}
+
+.audio-toggle:hover {
+  background: var(--uni-glass-hover);
+  transform: scale(1.02);
+}
+
+.audio-toggle span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--uni-text-dim);
+}
+
+.resonance-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--uni-text-muted);
+  border-radius: 50%;
+  transition: all 0.5s var(--ease);
+}
+
+.audio-toggle.playing .resonance-dot {
+  background: var(--emo-love);
+  box-shadow: 0 0 12px var(--emo-love);
+  animation: heartbeat 1.666s ease-in-out infinite;
+  /* 2-beat pulse */
+}
+
+/* Resonance Connection Event */
+.resonance-active {
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  z-index: 9999;
+}
+
+.resonance-spark {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 100px 40px #fff, 0 0 200px 80px var(--emo-happy), 0 0 400px 120px var(--emo-love);
+  animation: spark-explode 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.resonance-text {
+  font-family: var(--font-display);
+  font-size: 32px;
+  letter-spacing: 0.5em;
+  color: #fff;
+  opacity: 0;
+  animation: fade-in-out-resonance 2.5s ease-in-out forwards;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.resonance-subtext {
+  font-size: 12px;
+  color: var(--uni-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  margin-top: 20px;
+  opacity: 0;
+  animation: fade-in-out-resonance 2.5s ease-in-out 0.2s forwards;
+}
+
+@keyframes spark-explode {
+  0% {
+    transform: scale(0.1);
+    opacity: 0;
+  }
+
+  10% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  30% {
+    transform: scale(30);
+    opacity: 0.8;
+    filter: blur(50px);
+  }
+
+  100% {
+    transform: scale(60);
+    opacity: 0;
+    filter: blur(100px);
+  }
+}
+
+/* Psychic Presence Pulse (The 'I see you' light) */
+.presence-pulse {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--emo-love);
+  box-shadow: 0 0 20px 2px var(--emo-love);
+  opacity: 0;
+  transform: translateY(2px);
+  transition: all 2s var(--ease);
+  z-index: 5;
+  pointer-events: none;
+}
+
+.presence-pulse.active {
+  opacity: 0.25;
+  transform: translateY(0);
+  animation: breathe 3.333s ease-in-out infinite;
+}
+
+@keyframes fade-in-out-resonance {
+
+  0%,
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  20%,
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

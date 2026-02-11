@@ -1,0 +1,7 @@
+<!-- UNI COSMIC DOT — Static (for PWA manifest) -->
+<svg width="512" height="512" viewBox="0 0 512 512"
+xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="140" fill="#000000"/>
+  <circle cx="256" cy="256" r="110" stroke="white" stroke-opacity="0.08" stroke-width="2" fill="none"/>
+  <circle cx="256" cy="256" r="35" fill="white"/>
+</svg>

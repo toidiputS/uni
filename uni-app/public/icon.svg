@@ -1,0 +1,37 @@
+<!-- UNI COSMIC DOT -->
+<!-- Signals: intelligence, emergence, generative field -->
+
+<svg width="512" height="512" viewBox="0 0 512 512"
+xmlns="http://www.w3.org/2000/svg">
+
+  <!-- True black = depth -->
+  <rect width="512" height="512" rx="140" fill="#000000"/>
+
+  <!-- Orbital field -->
+  <!-- Extremely low opacity = luxury -->
+  <circle cx="256" cy="256" r="110"
+          stroke="white"
+          stroke-opacity="0.08"
+          stroke-width="2"
+          fill="none">
+
+    <!-- Slow orbit rotation -->
+    <animateTransform attributeName="transform"
+        type="rotate"
+        from="0 256 256"
+        to="360 256 256"
+        dur="18s"
+        repeatCount="indefinite"/>
+  </circle>
+
+  <!-- Core Intelligence -->
+  <circle cx="256" cy="256" r="34" fill="white">
+
+    <!-- gravitational breathing -->
+    <animate attributeName="r"
+             values="32;38;32"
+             dur="4s"
+             repeatCount="indefinite"/>
+  </circle>
+
+</svg>
