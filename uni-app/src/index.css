@@ -32,7 +32,10 @@
   --uni-gradient: linear-gradient(135deg, var(--uni-accent-1), var(--uni-accent-2));
 
   /* Emotion palette — held in reserve. Color = scarcity = impact. */
+  --emo-valentine: #ff2d55;
+  --emo-valentine-bg: rgba(255, 45, 85, 0.08);
   --emo-happy: #ffd700;
+
   --emo-happy-bg: rgba(255, 215, 0, 0.06);
   --emo-sad: #5b86e5;
   --emo-sad-bg: rgba(91, 134, 229, 0.06);

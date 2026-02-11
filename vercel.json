@@ -4,6 +4,8 @@
     },
     "buildCommand": "cd uni-app && npm install && npm run build",
     "outputDirectory": "uni-app/dist",
+    "cleanUrls": true,
+    "framework": null,
     "routes": [
         {
             "handle": "filesystem"

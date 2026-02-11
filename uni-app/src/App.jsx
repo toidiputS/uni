@@ -70,24 +70,30 @@ export default function App() {
         const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
             if (firebaseUser) {
                 setUser(firebaseUser);
-                const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-                    setOrderedUserData(data);
-                    if (data.pairedWith && data.lastRoomId) {
-                        setRoomId(data.lastRoomId);
-                        if (!hasSeenOnboarding()) {
-                            setView('onboarding');
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+                    if (userDoc.exists()) {
+                        const data = userDoc.data();
+                        setOrderedUserData(data);
+                        if (data.pairedWith && data.lastRoomId) {
+                            setRoomId(data.lastRoomId);
+                            if (!hasSeenOnboarding()) {
+                                setView('onboarding');
+                            } else {
+                                setView('chat');
+                            }
                         } else {
-                            setView('chat');
+                            setView('pairing');
                         }
                     } else {
                         setView('pairing');
                     }
-                } else {
-                    setView('pairing');
+                } catch (err) {
+                    console.error('[UNI] Auth Load Error:', err);
+                    setView('error');
                 }
             } else {
+
                 setUser(null);
                 setOrderedUserData(null);
                 setRoomId(null);
@@ -96,6 +102,7 @@ export default function App() {
         });
         return unsub;
     }, []);
+
 
     // Listen to user doc changes
     useEffect(() => {
@@ -139,6 +146,17 @@ export default function App() {
     const handleOnboardingComplete = useCallback(() => {
         setView('chat');
     }, []);
+
+    if (view === 'error') {
+        return (
+            <div className="welcome">
+                <div className="wordmark" style={{ fontSize: 24 }}>CONNECTION LOST</div>
+                <p>The sanctuary is currently unstable. Please refresh.</p>
+                <button className="btn btn-glass" onClick={() => window.location.reload()}>Reconnect</button>
+            </div>
+        );
+    }
+
 
     return (
         <div className="app">
