@@ -84,13 +84,22 @@ export default function Welcome({ onGetStarted, onMoodChange }) {
             </div>
 
             <div className={`welcome-content ${visible ? 'visible' : ''}`}>
-                <div className="wordmark">•UNI•</div>
+                <div className="wordmark">
+                    •UNI•
+                    <div style={{
+                        fontSize: 9,
+                        letterSpacing: '0.4em',
+                        marginTop: 4,
+                        opacity: 0.5,
+                        fontWeight: 400
+                    }}>CGEI PROTOCOL v4</div>
+                </div>
 
                 <p className="tagline">
                     Your conversations deserve to <em>feel</em> something.
                     <br />
                     <span style={{ fontSize: '0.9em', opacity: 0.8 }}>
-                        The world's first <em>Emotion Interface</em> for couples.
+                        The world's first <strong>CGEI</strong> (Conversational Generative Emotion Interface).
                     </span>
                 </p>
 
@@ -131,10 +140,10 @@ export default function Welcome({ onGetStarted, onMoodChange }) {
                 </div>
 
                 <div className="welcome-features">
-                    <div className="feature-pill">💬 Messages that feel alive</div>
-                    <div className="feature-pill">🎨 Backgrounds that shift with emotion</div>
-                    <div className="feature-pill">✨ AI that celebrates your moments</div>
-                    <div className="feature-pill">📸 Memory cards you'll keep forever</div>
+                    <div className="feature-pill">◈ CGEI Reactive Atmosphere Engine</div>
+                    <div className="feature-pill">◈ Neural Sentiment Transcription</div>
+                    <div className="feature-pill">◈ Memory Archiving & Keepsakes</div>
+                    <div className="feature-pill">◈ Shared Soul-Song Weaving</div>
                 </div>
             </div>
         </div>
