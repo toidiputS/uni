@@ -117,8 +117,10 @@ Messages are not boxes. They are **emotional organisms**:
 ### 🎨 2. Generative Canvas Backdrop
 
 The background is a real-time evolving art piece:
-- DALL·E / Stable Diffusion models generate a new visual scene based on emotion and conversation theme
-- Soft transitions create a sense of flow (auroras, textures, morphs)
+- **Deep Pool Imagery**: A curated library of high-fidelity atmospheric scenes (Unsplash) matched to emotional states.
+- **Dynamic Selection**: Each emotion (Love, Anger, Joy) pulls from a localized pool of 6-8 distinct scenes to ensure variety.
+- **Particle Synthesis**: Real-time canvas rendering of rain, sparks, and heartbeats overlaying the scene.
+- Soft transitions create a sense of flow (auroras, textures, morphs).
 
 No two conversations will ever look the same.
 
@@ -128,12 +130,17 @@ No two conversations will ever look the same.
 
 **Bell** is the N in •UNI• — the resonance between U (you) and I.
 
-She is an ever-present companion:
-- Quips, jokes, reflections (powered by Gemini 2.0 Flash)
-- Occasionally mediates arguments or spotlights meaningful moments
-- A third presence that enhances the vibe without dominating it
+She is an ever-present companion powered by a **Hybrid "Pulse" Architecture**:
 
-Think: part narrator, part cheerleader, part emotional artist.
+#### ⚡ The Pulse Strategy (Cost & Latency Optimization)
+To ensure viability at scale, Bell thinks in two modes:
+1.  **Fast Path (Local Brain)**:
+    *   **Instant Reaction**: Zero-latency response to strong emotions ("I love you", "I hate you").
+    *   **Trivial Filter**: Handles short messages (<12 chars) locally to save 90% of API costs.
+    *   **Expanded Vocabulary**: A local library of 7+ emotional reservoirs (Love, Tender, Playful, Angry, etc.) with randomized poetic quips.
+2.  **Deep Path (Gemini Cloud)**:
+    *   **Contextual Analysis**: Consults Gemini 2.0 Flash only when necessary (complex queries or every ~20s).
+    *   **Deep Reading**: Analyzes the full conversation window for subtle shifts in tone.
 
 #### The Cosmic Dot — Bell’s Body Language
 
@@ -203,7 +210,8 @@ These can be saved, downloaded, or gifted IRL (print-on-demand).
 - **Frontend:** React + Vite (SPA)
 - **Backend:** Firebase (Auth, Firestore, Hosting)
 - **AI Stack:**
-  - Gemini 2.0 Flash for Bell's mind (JSON-mode)
+  - **Hybrid Engine**: Local "Bell Brain" (JS) + Gemini 2.0 Flash (Cloud)
+  - **The Pulse**: Smart throttling based on message complexity and emotional confidence
   - Luminance-clamped scene color pipeline
 - **Design System:** Custom CSS v3 — Visual Hierarchy Doctrine
 - **PWA:** manifest.json + installable on mobile
@@ -261,17 +269,17 @@ These can be saved, downloaded, or gifted IRL (print-on-demand).
 
 ---
 
-### � 5. The Viral Pairing Doctrine ("Be my UNI")
+###  5. The Viral Pairing Doctrine ("Be my UNI")
 •UNI• is a "Two-Player Game" by design. You cannot use it alone. 
 - **The Invite Loop**: When a user joins, they are given a unique 6-digit **UNI Code**. To unlock the interface, they must send this code to *one* person.
 - **The Monogamy Rule**: A UNI connection is a 1:1 bond. To pair with someone else, you must "Part Ways," which resets the emotional canvas. This turns "Will you be my UNI?" into a social status on par with "Official."
 
-### 💰 6. Monetization: The Founder's Launch
+### 💳 6. Monetization Ritual (Stripe Integrated)
 To drive massive FOMO during the 72-hour blitz:
 1. **The Launch Window (Free until 2-15)**: Every feature is unlocked and free for the first 3 days to maximize virality and user acquisition.
 2. **Founder's Tier (Expires Feb 15)**:
-   - **$25 Lifetime Access (Per Person)**: One-time payment for "Founding Status." A couple pairs for a total of $50 lifetime.
-   - **$2.99/mo Subscription (Per Person)**: Low-friction monthly entry.
+   - **$25 Lifetime Access (Per Person)**: One-time payment for "Founding Status." Stripe Price ID: `price_1SzXqVEEe6fVBpFcUaCBSRIL`.
+   - **$2.99/mo Subscription (Per Person)**: Low-friction monthly entry. Stripe Price ID: `price_1SzXsuEEe6fVBpFckwUpRs2b`.
 3. **Standard Tier (Post-Feb 15)**:
    - **$49.99 Lifetime Access (Per Person)**: Premium positioning for "forever" couples.
    - **$4.99/mo (Per Person)**: Standard accessibility.

@@ -16,7 +16,7 @@
 - [x] **Tactile Resonance:** Ripple physics for shared physical presence.
 - [x] **Psychic Pulse:** Bell reactive typing (Partner Presence).
 - [x] **Aura Bubbles:** Volume-bleeding emotional light for every message.
-- [ ] **Final Friction Sweep:** 1-tap Google/Guest onboarding for viral velocity.
+- [x] **Final Friction Sweep:** 1-tap Google/Guest onboarding for viral velocity.
 
 ---
 
