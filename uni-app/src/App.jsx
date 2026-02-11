@@ -26,6 +26,19 @@ export default function App() {
     const [intensity, setIntensity] = useState(0.3);
     const [sceneColors, setSceneColors] = useState(['#0d0d18', '#0a0f1a']);
     const [bubbleEmit, setBubbleEmit] = useState(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const audioRef = React.useRef(null);
+
+    const toggleAudio = useCallback(() => {
+        if (!audioRef.current) return;
+        if (isPlaying) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+        } else {
+            audioRef.current.play().catch(() => { });
+            setIsPlaying(true);
+        }
+    }, [isPlaying]);
 
     // Unified mood change handler
     const handleMoodChange = useCallback((moodBundle) => {
@@ -142,6 +155,8 @@ export default function App() {
                 <Welcome
                     onGetStarted={() => setView('auth')}
                     onMoodChange={handleMoodChange}
+                    isPlaying={isPlaying}
+                    onToggleAudio={toggleAudio}
                 />
             )}
 
@@ -157,6 +172,8 @@ export default function App() {
                     user={user}
                     onPaired={handlePaired}
                     onLogout={handleLogout}
+                    isPlaying={isPlaying}
+                    onToggleAudio={toggleAudio}
                 />
             )}
 
@@ -173,12 +190,17 @@ export default function App() {
                     userData={userData}
                     roomId={roomId}
                     onMoodChange={handleMoodChange}
+                    bubbleEmit={bubbleEmit}
                     onBubbleEmit={handleBubbleEmit}
                     onSceneChange={setSceneColors}
                     onUnpair={() => setView('pairing')}
                     onLogout={handleLogout}
+                    isPlaying={isPlaying}
+                    onToggleAudio={toggleAudio}
                 />
             )}
+
+            <audio ref={audioRef} src="/wishes_in_the_wind.mp3" loop />
         </div>
     );
 }

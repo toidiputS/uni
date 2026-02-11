@@ -11,7 +11,7 @@ const PREVIEW_MOODS = [
     { mood: 'excited', sceneColors: ['#081518', '#0d1a1e'], intensity: 0.7 },
 ];
 
-export default function Welcome({ onGetStarted, onMoodChange }) {
+export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggleAudio }) {
     const [visible, setVisible] = useState(false);
     const index = useRef(0);
     const [timeLeft, setTimeLeft] = useState({ d: 0, h: 0, m: 0, s: 0 });
@@ -51,26 +51,11 @@ export default function Welcome({ onGetStarted, onMoodChange }) {
         return () => clearInterval(moodTimer);
     }, [onMoodChange]);
 
-    const [isPlaying, setIsPlaying] = useState(false);
-    const audioRef = useRef(null);
-
-    const toggleAudio = () => {
-        if (!audioRef.current) return;
-        if (isPlaying) {
-            audioRef.current.pause();
-            setIsPlaying(false);
-        } else {
-            audioRef.current.play().catch(() => { });
-            setIsPlaying(true);
-        }
-    };
-
     return (
         <div className="welcome">
-            <audio ref={audioRef} src="/wishes_in_the_wind.mp3" loop />
 
             {/* Resonance Player Toggle */}
-            <div className={`audio-toggle ${isPlaying ? 'playing' : ''}`} onClick={toggleAudio}>
+            <div className={`audio-toggle ${isPlaying ? 'playing' : ''}`} onClick={onToggleAudio}>
                 <div className="resonance-dot" />
                 <span>{isPlaying ? 'Resonance On' : 'Silent Mode'}</span>
             </div>

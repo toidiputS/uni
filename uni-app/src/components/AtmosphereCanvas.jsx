@@ -26,7 +26,15 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bu
     // Load background images
     useEffect(() => {
         const preset = WEATHER_PRESETS[mood];
-        if (preset?.skyImage) {
+        if (preset?.skyImages && preset.skyImages.length > 0) {
+            // Pick a random image from the pool
+            const randomImgUrl = preset.skyImages[Math.floor(Math.random() * preset.skyImages.length)];
+            const img = new Image();
+            img.src = randomImgUrl;
+            img.onload = () => {
+                targetBgImage.current = img;
+            };
+        } else if (preset?.skyImage) {
             const img = new Image();
             img.src = preset.skyImage;
             img.onload = () => {

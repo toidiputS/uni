@@ -6,10 +6,11 @@ import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     signInAnonymously,
+    signInWithPopup,
     updateProfile,
 } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '../lib/firebase';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, db, googleProvider } from '../lib/firebase';
 
 export default function Auth({ onBack, onAuthed }) {
     const [mode, setMode] = useState('login'); // login | signup
@@ -18,6 +19,36 @@ export default function Auth({ onBack, onAuthed }) {
     const [displayName, setDisplayName] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+
+    const handleGoogleLogin = async () => {
+        setError('');
+        setLoading(true);
+        try {
+            const cred = await signInWithPopup(auth, googleProvider);
+            const user = cred.user;
+
+            // Check if user exists in Firestore
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (!userDoc.exists()) {
+                const code = user.uid.slice(-6).toUpperCase();
+                await setDoc(doc(db, 'users', user.uid), {
+                    displayName: user.displayName || 'You',
+                    email: user.email,
+                    photoURL: user.photoURL,
+                    code,
+                    pairedWith: null,
+                    lastRoomId: null,
+                    createdAt: serverTimestamp(),
+                });
+            }
+            onAuthed();
+        } catch (err) {
+            console.error('[UNI] Google Auth Error:', err);
+            setError('Google entry failed. Try Guest Mode?');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleGuestLogin = async () => {
         setError('');
@@ -40,6 +71,7 @@ export default function Auth({ onBack, onAuthed }) {
             onAuthed();
         } catch (err) {
             setError('Guest entry failed. Please try email.');
+        } finally {
             setLoading(false);
         }
     };
@@ -71,8 +103,15 @@ export default function Auth({ onBack, onAuthed }) {
             onAuthed();
         } catch (err) {
             console.error('[UNI] Auth error:', err);
-            // ... (error handling logic) ...
-            setError(err.message || 'Something went wrong.');
+            if (err.code === 'auth/email-already-in-use') {
+                setError('This email is already on the path. Try Logging In?');
+            } else if (err.code === 'auth/weak-password') {
+                setError('Make your password a bit stronger.');
+            } else if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+                setError('The path is blocked. Check your credentials.');
+            } else {
+                setError('The gateway is hesitant. try again?');
+            }
         } finally {
             setLoading(false);
         }
@@ -84,16 +123,26 @@ export default function Auth({ onBack, onAuthed }) {
             <p className="auth-subtitle">Your emotional canvas awaits</p>
 
             <div className="glass-card">
-                <button
-                    className="btn btn-primary"
-                    onClick={handleGuestLogin}
-                    disabled={loading}
-                    style={{ width: '100%', marginBottom: 20, background: 'var(--uni-gradient)' }}
-                >
-                    {loading && mode === 'guest' ? <span className="spinner" /> : '🚀 Quick Entry (Guest)'}
-                </button>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+                    <button
+                        className="btn btn-primary"
+                        onClick={handleGoogleLogin}
+                        disabled={loading}
+                        style={{ flex: 1, background: '#fff', color: '#000', border: 'none' }}
+                    >
+                        {loading ? <span className="spinner" /> : 'G·Google'}
+                    </button>
+                    <button
+                        className="btn btn-primary"
+                        onClick={handleGuestLogin}
+                        disabled={loading}
+                        style={{ flex: 1, background: 'var(--uni-gradient)' }}
+                    >
+                        {loading ? <span className="spinner" /> : '🚀 Guest'}
+                    </button>
+                </div>
 
-                <div className="divider" style={{ margin: '0 0 20px' }}><span>OR</span></div>
+                <div className="divider" style={{ margin: '0 0 20px' }}><span>OR USE EMAIL</span></div>
 
                 <div className="auth-tabs">
                     <button

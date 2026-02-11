@@ -1,29 +1,30 @@
 // •UNI• Partner Pairing Page
 // Share your code → Enter partner's code → Create chat room
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../lib/firebase';
 import {
     doc, getDoc, setDoc, updateDoc, getDocs,
-    query, where, collection, serverTimestamp,
+    query, where, collection, serverTimestamp, onSnapshot
 } from 'firebase/firestore';
 
 function roomIdFor(a, b) {
     return [a, b].sort((x, y) => x.localeCompare(y)).join('_');
 }
 
-export default function Pairing({ user, onPaired, onLogout }) {
+export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleAudio }) {
     const [myCode, setMyCode] = useState('------');
     const [partnerCode, setPartnerCode] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
-    const [isWaiting, setIsWaiting] = useState(false);
     const [resonance, setResonance] = useState(false);
 
-    // Load or generate pairing code
+    // Initial setup: Get my code & listen for pair
     useEffect(() => {
         if (!user) return;
+
+        // Load or generate pairing code
         (async () => {
             const userRef = doc(db, 'users', user.uid);
             const snap = await getDoc(userRef);
@@ -41,43 +42,19 @@ export default function Pairing({ user, onPaired, onLogout }) {
                 setMyCode(code);
             }
         })();
-    }, [user]);
 
-    // Watch for resonance (both ready)
-    useEffect(() => {
-        if (!user || !isWaiting) return;
-
-        // Potential room ID if we have partner code
-        const code = partnerCode.trim().toUpperCase();
-        if (code.length < 3) return;
-
-        let unsub = () => { };
-
-        // Find partner to get their UID for the room listener
-        (async () => {
-            const q = query(collection(db, 'users'), where('code', '==', code));
-            const snap = await getDocs(q);
-            if (snap.empty) return;
-
-            const partnerUid = snap.docs[0].id;
-            const roomId = roomIdFor(user.uid, partnerUid);
-
-            unsub = onSnapshot(doc(db, 'chatRooms', roomId), (room) => {
-                if (room.exists()) {
-                    const ready = room.data().ready || {};
-                    if (ready[user.uid] && ready[partnerUid]) {
-                        // RESONANCE ACHIEVED
-                        setResonance(true);
-                        setTimeout(() => {
-                            onPaired(roomId);
-                        }, 2500); // 2.5s for the "explosion" animation
-                    }
+        // Listen for when someone else pairs with ME
+        const unsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
+            if (snap.exists()) {
+                const data = snap.data();
+                if (data.pairedWith && data.lastRoomId) {
+                    setResonance(true);
+                    setTimeout(() => onPaired(data.lastRoomId), 3500);
                 }
-            });
-        })();
-
-        return () => unsub();
-    }, [user, isWaiting, partnerCode, onPaired]);
+            }
+        });
+        return unsub;
+    }, [user, onPaired]);
 
     const copyCode = () => {
         navigator.clipboard?.writeText(myCode);
@@ -86,55 +63,72 @@ export default function Pairing({ user, onPaired, onLogout }) {
     };
 
     const handlePair = async (e) => {
-        e?.preventDefault();
-        const code = partnerCode.trim().toUpperCase();
-        if (!user || code.length < 3) {
+        e.preventDefault();
+        if (!partnerCode.trim() || partnerCode.length < 6) {
             setError('Enter your partner\'s code.');
             return;
         }
-
         setError('');
         setLoading(true);
 
         try {
-            const q = query(collection(db, 'users'), where('code', '==', code));
-            const results = await getDocs(q);
+            // 1. Find the partner
+            const q = query(
+                collection(db, 'users'),
+                where('code', '==', partnerCode.trim().toUpperCase())
+            );
+            const snap = await getDocs(q);
 
-            if (results.empty) {
-                setError('No user found with that code.');
+            if (snap.empty) {
+                setError("Resonance not found. Check the code.");
                 setLoading(false);
                 return;
             }
 
-            const partnerUid = results.docs[0].id;
-            const partnerData = results.docs[0].data();
+            const partnerDoc = snap.docs[0];
+            const partnerData = partnerDoc.data();
+            const partnerId = partnerDoc.id;
 
-            if (partnerUid === user.uid) {
-                setError('Ask your partner for their code.');
+            if (partnerId === user.uid) {
+                setError("You cannot pair with yourself.");
                 setLoading(false);
                 return;
             }
 
-            const roomId = roomIdFor(user.uid, partnerUid);
-            const roomRef = doc(db, 'chatRooms', roomId);
+            // 2. Create the room ID
+            const roomId = roomIdFor(user.uid, partnerId);
 
-            // Mark MYSELF as ready in this room
-            await setDoc(roomRef, {
-                members: [user.uid, partnerUid],
+            // 3. Update both users
+            const myRef = doc(db, 'users', user.uid);
+            const pRef = doc(db, 'users', partnerId);
+
+            const roomData = {
+                id: roomId,
+                members: [user.uid, partnerId],
                 memberNames: {
                     [user.uid]: user.displayName || 'You',
-                    [partnerUid]: partnerData?.displayName || 'Partner',
+                    [partnerId]: partnerData.displayName || 'Partner'
                 },
-                ready: {
-                    [user.uid]: true
-                }
-            }, { merge: true });
+                createdAt: serverTimestamp(),
+                isSanctified: false
+            };
 
-            const myRef = doc(db, 'users', user.uid);
-            await updateDoc(myRef, { lastRoomId: roomId });
+            // 4. Set the room & update users
+            await setDoc(doc(db, 'chatRooms', roomId), roomData, { merge: true });
 
-            setIsWaiting(true);
-            setLoading(false);
+            await updateDoc(myRef, {
+                pairedWith: partnerId,
+                lastRoomId: roomId
+            });
+
+            await updateDoc(pRef, {
+                pairedWith: user.uid,
+                lastRoomId: roomId
+            });
+
+            setResonance(true);
+            setTimeout(() => onPaired(roomId), 3500);
+
         } catch (err) {
             console.error('[UNI] Pairing error:', err);
             setError('Connection failed. Try again.');
@@ -142,44 +136,30 @@ export default function Pairing({ user, onPaired, onLogout }) {
         }
     };
 
-    const [isPlaying, setIsPlaying] = useState(false);
-    const audioRef = useRef(null);
-
-    const toggleAudio = () => {
-        if (!audioRef.current) return;
-        if (isPlaying) {
-            audioRef.current.pause();
-            setIsPlaying(false);
-        } else {
-            audioRef.current.play().catch(() => { });
-            setIsPlaying(true);
-        }
-    };
-
     if (resonance) {
         return (
-            <div className="pairing-page resonance-active">
-                <audio autoPlay src="/wishes_in_the_wind.mp3" />
-                <div className="resonance-spark" />
-                <h1 className="resonance-text">BECOMING •UNI•</h1>
-                <p className="resonance-subtext">Opening the heavens...</p>
+            <div className="pairing-resonance">
+                <div className="resonance-ring" />
+                <div className="resonance-content">
+                    <div className="wordmark">•UNI•</div>
+                    <p>Resonance Achieved</p>
+                    <div className="resonance-status">Creating your sanctuary...</div>
+                </div>
             </div>
         );
     }
 
     return (
         <div className="pairing-page">
-            <audio ref={audioRef} src="/wishes_in_the_wind.mp3" loop />
-
             {/* Resonance Player Toggle */}
-            <div className={`audio-toggle ${isPlaying ? 'playing' : ''}`} onClick={toggleAudio}>
+            <div className={`audio-toggle ${isPlaying ? 'playing' : ''}`} onClick={onToggleAudio}>
                 <div className="resonance-dot" />
                 <span>{isPlaying ? 'Resonance On' : 'Silent Mode'}</span>
             </div>
 
             <div className="wordmark" style={{ fontSize: 32 }}>•UNI•</div>
             <p style={{ color: 'var(--uni-text-dim)', fontSize: 14, marginTop: 8, marginBottom: 24 }}>
-                {isWaiting ? 'Waiting for your person to resonate...' : 'Connect with your person'}
+                Connect with your person
             </p>
 
             <div className="glass-card" style={{ textAlign: 'center' }}>
@@ -205,7 +185,6 @@ export default function Pairing({ user, onPaired, onLogout }) {
                             value={partnerCode}
                             onChange={(e) => setPartnerCode(e.target.value.toUpperCase())}
                             maxLength={6}
-                            disabled={isWaiting}
                             style={{ textAlign: 'center', letterSpacing: '0.2em', fontSize: 18, fontWeight: 600 }}
                         />
                     </div>
@@ -213,12 +192,12 @@ export default function Pairing({ user, onPaired, onLogout }) {
                     {error && <p className="error-msg">{error}</p>}
 
                     <button
-                        className={`btn ${isWaiting ? 'btn-glass disabled' : 'btn-primary'}`}
+                        className="btn btn-primary"
                         type="submit"
-                        disabled={loading || isWaiting}
+                        disabled={loading}
                         style={{ width: '100%' }}
                     >
-                        {loading ? <span className="spinner" /> : (isWaiting ? 'Sent. Waiting...' : 'Connect Interface')}
+                        {loading ? <span className="spinner" /> : 'Connect Interface'}
                     </button>
                 </form>
             </div>

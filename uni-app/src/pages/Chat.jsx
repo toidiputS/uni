@@ -9,10 +9,13 @@ import {
     serverTimestamp, doc, limit,
 } from 'firebase/firestore';
 import ArtifactFrame from '../components/ArtifactFrame';
+import PricingOverlay from '../components/PricingOverlay';
 import MemoryCard from '../components/MemoryCard';
 import BellDot from '../components/BellDot';
+import AtmosphereCanvas from '../components/AtmosphereCanvas';
 import { analyzeMessage, composeSoulSong } from '../lib/gemini';
-import { getDocs } from 'firebase/firestore';
+import { getDocs, updateDoc } from 'firebase/firestore';
+import { redirectToCheckout } from '../lib/stripe';
 
 // Bubble effect → particle type mapping
 const BUBBLE_PARTICLE_MAP = {
@@ -25,17 +28,59 @@ const BUBBLE_PARTICLE_MAP = {
     breathe: null, // no particles for subtle breathe
 };
 
-export default function Chat({ user, userData, roomId, onMoodChange, onBubbleEmit, onSceneChange, onUnpair, onLogout }) {
+export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit, onBubbleEmit, onSceneChange, onUnpair, onLogout, isPlaying, onToggleAudio }) {
     const [messages, setMessages] = useState([]);
     const [text, setText] = useState('');
     const [sending, setSending] = useState(false);
     const [roomData, setRoomData] = useState(null);
     const [mood, setMood] = useState('neutral');
+    const [intensity, setIntensity] = useState(0.5);
     const [showMemory, setShowMemory] = useState(false);
     const [showArtifact, setShowArtifact] = useState(false);
+    const [showPricing, setShowPricing] = useState(false);
     const [soulSong, setSoulSong] = useState(null);
     const [toast, setToast] = useState('');
     const [bellState, setBellState] = useState('idle');
+
+    const showToast = (msg) => {
+        setToast(msg);
+        setTimeout(() => setToast(''), 3000);
+    };
+
+    // Handle return from Stripe
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const sessionId = params.get('session_id');
+        if (sessionId && user) {
+            // In a production app, the backend (Webhook) would do this.
+            // For launch, we unlock it on the return trip.
+            const userRef = doc(db, 'users', user.uid);
+            updateDoc(userRef, {
+                isSubscriber: true,
+                subscriptionType: 'founder',
+                lastPaymentAt: serverTimestamp()
+            }).then(() => {
+                showToast("Your Sanctuary is Sanctified ✨");
+                // Clean the URL
+                window.history.replaceState({}, document.title, "/");
+            });
+        }
+    }, [user]);
+
+    const handleSponsor = async (type) => {
+        if (!user) return;
+        setBellState('thinking');
+        showToast("Preparing the Gateway...");
+
+        try {
+            await redirectToCheckout(type, user.email);
+        } catch (err) {
+            console.error('[UNI] Stripe Redirect failed:', err);
+            showToast("The Gateway is closed. Try later.");
+        } finally {
+            setBellState('idle');
+        }
+    };
 
     // ... inside the component logic ...
     const handleWeave = async () => {
@@ -336,11 +381,6 @@ export default function Chat({ user, userData, roomId, onMoodChange, onBubbleEmi
         }
     };
 
-    const showToast = (msg) => {
-        setToast(msg);
-        setTimeout(() => setToast(''), 3000);
-    };
-
     const handleMemoryToast = (msg) => {
         setBellState('glow');
         showToast(msg);
@@ -380,6 +420,16 @@ export default function Chat({ user, userData, roomId, onMoodChange, onBubbleEmi
                     >
                         ⟢
                     </button>
+                    {!roomData?.isSanctified && (
+                        <button
+                            className="btn btn-glass btn-sm"
+                            onClick={() => setShowPricing(true)}
+                            title="Sanctify the Room"
+                            style={{ color: 'var(--emo-happy)' }}
+                        >
+                            🕯️
+                        </button>
+                    )}
                     <button
                         className="btn btn-glass btn-sm"
                         onClick={() => setShowMemory(true)}
@@ -496,8 +546,23 @@ export default function Chat({ user, userData, roomId, onMoodChange, onBubbleEmi
                 />
             )}
 
+            {/* Pricing Modal */}
+            {showPricing && (
+                <PricingOverlay
+                    onClose={() => setShowPricing(false)}
+                    onSponsor={handleSponsor}
+                />
+            )}
+
             {/* Toast */}
             {toast && <div className="toast">{toast}</div>}
+
+            {/* CGEI Protocol Watermark */}
+            <div className="cgei-watermark">
+                {roomData?.isSanctified
+                    ? 'FOUNDER PROTOCOL v4 • ETERNAL RESONANCE'
+                    : 'CGEI PROTOCOL v4 • AUTHENTIC RESONANCE'}
+            </div>
         </div>
     );
 }
