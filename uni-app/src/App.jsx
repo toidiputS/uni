@@ -18,7 +18,7 @@ import { hasSeenOnboarding } from './lib/onboarding';
 export default function App() {
     const [view, setView] = useState('loading');
     const [user, setUser] = useState(null);
-    const [userData, setUserData] = useState(null);
+    const [userData, setOrderedUserData] = useState(null);
     const [roomId, setRoomId] = useState(null);
 
     // CGEI Atmosphere state
@@ -27,6 +27,8 @@ export default function App() {
     const [sceneColors, setSceneColors] = useState(['#0d0d18', '#0a0f1a']);
     const [bubbleEmit, setBubbleEmit] = useState(null);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [currentSong, setCurrentSong] = useState('/wishes_in_the_wind.mp3');
+    const [currentSongTitle, setCurrentSongTitle] = useState('Wishes in the Wind');
     const audioRef = React.useRef(null);
 
     const toggleAudio = useCallback(() => {
@@ -39,6 +41,18 @@ export default function App() {
             setIsPlaying(true);
         }
     }, [isPlaying]);
+
+    const playSong = useCallback((url, title) => {
+        if (!audioRef.current) return;
+        setCurrentSong(url);
+        setCurrentSongTitle(title || 'Shared Resonance');
+
+        // Wait for next tick to ensure src is updated
+        setTimeout(() => {
+            audioRef.current.play().catch(() => { });
+            setIsPlaying(true);
+        }, 10);
+    }, []);
 
     // Unified mood change handler
     const handleMoodChange = useCallback((moodBundle) => {
@@ -59,7 +73,7 @@ export default function App() {
                 const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
                 if (userDoc.exists()) {
                     const data = userDoc.data();
-                    setUserData(data);
+                    setOrderedUserData(data);
                     if (data.pairedWith && data.lastRoomId) {
                         setRoomId(data.lastRoomId);
                         if (!hasSeenOnboarding()) {
@@ -75,7 +89,7 @@ export default function App() {
                 }
             } else {
                 setUser(null);
-                setUserData(null);
+                setOrderedUserData(null);
                 setRoomId(null);
                 setView('welcome');
             }
@@ -89,7 +103,7 @@ export default function App() {
         const unsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
             if (snap.exists()) {
                 const data = snap.data();
-                setUserData(data);
+                setOrderedUserData(data);
                 if (data.pairedWith && data.lastRoomId) {
                     setRoomId(data.lastRoomId);
                     if (view === 'pairing') {
@@ -197,10 +211,12 @@ export default function App() {
                     onLogout={handleLogout}
                     isPlaying={isPlaying}
                     onToggleAudio={toggleAudio}
+                    playSong={playSong}
+                    currentSongTitle={currentSongTitle}
                 />
             )}
 
-            <audio ref={audioRef} src="/wishes_in_the_wind.mp3" loop />
+            <audio ref={audioRef} src={currentSong} loop />
         </div>
     );
 }
