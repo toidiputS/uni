@@ -1,0 +1,14 @@
+{
+    "github": {
+        "silent": true
+    },
+    "buildCommand": "cd uni-app && npm install && npm run build",
+    "outputDirectory": "uni-app/dist",
+    "framework": "vite",
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
