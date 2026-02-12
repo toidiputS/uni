@@ -163,15 +163,15 @@ export function createEnergy(originX, originY, targetX, targetY, color) {
     };
 }
 
-export function createMorphingBubble(x, y, w, h, color) {
+export function createMorphingBubble(x, y, w, h, color, isBurst = false) {
     return {
         type: 'morph',
         x, y, w, h,
         life: 1.0,
         phase: Math.random() * Math.PI * 2,
         color: color || '255, 255, 255',
-        speed: 0.01 + Math.random() * 0.01,
-        isBurst: true
+        speed: isBurst ? 0.01 + Math.random() * 0.01 : 0.002 + Math.random() * 0.003,
+        isBurst
     };
 }
 
@@ -602,24 +602,35 @@ export function renderParticle(ctx, p) {
         ctx.fill();
     } else if (p.type === 'morph') {
         ctx.save();
-        const alpha = Math.pow(p.life, 3) * 0.35;
-        const driftX = Math.sin(p.phase) * 20;
-        const driftY = Math.cos(p.phase) * 20;
+        // Cosmic Burst: high-impact, razor-sharp initial flash
+        const alpha = p.isBurst
+            ? Math.pow(p.life, 4) * 0.6 // Sharper curve, brighter peak
+            : p.life * (0.05 + Math.sin(p.phase) * 0.03);
+
+        const driftX = Math.sin(p.phase) * (p.isBurst ? 5 : 10);
+        const driftY = Math.cos(p.phase) * (p.isBurst ? 5 : 10);
         const size = Math.max(p.w, p.h);
-        const radius = size * 3.5;
+
+        // Explosion expansion: start tight, end wide and thin
+        const expansion = (1.0 - p.life) * 2;
+        const radius = size * (p.isBurst ? 0.8 + expansion : 1.0 + (p.life * 0.2));
 
         const grad = ctx.createRadialGradient(
             p.x + driftX, p.y + driftY, 0,
             p.x + driftX, p.y + driftY, radius
         );
         grad.addColorStop(0, `rgba(${p.color}, ${alpha})`);
-        grad.addColorStop(0.3, `rgba(${p.color}, ${alpha * 0.1})`);
+        grad.addColorStop(0.2, `rgba(${p.color}, ${alpha * 0.3})`);
         grad.addColorStop(1, `rgba(${p.color}, 0)`);
 
         ctx.fillStyle = grad;
         ctx.beginPath();
-        // Circle instead of Rect to kill the "Squares"
-        ctx.arc(p.x + driftX, p.y + driftY, radius, 0, Math.PI * 2);
+        // Ellipse instead of circle if it's a burst to match the bubble shape
+        if (p.isBurst) {
+            ctx.ellipse(p.x + driftX, p.y + driftY, radius * 1.5, radius * 0.8, 0, 0, Math.PI * 2);
+        } else {
+            ctx.arc(p.x + driftX, p.y + driftY, radius, 0, Math.PI * 2);
+        }
         ctx.fill();
         ctx.restore();
     } else {

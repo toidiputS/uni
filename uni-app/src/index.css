@@ -1096,17 +1096,18 @@ body,
 .bubble::after {
   content: '';
   position: absolute;
-  /* Massive spread to feel "as big as the screen" */
-  inset: -150px;
-  /* Radial gradient kills the "box" look by fading at its own edge */
+  /* Razor-tight on the words - Neon Profile look */
+  inset: -3px;
   background: radial-gradient(circle at center,
-      var(--aura-color) 0%,
-      transparent 70%);
+      var(--aura-color) 30%,
+      transparent 100%);
   opacity: 0;
-  filter: blur(40px);
+  filter: blur(20px);
   z-index: -1;
-  border-radius: 50%;
-  transition: opacity 2s var(--ease), transform 2s var(--ease);
+  border-radius: inherit;
+  /* Fade & Disperse: expansion during dissolution */
+  transform: scale(0.9);
+  transition: opacity 2s var(--ease), transform 3s var(--ease);
   pointer-events: none;
 }
 

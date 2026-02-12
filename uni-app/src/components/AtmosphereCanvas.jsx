@@ -70,7 +70,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bu
         const originX = bellPos?.x || window.innerWidth / 2;
         const originY = bellPos?.y || 72;
 
-        for (let i = 0; i < (count || 8); i++) {
+        for (let i = 0; i < (count || 12); i++) {
             // Spawn energy flow
             const energy = spawnParticle('energy', window.innerWidth, window.innerHeight, intensity, {
                 x: originX,
@@ -80,9 +80,20 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bu
             });
             if (energy) particles.current.push(energy);
 
-            // Also spawn standard sentiment particles at the destination
+            // Sentiment particles at destination (Explosion Spark)
             const p = spawnParticle(type, window.innerWidth, window.innerHeight, intensity, { x, y });
-            if (p) particles.current.push(p);
+            if (p) {
+                // High-velocity sparks for "Cosmic Burst" feel
+                p.vx *= 2;
+                p.vy *= 2;
+                particles.current.push(p);
+            }
+
+            // Initial Burst (Neon Pulse)
+            const m = spawnParticle('morph', window.innerWidth, window.innerHeight, intensity, {
+                x, y, w: 100, h: 40, color: p?.color, isBurst: true
+            });
+            if (m) particles.current.push(m);
         }
     }, [bubbleEmit, intensity, bellPos]);
 
@@ -242,13 +253,15 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bu
                 if (lightningFlash.current < 0.01) lightningFlash.current = 0;
             }
 
-            // Morphing Bubbles Layer
+            // Morphing Bubbles Layer (Gentle Ambient)
             if (bubblePositions && bubblePositions.length > 0) {
                 bubblePositions.forEach(b => {
-                    if (Math.random() < 0.05 * intensity) {
+                    // 10x slower spawn rate for continuous atmosphere
+                    if (Math.random() < 0.005 * intensity) {
                         const m = spawnParticle('morph', w, h, intensity, {
                             x: b.x, y: b.y, w: b.width, h: b.height,
-                            color: WEATHER_PRESETS[b.sentiment]?.sky?.[0] === '#050508' ? '255,255,255' : '150,150,255'
+                            color: WEATHER_PRESETS[b.sentiment]?.sky?.[0] === '#050508' ? '255,255,255' : '150,150,255',
+                            isBurst: false
                         });
                         if (m) particles.current.push(m);
                     }
