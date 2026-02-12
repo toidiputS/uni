@@ -51,32 +51,20 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
         setTimeout(() => setVisible(true), 100);
     }, []);
 
-    const sequenceRef = useRef(null);
-    const scrollRef = useRef(null);
+    const [currentIdx, setCurrentIdx] = useState(0);
 
-    // Auto-scroll for onboarding messages
-    useEffect(() => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-        }
-    }, [messages]);
-
-    // Onboarding Sequence Logic
     const startOnboarding = () => {
         if (!isPlaying) onToggleAudio();
         setStep('onboarding');
         setMessages([]);
+        setCurrentIdx(0);
         runSequenceStep(0);
     };
 
     const runSequenceStep = (idx) => {
-        if (idx >= SEQUENCE.length) {
-            setStep('urgency');
-            markOnboardingComplete();
-            return;
-        }
-
         const current = SEQUENCE[idx];
+        if (!current) return;
+
         setBellStatus(current.bellState);
 
         // Apply Atmosphere Shift
@@ -88,7 +76,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
             });
         }
 
-        // Add Message with Cadence
+        // Add Message
         if (current.text || current.futureFeatures) {
             setMessages(prev => [...prev, {
                 id: Date.now(),
@@ -97,10 +85,17 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                 features: current.futureFeatures
             }]);
         }
+    };
 
-        // Wait for the scripted delay before next beat
-        const nextDelay = current.delay || 3000;
-        sequenceRef.current = setTimeout(() => runSequenceStep(idx + 1), nextDelay);
+    const handleNext = () => {
+        const nextIdx = currentIdx + 1;
+        if (nextIdx >= SEQUENCE.length) {
+            setStep('urgency');
+            markOnboardingComplete();
+            return;
+        }
+        setCurrentIdx(nextIdx);
+        runSequenceStep(nextIdx);
     };
 
     const skipToIntro = () => {
@@ -159,39 +154,42 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                 {/* ACT 2: SPEAKING (Floating Protocol) */}
                 {step === 'onboarding' && (
-                    <div className="flex flex-col items-center justify-center w-full min-h-[40vh] fade-in">
-                        {messages.slice(-1).map((msg, i) => (
-                            <div key={msg.id || i} className="onboarding-msg flex flex-col items-center">
-                                {msg.text && (
-                                    <p className="onboarding-text" style={{
-                                        fontSize: 'clamp(16px, 4vw, 20px)',
-                                        fontWeight: 300,
-                                        lineHeight: 1.6,
-                                        maxWidth: 540,
-                                        margin: '0 auto',
-                                        animation: 'fadeSlideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards'
-                                    }}>
-                                        {msg.text}
-                                    </p>
-                                )}
+                    <div className="flex flex-col items-center w-full py-8 fade-in">
+                        <div className="flex flex-col items-center w-full">
+                            {messages.map((msg, i) => (
+                                <div key={msg.id || i} className="onboarding-msg flex flex-col items-center w-full" style={{ opacity: i === messages.length - 1 ? 1 : 0.35, transition: 'opacity 0.6s', marginBottom: 24 }}>
+                                    {msg.text && (
+                                        <p className="onboarding-text">
+                                            {msg.text}
+                                        </p>
+                                    )}
 
-                                {msg.features && (
-                                    <div className="flex flex-wrap justify-center gap-3 mt-12" style={{ animation: 'fade-in 1.5s ease forwards' }}>
-                                        {msg.features.map((f, j) => (
-                                            <div key={j} className="onboarding-future-card" style={{
-                                                background: 'var(--uni-glass)',
-                                                border: '1px solid var(--uni-glass-border)',
-                                                padding: '10px 20px',
-                                                borderRadius: 'var(--radius-full)',
-                                                fontSize: 12,
-                                                color: 'var(--uni-text-dim)',
-                                                backdropFilter: 'blur(8px)'
-                                            }}>{f}</div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        ))}
+                                    {msg.features && (
+                                        <div className="flex flex-wrap justify-center gap-4 mt-8" style={{ maxWidth: 600 }}>
+                                            {msg.features.map((f, j) => (
+                                                <div key={j} className="onboarding-future-card"
+                                                    style={{
+                                                        background: 'var(--uni-glass)',
+                                                        border: '1px solid var(--uni-glass-border)',
+                                                        padding: '10px 24px',
+                                                        borderRadius: 'var(--radius-full)',
+                                                        fontSize: 13,
+                                                        color: 'var(--uni-text-dim)',
+                                                        backdropFilter: 'blur(12px)',
+                                                        animation: 'fadeIn 1s ease both'
+                                                    }}>{f}</div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-12">
+                            <ReflectiveButton variant="primary" onClick={handleNext}>
+                                {currentIdx < SEQUENCE.length - 1 ? 'Next' : 'Continue'}
+                            </ReflectiveButton>
+                        </div>
                     </div>
                 )}
 
