@@ -122,6 +122,8 @@ export default function App() {
                     }
                 }
             }
+        }, (err) => {
+            console.error('[UNI] User sync error:', err);
         });
         return unsub;
     }, [user, view]);

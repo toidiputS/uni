@@ -302,6 +302,8 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
         if (!roomId) return;
         const unsub = onSnapshot(doc(db, 'chatRooms', roomId), (snap) => {
             if (snap.exists()) setRoomData(snap.data());
+        }, (err) => {
+            console.error('[UNI] Room sync error:', err);
         });
         return unsub;
     }, [roomId]);
@@ -326,6 +328,8 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
                     setPartnerPresent(isRecent);
                 }
             }
+        }, (err) => {
+            console.error('[UNI] Presence sync error:', err);
         });
         const presenceInterval = setInterval(() => { updateTypingStatus(false); }, 10000);
         return () => { unsubPresence(); clearInterval(presenceInterval); };
@@ -356,6 +360,8 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
                 }
             }
             lastMsgCount.current = msgs.length;
+        }, (err) => {
+            console.error('[UNI] Message sync error:', err);
         });
         return () => unsub();
     }, [roomId, onMoodChange, onBubbleEmit, user]);
@@ -397,6 +403,8 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
                 const drawData = snap.docs[0].data();
                 if (drawData.uid !== user.uid) setDrawEmit({ x: drawData.x, y: drawData.y });
             }
+        }, (err) => {
+            console.error('[UNI] Drawing sync error:', err);
         });
         return () => unsubDrawing();
     }, [roomId, user]);

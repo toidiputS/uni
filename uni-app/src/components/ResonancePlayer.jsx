@@ -7,13 +7,19 @@ export default function ResonancePlayer({ roomId, user, onPlay, onClose, current
     const [songs, setSongs] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!roomId) return;
+        setLoading(true);
         const q = query(collection(db, 'chatRooms', roomId, 'resonance'), orderBy('createdAt', 'desc'));
         const unsub = onSnapshot(q, (snap) => {
             const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             setSongs(list);
+            setLoading(false);
+        }, (err) => {
+            console.error('[Resonance] Load error:', err);
+            setLoading(false);
         });
         return unsub;
     }, [roomId]);
