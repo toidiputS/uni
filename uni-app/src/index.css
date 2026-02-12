@@ -556,9 +556,12 @@ body,
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: wordmarkGlow 4s ease-in-out infinite, breathe 6s ease-in-out infinite;
+  margin-top: 6vh;
   margin-bottom: 8px;
+
   user-select: none;
 }
+
 
 .tagline {
   font-size: clamp(13px, 2.5vw, 16px);
@@ -1518,6 +1521,22 @@ body,
   opacity: 1;
   transform: translateY(0);
 }
+
+.tagline-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.sub-tagline {
+  text-align: center;
+  line-height: 1.4;
+  margin-top: -32px;
+  margin-bottom: 24px;
+  animation: fadeSlideUp 1s var(--ease) 0.4s both;
+}
+
 
 .vday-badge {
   display: inline-flex;
