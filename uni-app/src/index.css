@@ -1254,16 +1254,20 @@ body,
 
 .memory-card {
   width: 100%;
-  max-width: 360px;
-  border-radius: var(--radius-xl);
+  max-width: 380px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  animation: slideUp 0.5s var(--ease-bounce);
+  animation: slideUp 0.6s var(--ease-bounce);
   position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
 }
 
 .memory-card-inner {
-  background: linear-gradient(160deg, var(--scene-1, #1a1a2e), var(--uni-void), var(--scene-2, #16213e));
-  padding: 32px 24px;
+  background: var(--uni-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 40px 30px;
   text-align: center;
 }
 
@@ -1273,8 +1277,8 @@ body,
   font-weight: 600;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--uni-text-muted);
-  margin-bottom: 24px;
+  color: var(--uni-chrome-dim);
+  margin-bottom: 30px;
 }
 
 .memory-card-quote {

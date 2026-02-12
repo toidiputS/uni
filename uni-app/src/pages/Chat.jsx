@@ -462,7 +462,7 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
             </div>
             <div className="messages-container" ref={messagesContainerRef}>
                 {messages.length === 0 ? (
-                    <div className="empty-chat"><BellDot state="idle" size={16} /><p style={{ marginTop: 16, color: 'var(--uni-chrome)' }}>Your canvas is ready.</p></div>
+                    <div className="empty-chat"><BellDot state="idle" size={16} sentiment={mood} /><p style={{ marginTop: 16, color: 'var(--uni-chrome)' }}>Your canvas is ready.</p></div>
                 ) : (
                     messages.map((msg, idx) => {
                         const isMe = msg.sender === user?.uid;
@@ -491,7 +491,7 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
 
             {/* Bell's New Gravitational Home */}
             <div className="bell-gravitation-well" ref={bellRef}>
-                <BellDot state={bellState} size={22} />
+                <BellDot state={bellState} size={22} sentiment={mood} />
             </div>
 
             <div className="input-bar">

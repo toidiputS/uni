@@ -103,22 +103,22 @@ export default function MemoryCard({ roomId, messages, mood, partnerName, userNa
                             <span style={{
                                 display: 'block',
                                 fontSize: 11,
-                                color: 'var(--uni-text-muted)',
+                                color: 'var(--uni-text-dim)',
                                 marginTop: 4,
                                 fontStyle: 'normal',
                             }}>
-                                — {msg.senderName || 'Unknown'}
+                                — {msg.senderName || 'Anonymous'}
                             </span>
                         </p>
                     ))}
 
                     {cardMessages.length === 0 && (
-                        <p className="memory-card-quote" style={{ color: 'var(--uni-text-muted)' }}>
+                        <p className="memory-card-quote" style={{ color: 'var(--uni-text-dim)' }}>
                             Start a conversation to capture moments.
                         </p>
                     )}
 
-                    <div className="memory-card-date">
+                    <div className="memory-card-date" style={{ color: 'var(--uni-text-dim)' }}>
                         {dateStr} · {userName} & {partnerName}
                     </div>
 

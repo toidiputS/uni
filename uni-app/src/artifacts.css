@@ -2,26 +2,33 @@
 .artifact-overlay {
     z-index: 10000;
     perspective: 2000px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(12px);
 }
 
 .artifact-frame {
     max-width: 500px;
-    width: 90%;
+    width: 95%;
     padding: 0;
     background: none;
     animation: artifact-rise 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .artifact-paper {
-    background: #fdfdfc;
-    /* Bone / Antique Paper */
+    background: linear-gradient(165deg,
+            rgba(255, 255, 255, 0.05) 0%,
+            rgba(10, 10, 20, 0.95) 40%,
+            rgba(5, 5, 8, 1) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     padding: 60px 40px;
-    color: #1a1a1a;
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 0, 0, 0.1);
+    color: var(--uni-text);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
     position: relative;
     min-height: 600px;
     display: flex;
     flex-direction: column;
+    border-radius: 4px;
+    /* Paper shouldn't be too round */
 }
 
 .artifact-header {
@@ -36,10 +43,11 @@
 }
 
 .artifact-uni-dot {
-    width: 5px;
-    height: 5px;
-    background: #1a1a1a;
+    width: 6px;
+    height: 6px;
+    background: #fff;
     border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .artifact-title {
@@ -48,7 +56,7 @@
     font-weight: 800;
     letter-spacing: 0.05em;
     margin-bottom: 30px;
-    color: #1a1a1a;
+    color: #fff;
 }
 
 .artifact-divider {
@@ -59,12 +67,13 @@
 }
 
 .artifact-lyrics {
-    font-family: serif;
-    font-size: 18px;
+    font-family: var(--font);
+    font-size: 17px;
     line-height: 1.8;
-    color: #333;
+    color: var(--uni-text-dim);
     flex: 1;
     white-space: pre-line;
+    font-weight: 300;
 }
 
 .artifact-footer {
