@@ -5,20 +5,20 @@
 // ─── Particle Factory ───
 
 export function createRaindrop(canvasW, canvasH, intensity = 0.7) {
-    const speed = 4 + Math.random() * 6 * intensity;
-    const wind = -1.5 + Math.random() * 0.5;
+    const speed = 6 + Math.random() * 8 * intensity;
+    const wind = -0.5 + Math.random() * 0.2;
     return {
         type: 'rain',
         x: Math.random() * (canvasW + 100) - 50,
-        y: -10 - Math.random() * canvasH * 0.5,
+        y: -50,
         vx: wind,
         vy: speed,
         life: 1,
         maxLife: 1,
-        size: 1 + Math.random() * 1.5,
-        length: 12 + Math.random() * 18 * intensity,
-        opacity: 0.15 + Math.random() * 0.25,
-        color: '180, 200, 255',
+        size: 0.5 + Math.random() * 1.0, // Smaller, finer
+        length: 8 + Math.random() * 12 * intensity, // Shorter
+        opacity: 0.1 + Math.random() * 0.2, // More transparent
+        color: '200, 220, 240', // Silver/Transparent
     };
 }
 
@@ -95,17 +95,17 @@ export function createDrop(canvasW) {
 export function createCloud(canvasW, canvasH) {
     return {
         type: 'cloud',
-        x: -200 + Math.random() * (canvasW + 200),
-        y: Math.random() * canvasH * 0.4,
-        vx: 0.1 + Math.random() * 0.2,
+        x: -400 + Math.random() * (canvasW + 400),
+        y: -50 + Math.random() * canvasH * 0.3,
+        vx: 0.05 + Math.random() * 0.1, // Heavy, slow movement
         vy: 0,
         life: 1,
         maxLife: 1,
-        size: 120 + Math.random() * 200,
+        size: 300 + Math.random() * 400, // Massive clouds
         opacity: 0,
-        targetOpacity: 0.03 + Math.random() * 0.05,
-        color: '255, 255, 255',
-        fadeSpeed: 0.002,
+        targetOpacity: 0.08 + Math.random() * 0.12, // More visible
+        color: '80, 80, 95', // Ominous Charcoal
+        fadeSpeed: 0.0015,
     };
 }
 
@@ -206,10 +206,11 @@ export const WEATHER_PRESETS = {
             'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=1200'  // stormy sea
         ],
         particles: {
-            rain: { count: 120, spawnRate: 4 },
+            rain: { count: 180, spawnRate: 6 },
+            cloud: { count: 8, spawnRate: 0.05 },
         },
         lightning: true,
-        lightningInterval: [2000, 5000],
+        lightningInterval: [1500, 4000], // More frequent "Thundering"
     },
     sad: {
         sky: ['#05081a', '#0a1020'],
@@ -593,21 +594,21 @@ export function renderParticle(ctx, p) {
         ctx.fill();
     } else if (p.type === 'morph') {
         ctx.save();
-        ctx.globalAlpha = Math.min(0.25, p.life * 0.4);
-        const driftX = Math.sin(p.phase) * 15;
-        const driftY = Math.cos(p.phase) * 15;
-        // Tighter center, massive dispersion
+        ctx.globalAlpha = Math.min(0.2, p.life * 0.3);
+        const driftX = Math.sin(p.phase) * 20;
+        const driftY = Math.cos(p.phase) * 20;
+        // Middle-ground dispersion: wider than words, but focused on sentiment
         const size = Math.max(p.w, p.h);
         const grad = ctx.createRadialGradient(
             p.x + driftX, p.y + driftY, 0,
-            p.x, p.y, size * 1.5
+            p.x, p.y, size * 2.5
         );
-        grad.addColorStop(0, `rgba(${p.color}, 0.35)`);
-        grad.addColorStop(0.2, `rgba(${p.color}, 0.1)`);
+        grad.addColorStop(0, `rgba(${p.color}, 0.25)`);
+        grad.addColorStop(0.3, `rgba(${p.color}, 0.08)`);
         grad.addColorStop(1, `rgba(${p.color}, 0)`);
         ctx.fillStyle = grad;
-        // Cover a larger area with the dispersion
-        ctx.fillRect(p.x - size, p.y - size, size * 2, size * 2);
+        // Massive dispersion area
+        ctx.fillRect(p.x - size * 2, p.y - size * 2, size * 4, size * 4);
         ctx.restore();
     } else {
         ctx.beginPath();

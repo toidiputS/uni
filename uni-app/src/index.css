@@ -1096,14 +1096,16 @@ body,
 .bubble::after {
   content: '';
   position: absolute;
-  inset: -2px;
-  /* Tighter in on the sentence */
-  background: var(--aura-color);
+  /* Massive spread to feel "as big as the screen" */
+  inset: -150px;
+  /* Radial gradient kills the "box" look by fading at its own edge */
+  background: radial-gradient(circle at center,
+      var(--aura-color) 0%,
+      transparent 70%);
   opacity: 0;
-  filter: blur(var(--aura-dispersion));
-  /* Higher dispersion */
+  filter: blur(40px);
   z-index: -1;
-  border-radius: inherit;
+  border-radius: 50%;
   transition: opacity 2s var(--ease), transform 2s var(--ease);
   pointer-events: none;
 }

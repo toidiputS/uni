@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { db, storage } from '../lib/firebase';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 
 export default function ResonancePlayer({ roomId, user, onPlay, onClose, currentTitle, isPlaying, onToggle }) {
     const [songs, setSongs] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [progress, setProgress] = useState(0);
 
     useEffect(() => {
         if (!roomId) return;
@@ -18,29 +18,46 @@ export default function ResonancePlayer({ roomId, user, onPlay, onClose, current
         return unsub;
     }, [roomId]);
 
-    const handleFileUpload = async (e) => {
+    const handleFileUpload = (e) => {
         const file = e.target.files[0];
-        if (!file || !file.type.startsWith('audio/')) return;
+        if (!file) return;
+
+        // Loosened type check for mobile/uncommon audio formats
+        const isAudio = file.type.startsWith('audio/') || file.name.endsWith('.mp3') || file.name.endsWith('.m4a') || file.name.endsWith('.wav');
+        if (!isAudio) {
+            alert("Please share a valid audio file (MP3, M4A, WAV).");
+            return;
+        }
 
         setUploading(true);
-        try {
-            const storageRef = ref(storage, `rooms/${roomId}/resonance/${Date.now()}_${file.name}`);
-            const snapshot = await uploadBytes(storageRef, file);
-            const url = await getDownloadURL(snapshot.ref);
+        setProgress(0);
 
-            await addDoc(collection(db, 'chatRooms', roomId, 'resonance'), {
-                title: file.name.replace(/\.[^/.]+$/, ""),
-                url,
-                sharedBy: user.uid,
-                sharedByName: user.displayName || 'Partner',
-                createdAt: serverTimestamp()
-            });
-        } catch (err) {
-            console.error('[Resonance] Upload failed:', err);
-            alert("Upload failed. Storage might be restricted.");
-        } finally {
-            setUploading(false);
-        }
+        const storageRef = ref(storage, `rooms/${roomId}/resonance/${Date.now()}_${file.name}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const p = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                setProgress(p);
+            },
+            (err) => {
+                console.error('[Resonance] Upload task failed:', err);
+                setUploading(false);
+                alert(`Upload failed: ${err.message}. Check your internet or storage rules.`);
+            },
+            async () => {
+                const url = await getDownloadURL(uploadTask.snapshot.ref);
+                await addDoc(collection(db, 'chatRooms', roomId, 'resonance'), {
+                    title: file.name.replace(/\.[^/.]+$/, ""),
+                    url,
+                    sharedBy: user.uid,
+                    sharedByName: user.displayName || 'Partner',
+                    createdAt: serverTimestamp()
+                });
+                setUploading(false);
+                setProgress(0);
+            }
+        );
     };
 
     return (
@@ -77,8 +94,19 @@ export default function ResonancePlayer({ roomId, user, onPlay, onClose, current
                 </div>
 
                 <div className="upload-section">
-                    <label className="btn btn-glass btn-sm" style={{ width: '100%' }}>
-                        {uploading ? 'Uploading...' : 'Upload & Share MP3'}
+                    <label className="btn btn-glass btn-sm" style={{ width: '100%', position: 'relative', overflow: 'hidden' }}>
+                        {uploading ? `Uploading ${Math.round(progress)}%...` : 'Upload & Share MP3'}
+                        {uploading && (
+                            <div style={{
+                                position: 'absolute',
+                                left: 0,
+                                bottom: 0,
+                                height: 2,
+                                background: 'var(--emo-happy)',
+                                width: `${progress}%`,
+                                transition: 'width 0.3s ease'
+                            }} />
+                        )}
                         <input type="file" accept="audio/*" onChange={handleFileUpload} hidden disabled={uploading} />
                     </label>
                 </div>
