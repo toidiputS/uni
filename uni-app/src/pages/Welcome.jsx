@@ -2,6 +2,7 @@
 // Valentine's Day 2026 launch — emotion-first landing
 
 import React, { useState, useEffect, useRef } from 'react';
+import BellDot from '../components/BellDot';
 
 const PREVIEW_MOODS = [
     { mood: 'valentine', sceneColors: ['#1a050d', '#200810'], intensity: 0.9 },
@@ -15,6 +16,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
     const [visible, setVisible] = useState(false);
     const index = useRef(0);
     const [timeLeft, setTimeLeft] = useState({ d: 0, h: 0, m: 0, s: 0 });
+    const [bellStatus, setBellStatus] = useState('idle');
 
     useEffect(() => {
         const target = new Date('2026-02-15T00:00:00').getTime();
@@ -44,6 +46,10 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
         const moodTimer = setInterval(() => {
             index.current = (index.current + 1) % PREVIEW_MOODS.length;
             onMoodChange(PREVIEW_MOODS[index.current]);
+
+            // Cycle bell state for visual interest on lander
+            const states = ['idle', 'glow', 'listening'];
+            setBellStatus(states[index.current % states.length]);
         }, 6000);
 
         onMoodChange(PREVIEW_MOODS[0]);
@@ -75,21 +81,40 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                         fontSize: 9,
                         letterSpacing: '0.4em',
                         marginTop: 4,
-                        opacity: 0.5,
+                        opacity: 0.6,
+                        fontWeight: 600,
+                        color: 'var(--emo-valentine)'
+                    }}>VALENTINE'S DAY FOUNDERS EDITION</div>
+                    <div style={{
+                        fontSize: 8,
+                        letterSpacing: '0.2em',
+                        marginTop: 2,
+                        opacity: 0.4,
                         fontWeight: 400
                     }}>CGEI PROTOCOL v4</div>
                 </div>
 
-                <p className="tagline">
-                    Your conversations deserve to <em>feel</em> something.
-                    <br />
-                    <span style={{ fontSize: '0.9em', opacity: 0.8 }}>
-                        The world's first <strong>CGEI</strong> (Conversational Generative Emotion Interface).
-                    </span>
-                </p>
+                {/* Bell Face on Front */}
+                <div className="welcome-bell">
+                    <BellDot state={bellStatus} size={14} />
+                    <span className="bell-label">Bell</span>
+                    <div className="bell-shadow" />
+                </div>
+
+                <div className="tagline-container">
+                    <p className="tagline">
+                        When words alone just aren't enough.
+                    </p>
+                    <p className="sub-tagline">
+                        The world's first <strong>CGEI</strong><br />
+                        <span style={{ fontSize: '0.75em', opacity: 0.6, letterSpacing: '0.1em' }}>
+                            (Conversational Generative Emotion Interface)
+                        </span>
+                    </p>
+                </div>
 
                 <div className="vday-badge">
-                    🌹 Founder's Launch Edition — Ends 2.15
+                    🌹 Limited Founder's Sanctum — Ends 2.15
                 </div>
 
                 <div className="vday-timer">
@@ -113,24 +138,24 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                 <div className="welcome-actions">
                     <button className="btn btn-primary btn-glow" onClick={onGetStarted}>
-                        Start Your Story
+                        Claim Your Sanctuary
                     </button>
                     <button
                         className="btn btn-glass btn-sm"
                         onClick={onGetStarted}
-                        style={{ marginTop: 4 }}
+                        style={{ marginTop: 8 }}
                     >
-                        Already have an account? Log in
+                        Enter the interface
                     </button>
                 </div>
 
                 <div className="welcome-features">
-                    <div className="feature-pill">◈ CGEI Reactive Atmosphere Engine</div>
-                    <div className="feature-pill">◈ Neural Sentiment Transcription</div>
-                    <div className="feature-pill">◈ Memory Archiving & Keepsakes</div>
+                    <div className="feature-pill">◈ CGEI Reactive Atmosphere</div>
                     <div className="feature-pill">◈ Shared Soul-Song Weaving</div>
+                    <div className="feature-pill">◈ Eternal Memory Archiving</div>
                 </div>
             </div>
         </div>
     );
 }
+

@@ -32,7 +32,10 @@
   --uni-gradient: linear-gradient(135deg, var(--uni-accent-1), var(--uni-accent-2));
 
   /* Emotion palette — held in reserve. Color = scarcity = impact. */
+  --emo-valentine: #ff2d55;
+  --emo-valentine-bg: rgba(255, 45, 85, 0.08);
   --emo-happy: #ffd700;
+
   --emo-happy-bg: rgba(255, 215, 0, 0.06);
   --emo-sad: #5b86e5;
   --emo-sad-bg: rgba(91, 134, 229, 0.06);
@@ -972,7 +975,9 @@ body,
   color: var(--uni-chrome);
   padding: 8px 20px;
   text-align: center;
+  --aura-intensity: 0.1;
 }
+
 
 .bubble.uni::before {
   content: none;
@@ -1595,11 +1600,218 @@ body,
   transform: translateY(-1px);
 }
 
-/* ─── Selection ─── */
+/* ─── Shared Resonance Player ─── */
+.music-player {
+  max-width: 340px !important;
+  padding: 24px !important;
+}
+
+.player-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.player-header h3 {
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--uni-text-dim);
+  flex: 1;
+}
+
+.resonance-dot-active {
+  width: 8px;
+  height: 8px;
+  background: var(--emo-love);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--emo-love);
+  animation: heartbeat 2s infinite;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--uni-chrome);
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.currently-playing {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--uni-glass-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.currently-playing .label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--uni-chrome);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.track-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--uni-text);
+  margin-bottom: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-list {
+  max-height: 240px;
+  overflow-y: auto;
+  margin-bottom: 24px;
+  padding-right: 4px;
+}
+
+.list-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--uni-chrome-dim);
+  margin-bottom: 12px;
+  letter-spacing: 0.1em;
+}
+
+.song-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.02);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: 1px solid transparent;
+}
+
+.song-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--uni-glass-border);
+}
+
+.song-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.song-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--uni-text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-meta {
+  font-size: 10px;
+  color: var(--uni-chrome-dim);
+  margin-top: 2px;
+}
+
+.play-indicator {
+  color: var(--uni-chrome);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.song-item:hover .play-indicator {
+  opacity: 1;
+}
+
+.empty-list {
+  text-align: center;
+  font-size: 12px;
+  color: var(--uni-chrome-dim);
+  padding: 24px 0;
+}
+
+.resonance-active-btn {
+  color: var(--emo-love) !important;
+  border-color: rgba(255, 107, 157, 0.3) !important;
+  box-shadow: 0 0 15px rgba(255, 107, 157, 0.1);
+}
+
+.upload-section .btn {
+  font-size: 12px;
+}
+
+/* Custom Scrollbar for Song List */
+.song-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.song-list::-webkit-scrollbar-thumb {
+  background: var(--uni-glass-border);
+  border-radius: 4px;
+}
+
+/* ─── Welcome Page Branding ─── */
+.welcome-bell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 32px 0;
+  position: relative;
+}
+
+.bell-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--uni-chrome);
+  margin-top: -10px;
+  opacity: 0.8;
+}
+
+.bell-shadow {
+  position: absolute;
+  bottom: 10px;
+  width: 40px;
+  height: 10px;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
+  filter: blur(5px);
+  z-index: -1;
+}
+
+.tagline-container {
+  margin-bottom: 32px;
+}
+
+.tagline {
+  font-size: 28px;
+  font-weight: 300;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+.sub-tagline {
+  font-size: 14px;
+  color: var(--uni-text-dim);
+  line-height: 1.6;
+  max-width: 280px;
+  margin: 0 auto;
+}
+
+/* Selectability */
 ::selection {
   background: rgba(102, 126, 234, 0.3);
   color: var(--uni-text);
 }
+
 
 /* Resonance Player UI */
 .audio-toggle {

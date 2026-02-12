@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 
-export default function PricingOverlay({ onClose, onSponsor }) {
+export default function PricingOverlay({ onClose, onSponsor, hasDiscount, onOpenSurvey }) {
     const [selected, setSelected] = useState('lifetime'); // 'lifetime' | 'monthly'
+
+    const lifetimePrice = hasDiscount ? 20.00 : 25.00;
 
     return (
         <div className="modal-overlay artifact-overlay" onClick={onClose}>
@@ -9,24 +11,24 @@ export default function PricingOverlay({ onClose, onSponsor }) {
                 <div className="artifact-paper" style={{ minHeight: 'auto', padding: '40px 30px' }}>
                     <div className="artifact-header">
                         <div className="artifact-uni-dot" style={{ background: 'var(--emo-happy)' }} />
-                        <span>•UNI• FOUNDER'S TIER EXPIRES 2.15</span>
+                        <span>•UNI• {hasDiscount ? 'SPECIAL DISCOUNT APPLIED' : "FOUNDER'S TIER EXPIRES 2.15"}</span>
                     </div>
 
                     <h1 className="artifact-title" style={{ fontSize: 24, marginBottom: 16 }}>Choose Your Path</h1>
                     <div className="artifact-divider" />
 
-                    <p style={{ fontSize: 13, lineHeight: 1.6, color: '#666', marginBottom: 24 }}>
+                    <p style={{ fontSize: 13, lineHeight: 1.6, color: '#666', marginBottom: 24, textAlign: 'center' }}>
                         •UNI• is a boutique digital sanctuary. Your support allows us to keep the atmosphere pure, the AI wise, and your history private forever.
                     </p>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1-1', gap: 15, marginBottom: 30 }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 20 }}>
                         <div
                             className={`pricing-card ${selected === 'lifetime' ? 'active' : ''}`}
                             onClick={() => setSelected('lifetime')}
                             style={cardStyle(selected === 'lifetime')}
                         >
                             <div style={labelStyle}>Lifetime Access</div>
-                            <div style={priceStyle}>$25.00</div>
+                            <div style={priceStyle}>${lifetimePrice.toFixed(2)}</div>
                             <div style={descStyle}>One-time payment.<br />Own your sanctuary forever.</div>
                         </div>
 
@@ -41,6 +43,22 @@ export default function PricingOverlay({ onClose, onSponsor }) {
                         </div>
                     </div>
 
+                    {!hasDiscount && (
+                        <div
+                            onClick={onOpenSurvey}
+                            style={{
+                                fontSize: 11,
+                                textAlign: 'center',
+                                color: 'var(--emo-happy)',
+                                marginBottom: 20,
+                                cursor: 'pointer',
+                                textDecoration: 'underline'
+                            }}
+                        >
+                            Get $5.00 off by sharing your thoughts ✨
+                        </div>
+                    )}
+
                     <div className="pricing-perks" style={{ marginBottom: 30 }}>
                         <div style={perkStyle}>⟢ Permanent Soul-Song Weaving</div>
                         <div style={perkStyle}>✦ Unlimited Memory Archiving</div>
@@ -48,8 +66,8 @@ export default function PricingOverlay({ onClose, onSponsor }) {
                     </div>
 
                     <div className="artifact-actions" style={{ flexDirection: 'column', gap: 12 }}>
-                        <button className="btn btn-primary btn-glow" style={{ width: '100%' }} onClick={() => onSponsor(selected)}>
-                            {selected === 'lifetime' ? 'Claim Your Lifetime Sanctuary ✨' : 'Start Your Monthly Bloom ✨'}
+                        <button className="btn btn-primary btn-glow" style={{ width: '100%' }} onClick={() => onSponsor(selected, lifetimePrice)}>
+                            {selected === 'lifetime' ? `Claim Your $${lifetimePrice.toFixed(0)} Lifetime Sanctuary ✨` : 'Start Your Monthly Bloom ✨'}
                         </button>
                         <button className="btn btn-glass btn-sm" style={{ width: '100%', color: '#999' }} onClick={onClose}>
                             Maybe Later
@@ -64,6 +82,7 @@ export default function PricingOverlay({ onClose, onSponsor }) {
         </div>
     );
 }
+
 
 const cardStyle = (active) => ({
     padding: '20px 15px',

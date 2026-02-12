@@ -1,0 +1,13 @@
+{
+    "name": "uni-root",
+    "private": true,
+    "version": "1.0.0",
+    "scripts": {
+        "install-app": "cd uni-app && npm install",
+        "build": "cd uni-app && npm install && npm run build",
+        "dev": "cd uni-app && npm run dev"
+    },
+    "dependencies": {
+        "@vercel/speed-insights": "^1.3.1"
+    }
+}

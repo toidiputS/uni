@@ -4,6 +4,8 @@ import App from './App'
 import './index.css'
 import './artifacts.css'
 
+
+
 // PWA Service Worker Registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

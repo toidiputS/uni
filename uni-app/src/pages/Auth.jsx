@@ -20,14 +20,21 @@ export default function Auth({ onBack, onAuthed }) {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    const [primed, setPrimed] = useState(null); // 'google' | 'guest' | null
+
     const handleGoogleLogin = async () => {
+        if (primed !== 'google') {
+            setPrimed('google');
+            setError('');
+            return;
+        }
+
         setError('');
         setLoading(true);
         try {
             const cred = await signInWithPopup(auth, googleProvider);
             const user = cred.user;
 
-            // Check if user exists in Firestore
             const userDoc = await getDoc(doc(db, 'users', user.uid));
             if (!userDoc.exists()) {
                 const code = user.uid.slice(-6).toUpperCase();
@@ -45,12 +52,19 @@ export default function Auth({ onBack, onAuthed }) {
         } catch (err) {
             console.error('[UNI] Google Auth Error:', err);
             setError('Google entry failed. Try Guest Mode?');
+            setPrimed(null);
         } finally {
             setLoading(false);
         }
     };
 
     const handleGuestLogin = async () => {
+        if (primed !== 'guest') {
+            setPrimed('guest');
+            setError('');
+            return;
+        }
+
         setError('');
         setLoading(true);
         try {
@@ -71,6 +85,7 @@ export default function Auth({ onBack, onAuthed }) {
             onAuthed();
         } catch (err) {
             setError('Guest entry failed. Please try email.');
+            setPrimed(null);
         } finally {
             setLoading(false);
         }
@@ -80,6 +95,7 @@ export default function Auth({ onBack, onAuthed }) {
         e.preventDefault();
         setError('');
         setLoading(true);
+        setPrimed(null);
 
         try {
             if (mode === 'signup') {
@@ -123,37 +139,59 @@ export default function Auth({ onBack, onAuthed }) {
             <p className="auth-subtitle">Your emotional canvas awaits</p>
 
             <div className="glass-card">
-                <div style={{ display: 'flex', gap: 12, marginBottom: 20 }}>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
                     <button
                         className="btn btn-primary"
                         onClick={handleGoogleLogin}
                         disabled={loading}
-                        style={{ flex: 1, background: '#fff', color: '#000', border: 'none' }}
+                        style={{
+                            flex: 1,
+                            background: primed === 'google' ? '#fff' : 'rgba(255,255,255,0.05)',
+                            color: primed === 'google' ? '#000' : '#fff',
+                            border: primed === 'google' ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                            transform: primed === 'google' ? 'scale(1.05)' : 'scale(1)'
+                        }}
                     >
-                        {loading ? <span className="spinner" /> : 'G·Google'}
+                        {loading && primed === 'google' ? <span className="spinner" /> : (primed === 'google' ? 'Confirm G·' : 'G·Google')}
                     </button>
                     <button
                         className="btn btn-primary"
                         onClick={handleGuestLogin}
                         disabled={loading}
-                        style={{ flex: 1, background: 'var(--uni-gradient)' }}
+                        style={{
+                            flex: 1,
+                            background: primed === 'guest' ? 'var(--uni-gradient)' : 'rgba(255,255,255,0.05)',
+                            border: primed === 'guest' ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                            transform: primed === 'guest' ? 'scale(1.05)' : 'scale(1)'
+                        }}
                     >
-                        {loading ? <span className="spinner" /> : '🚀 Guest'}
+                        {loading && primed === 'guest' ? <span className="spinner" /> : (primed === 'guest' ? 'Confirm 🚀' : '🚀 Guest')}
                     </button>
                 </div>
+
+                <p style={{
+                    fontSize: '10px',
+                    textAlign: 'center',
+                    color: 'var(--uni-chrome)',
+                    marginBottom: 20,
+                    opacity: primed ? 1 : 0,
+                    transition: 'opacity 0.3s'
+                }}>
+                    Tap again to enter the interface
+                </p>
 
                 <div className="divider" style={{ margin: '0 0 20px' }}><span>OR USE EMAIL</span></div>
 
                 <div className="auth-tabs">
                     <button
                         className={`auth-tab ${mode === 'login' ? 'active' : ''}`}
-                        onClick={() => { setMode('login'); setError(''); }}
+                        onClick={() => { setMode('login'); setError(''); setPrimed(null); }}
                     >
                         Log In
                     </button>
                     <button
                         className={`auth-tab ${mode === 'signup' ? 'active' : ''}`}
-                        onClick={() => { setMode('signup'); setError(''); }}
+                        onClick={() => { setMode('signup'); setError(''); setPrimed(null); }}
                     >
                         Sign Up
                     </button>
@@ -202,10 +240,11 @@ export default function Auth({ onBack, onAuthed }) {
                         disabled={loading}
                         style={{ width: '100%', marginTop: 8 }}
                     >
-                        {loading && mode !== 'guest' ? <span className="spinner" /> : (mode === 'login' ? 'Enter' : 'Create')}
+                        {loading && !primed ? <span className="spinner" /> : (mode === 'login' ? 'Enter' : 'Create')}
                     </button>
                 </form>
             </div>
         </div>
+
     );
 }
