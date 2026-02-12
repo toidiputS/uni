@@ -51,10 +51,21 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
         setTimeout(() => setVisible(true), 100);
     }, []);
 
+    const sequenceRef = useRef(null);
+    const scrollRef = useRef(null);
+
+    // Auto-scroll for onboarding messages
+    useEffect(() => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    }, [messages]);
+
     // Onboarding Sequence Logic
     const startOnboarding = () => {
         if (!isPlaying) onToggleAudio();
         setStep('onboarding');
+        setMessages([]);
         runSequenceStep(0);
     };
 
@@ -67,16 +78,32 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
         const current = SEQUENCE[idx];
         setBellStatus(current.bellState);
-        if (current.sceneColors) onMoodChange({ mood: current.sentiment, sceneColors: current.sceneColors });
 
-        if (current.text) {
-            setMessages(prev => [...prev, { text: current.text, label: current.demoLabel }]);
+        // Apply Atmosphere Shift
+        if (current.sceneColors) {
+            onMoodChange({
+                mood: current.sentiment || 'neutral',
+                sceneColors: current.sceneColors,
+                intensity: current.sentiment === 'love' ? 0.8 : 0.4
+            });
         }
 
-        setTimeout(() => runSequenceStep(idx + 1), current.delay || 3000);
+        // Add Message with Cadence
+        if (current.text) {
+            setMessages(prev => [...prev, {
+                text: current.text,
+                label: current.demoLabel,
+                features: current.futureFeatures
+            }]);
+        }
+
+        // Wait for the scripted delay before next beat
+        const nextDelay = current.delay || 3000;
+        sequenceRef.current = setTimeout(() => runSequenceStep(idx + 1), nextDelay);
     };
 
     const skipToIntro = () => {
+        if (sequenceRef.current) clearTimeout(sequenceRef.current);
         setStep('urgency');
         markOnboardingComplete();
         if (!isPlaying) onToggleAudio();
@@ -94,35 +121,30 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                 </ReflectiveButton>
             </div>
 
-            <div className={`welcome-content ${visible ? 'visible' : ''}`}>
+            <div className={`welcome-content ${visible ? 'visible' : ''}`} style={{ textAlign: 'center' }}>
 
-                {/* 1. Bell (Always central focus) */}
-                <div className="welcome-bell" style={{ transition: 'all 1s ease', transform: step === 'onboarding' ? 'translateY(2vh)' : 'translateY(0)' }}>
-                    <BellDot state={bellStatus} size={step === 'onboarding' ? 40 : 32} />
-                    <span className="bell-label">Bell • Neural Core</span>
+                {/* 1. Bell (Pure Center) */}
+                <div className="welcome-bell" style={{ transition: 'all 1s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                    <BellDot state={bellStatus} size={32} />
+                    <span className="bell-label" style={{ opacity: 0.6, marginTop: 12 }}>Bell</span>
                 </div>
 
                 {/* ACT 1: RESONANCE (Initial State) */}
                 {step === 'resonance' && (
-                    <div className="flex flex-col items-center gap-12 fade-in">
-                        <div style={{ textAlign: 'center', maxWidth: 460 }}>
-                            <p style={{ fontSize: 13, letterSpacing: '0.15em', color: 'var(--uni-text-muted)', textTransform: 'uppercase', marginBottom: 20 }}>
-                                Intimate Vibe-Architecture for U & I
-                            </p>
-                        </div>
+                    <div className="flex flex-col items-center justify-center gap-12 fade-in w-full text-center" style={{ flex: 1 }}>
+                        <p style={{ fontSize: 13, letterSpacing: '0.2em', color: 'var(--uni-text-muted)', textTransform: 'uppercase', marginBottom: 20, width: '100%' }}>
+                            Intimate Vibe-Architecture for U & I
+                        </p>
 
-                        <div className="flex items-center gap-8">
-                            {/* 5. Play (Trigger) */}
+                        <div className="flex items-center justify-center gap-6 w-full">
                             <ReflectiveButton variant="primary" onClick={startOnboarding}>
                                 Start Resonance
                             </ReflectiveButton>
 
-                            {/* 2. Skip */}
                             <ReflectiveButton size="sm" onClick={skipToIntro}>
                                 Skip
                             </ReflectiveButton>
 
-                            {/* 3. Read */}
                             <ReflectiveButton size="sm" onClick={() => window.open('https://uni.putit.on', '_blank')}>
                                 Read
                             </ReflectiveButton>
@@ -134,13 +156,21 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                     </div>
                 )}
 
-                {/* ACT 2: SPEAKING (Onboarding Stream) */}
+                {/* ACT 2: SPEAKING (Scripted Stream) */}
                 {step === 'onboarding' && (
-                    <div className="onboarding-stream flex flex-col items-center gap-6" style={{ height: '25vh', overflow: 'hidden', width: '100%', maxWidth: 500 }}>
-                        {messages.slice(-2).map((msg, i) => (
-                            <div key={i} className="onboarding-msg text-center fade-slide-up" style={{ opacity: i === 0 ? 0.3 : 1 }}>
-                                {msg.label && <div className="onboarding-label" style={{ color: 'var(--uni-accent-1)' }}>{msg.label}</div>}
-                                <p className="onboarding-text" style={{ fontSize: 18, fontWeight: 300 }}>{msg.text}</p>
+                    <div className="onboarding-float flex flex-col items-center justify-center gap-12" style={{ height: '35vh', width: '100%', position: 'relative', textAlign: 'center' }}>
+                        {messages.slice(-1).map((msg, i) => (
+                            <div key={messages.length} className="text-center fade-float-up flex flex-col items-center">
+                                {msg.label && <div className="onboarding-label" style={{ color: 'var(--uni-accent-1)', fontSize: 10, letterSpacing: '0.15em', marginBottom: 12 }}>{msg.label}</div>}
+                                <p className="onboarding-text" style={{ fontSize: 24, fontWeight: 300, lineHeight: 1.5, maxWidth: 600, width: '100%', margin: '0 auto' }}>{msg.text}</p>
+
+                                {msg.features && (
+                                    <div className="flex flex-wrap justify-center gap-3 mt-10">
+                                        {msg.features.map((f, j) => (
+                                            <div key={j} className="onboarding-future-card" style={{ fontSize: 12, padding: '8px 18px' }}>{f}</div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -148,10 +178,10 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                 {/* ACT 3: URGENCY (The Join Page) */}
                 {step === 'urgency' && (
-                    <div className="flex flex-col items-center gap-4 fade-in">
-                        <div className="vday-badge">🌹 Limited Founder's Sanctum — Ends 2.15</div>
+                    <div className="flex flex-col items-center justify-center gap-6 fade-in w-full text-center" style={{ flex: 1 }}>
+                        <div className="vday-badge" style={{ margin: '0 auto' }}>🌹 Limited Founder's Sanctum — Ends 2.15</div>
 
-                        <div className="vday-timer">
+                        <div className="vday-timer flex justify-center items-center w-full" style={{ gap: '32px', margin: '40px auto' }}>
                             {Object.entries(timeLeft).map(([label, val]) => (
                                 <div key={label} className="timer-unit">
                                     <span className="timer-val">{String(val).padStart(2, '0')}</span>
@@ -160,7 +190,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             ))}
                         </div>
 
-                        <div className="flex flex-wrap justify-center gap-3 my-8" style={{ maxWidth: 450 }}>
+                        <div className="flex flex-wrap justify-center gap-3 w-full" style={{ maxWidth: 500, margin: '20px auto' }}>
                             <div className="feature-pill">◈ Generative Vibe-Architecture</div>
                             <div className="feature-pill">◈ Neural Soul-Song Weaving</div>
                             <div className="feature-pill">◈ Permanent Soul-Archive</div>
