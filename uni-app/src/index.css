@@ -1965,7 +1965,7 @@ body,
 
 /* Bell Raised & Floating - Act 2 */
 .bell-raised {
-  transform: translateY(-18vh);
+  transform: translateY(-12vh);
   animation: bell-orbital-float 20s ease-in-out infinite;
   position: relative;
   z-index: 10;
@@ -1973,23 +1973,23 @@ body,
 
 @keyframes bell-orbital-float {
   0% {
-    transform: translate(0, -18vh);
+    transform: translate(0, -12vh);
   }
 
   25% {
-    transform: translate(45px, calc(-18vh - 15px));
+    transform: translate(45px, calc(-12vh - 15px));
   }
 
   50% {
-    transform: translate(-15px, calc(-18vh - 50px));
+    transform: translate(-15px, calc(-12vh - 50px));
   }
 
   75% {
-    transform: translate(-50px, calc(-18vh - 20px));
+    transform: translate(-50px, calc(-12vh - 20px));
   }
 
   100% {
-    transform: translate(0, -18vh);
+    transform: translate(0, -12vh);
   }
 }
 

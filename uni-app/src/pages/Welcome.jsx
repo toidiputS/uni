@@ -67,7 +67,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
         setBellStatus(current.bellState);
 
-        // Apply Atmosphere Shift
+        // Atmosphere Shift
         if (current.sceneColors) {
             onMoodChange({
                 mood: current.sentiment || 'neutral',
@@ -76,14 +76,28 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
             });
         }
 
-        // Add Message
-        if (current.text || current.futureFeatures) {
-            setMessages(prev => [...prev, {
+        // Narrative Logic: Stack messages, but isolate Features
+        if (current.futureFeatures) {
+            // "Take all these that are scrunched up and put them on the next page"
+            setMessages([{
                 id: Date.now(),
-                text: current.text,
-                label: current.demoLabel,
+                text: "Coming soon...",
                 features: current.futureFeatures
             }]);
+        } else if (current.text) {
+            setMessages(prev => {
+                // If the previous message was the "Features Page", we start a new stack
+                // (though in this specific sequence, final text comes after features)
+                const lastMsg = prev[prev.length - 1];
+                if (lastMsg && lastMsg.features) {
+                    return [{ id: Date.now(), text: current.text }];
+                }
+                return [...prev, {
+                    id: Date.now(),
+                    text: current.text,
+                    label: current.demoLabel
+                }];
+            });
         }
     };
 
@@ -107,8 +121,15 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
     return (
         <div className="welcome">
-            {/* 5. Play (The Resonance) */}
-            <div className="absolute top-8 right-8 z-50">
+            {/* UI Chrome — System Layer */}
+            <div style={{
+                position: 'fixed',
+                top: 24,
+                right: 24,
+                zIndex: 100,
+                opacity: 0.8,
+                transition: 'opacity 0.3s'
+            }}>
                 <ReflectiveButton
                     size="sm"
                     onClick={onToggleAudio}
@@ -120,9 +141,17 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
             <div className={`welcome-content ${visible ? 'visible' : ''}`} style={{ textAlign: 'center' }}>
 
                 {/* 1. Bell (Pure Center) */}
-                <div className={`welcome-bell ${['onboarding', 'urgency'].includes(step) ? 'bell-raised' : ''}`} style={{ transition: 'all 1s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                {/* 1. Bell (Pure Center) */}
+                <div className={`welcome-bell ${['onboarding', 'urgency'].includes(step) ? 'bell-raised' : ''}`} style={{
+                    transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    width: '100%',
+                    marginBottom: step === 'onboarding' ? 0 : 32
+                }}>
                     <BellDot state={bellStatus} size={32} />
-                    <span className="bell-label" style={{ opacity: 0.6, marginTop: 12 }}>Bell</span>
+                    <span className="bell-label" style={{ opacity: 0.6, marginTop: 8, fontSize: 10, letterSpacing: '0.1em' }}>Bell</span>
                 </div>
 
                 {/* ACT 1: RESONANCE (Initial State) */}
@@ -152,20 +181,24 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                     </div>
                 )}
 
-                {/* ACT 2: SPEAKING (Floating Protocol) */}
+                {/* ACT 2: SPEAKING (Sovereign Stack) */}
                 {step === 'onboarding' && (
-                    <div className="flex flex-col items-center w-full py-8 fade-in">
-                        <div className="flex flex-col items-center w-full">
+                    <div className="flex flex-col items-center w-full fade-in" style={{ flex: 1, paddingTop: '5vh' }}>
+                        <div className="flex flex-col items-center w-full" style={{ gap: 20 }}>
                             {messages.map((msg, i) => (
-                                <div key={msg.id || i} className="onboarding-msg flex flex-col items-center w-full" style={{ opacity: i === messages.length - 1 ? 1 : 0.35, transition: 'opacity 0.6s', marginBottom: 24 }}>
+                                <div key={msg.id || i} className="onboarding-msg flex flex-col items-center w-full" style={{
+                                    opacity: i === messages.length - 1 ? 1 : 0.25,
+                                    transition: 'all 0.8s',
+                                    marginBottom: 0
+                                }}>
                                     {msg.text && (
-                                        <p className="onboarding-text">
+                                        <p className="onboarding-text" style={{ fontSize: 16, maxWidth: 500 }}>
                                             {msg.text}
                                         </p>
                                     )}
 
                                     {msg.features && (
-                                        <div className="flex flex-wrap justify-center gap-4 mt-8" style={{ maxWidth: 600 }}>
+                                        <div className="flex flex-wrap justify-center gap-4 mt-8" style={{ maxWidth: 540 }}>
                                             {msg.features.map((f, j) => (
                                                 <div key={j} className="onboarding-future-card"
                                                     style={{
@@ -176,7 +209,8 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                                                         fontSize: 13,
                                                         color: 'var(--uni-text-dim)',
                                                         backdropFilter: 'blur(12px)',
-                                                        animation: 'fadeIn 1s ease both'
+                                                        animation: 'fadeSlideUp 0.8s ease both',
+                                                        animationDelay: `${j * 0.1}s`
                                                     }}>{f}</div>
                                             ))}
                                         </div>
@@ -185,7 +219,8 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             ))}
                         </div>
 
-                        <div className="mt-12">
+                        {/* Interaction Zone — Viewport-Locked */}
+                        <div style={{ position: 'fixed', bottom: '18vh', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
                             <ReflectiveButton variant="primary" onClick={handleNext}>
                                 {currentIdx < SEQUENCE.length - 1 ? 'Next' : 'Continue'}
                             </ReflectiveButton>
@@ -195,7 +230,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                 {/* ACT 3: URGENCY (The Join Page) */}
                 {step === 'urgency' && (
-                    <div className="flex flex-col items-center justify-center gap-6 fade-in w-full text-center" style={{ flex: 1 }}>
+                    <div className="flex flex-col items-center justify-center gap-6 fade-in w-full text-center" style={{ flex: 1, paddingBottom: '25vh' }}>
                         <div className="vday-badge" style={{ margin: '0 auto' }}>🌹 Limited Founder's Sanctum — Ends 2.15</div>
 
                         <div className="vday-timer flex justify-center items-center w-full mx-auto" style={{ gap: '24px', margin: '40px auto' }}>
@@ -213,14 +248,23 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             <div className="feature-pill">◈ Permanent Soul-Archive</div>
                         </div>
 
-                        <ReflectiveButton variant="primary" onClick={onGetStarted}>
-                            Begin
-                        </ReflectiveButton>
+                        <div style={{ position: 'fixed', bottom: '18vh', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
+                            <ReflectiveButton variant="primary" onClick={onGetStarted}>
+                                Begin
+                            </ReflectiveButton>
+                        </div>
                     </div>
                 )}
 
-                {/* 4. •UNI• (Reflection - Always present) */}
-                <div className="wordmark-reflect">
+                {/* 4. •UNI• (Base Identity) */}
+                <div className="wordmark-reflect" style={{
+                    position: 'fixed',
+                    bottom: '2vh',
+                    left: 0,
+                    right: 0,
+                    margin: 0,
+                    zIndex: 0
+                }}>
                     •UNI•
                 </div>
 
