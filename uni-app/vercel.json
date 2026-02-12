@@ -1,16 +1,12 @@
 {
-    "github": {
-        "silent": true
-    },
     "cleanUrls": true,
-    "rewrites": [
+    "routes": [
         {
-            "source": "/assets/(.*)",
-            "destination": "/assets/$1"
+            "handle": "filesystem"
         },
         {
-            "source": "/(.*)",
-            "destination": "/index.html"
+            "src": "/.*",
+            "dest": "/index.html"
         }
     ]
 }
