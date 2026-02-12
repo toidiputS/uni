@@ -8,7 +8,7 @@ import {
     drawVolumetricCloud,
 } from '../lib/particles';
 
-export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bubbleEmit, drawEmit, onDraw }) {
+export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bubbleEmit, drawEmit, onDraw, bellPos, bubblePositions = [] }) {
     const canvasRef = useRef(null);
     const particles = useRef([]);
     const animFrame = useRef(null);
@@ -65,12 +65,26 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bu
     useEffect(() => {
         if (!bubbleEmit || !canvasRef.current) return;
         const { type, x, y, count } = bubbleEmit;
-        const canvas = canvasRef.current;
-        for (let i = 0; i < (count || 5); i++) {
-            const p = spawnParticle(type, canvas.width, canvas.height, intensity, { x, y });
+
+        // CGEI EVOLUTION: Flow from Bell to Bubble
+        const originX = bellPos?.x || window.innerWidth / 2;
+        const originY = bellPos?.y || 72;
+
+        for (let i = 0; i < (count || 8); i++) {
+            // Spawn energy flow
+            const energy = spawnParticle('energy', window.innerWidth, window.innerHeight, intensity, {
+                x: originX,
+                y: originY,
+                tx: x,
+                ty: y
+            });
+            if (energy) particles.current.push(energy);
+
+            // Also spawn standard sentiment particles at the destination
+            const p = spawnParticle(type, window.innerWidth, window.innerHeight, intensity, { x, y });
             if (p) particles.current.push(p);
         }
-    }, [bubbleEmit, intensity]);
+    }, [bubbleEmit, intensity, bellPos]);
 
     const triggerLightning = useCallback(() => {
         lightningFlash.current = 1;
@@ -226,6 +240,19 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bu
                 ctx.fillRect(0, 0, w, h);
                 lightningFlash.current *= 0.85;
                 if (lightningFlash.current < 0.01) lightningFlash.current = 0;
+            }
+
+            // Morphing Bubbles Layer
+            if (bubblePositions && bubblePositions.length > 0) {
+                bubblePositions.forEach(b => {
+                    if (Math.random() < 0.05 * intensity) {
+                        const m = spawnParticle('morph', w, h, intensity, {
+                            x: b.x, y: b.y, w: b.width, h: b.height,
+                            color: WEATHER_PRESETS[b.sentiment]?.sky?.[0] === '#050508' ? '255,255,255' : '150,150,255'
+                        });
+                        if (m) particles.current.push(m);
+                    }
+                });
             }
 
             animFrame.current = requestAnimationFrame(loop);

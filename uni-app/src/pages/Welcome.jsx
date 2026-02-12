@@ -96,19 +96,19 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                 {/* Bell Face on Front */}
                 <div className="welcome-bell">
-                    <BellDot state={bellStatus} size={14} />
+                    <BellDot state={bellStatus} size={24} />
                     <span className="bell-label">Bell</span>
                     <div className="bell-shadow" />
                 </div>
 
                 <div className="tagline-container">
                     <p className="tagline">
-                        When words alone just aren't enough.
+                        Beyond language. Into pure resonance.
                     </p>
-                    <p className="sub-tagline">
-                        The world's first <strong>CGEI</strong><br />
-                        <span style={{ fontSize: '0.75em', opacity: 0.6, letterSpacing: '0.1em' }}>
-                            (Conversational Generative Emotion Interface)
+                    <p className="sub-tagline" style={{ opacity: 0.8, marginTop: 16 }}>
+                        The world's first <strong>Conversational Generative Emotional Interface</strong><br />
+                        <span style={{ fontSize: '0.75em', opacity: 0.5, letterSpacing: '0.15em', marginTop: 8, display: 'block' }}>
+                            A high-fidelity sanctuary for those who feel everything.
                         </span>
                     </p>
                 </div>
@@ -138,21 +138,21 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                 <div className="welcome-actions">
                     <button className="btn btn-primary btn-glow" onClick={onGetStarted}>
-                        Claim Your Sanctuary
+                        Initialize Your Sanctuary
                     </button>
                     <button
                         className="btn btn-glass btn-sm"
                         onClick={onGetStarted}
-                        style={{ marginTop: 8 }}
+                        style={{ marginTop: 12, opacity: 0.7, letterSpacing: '0.2em' }}
                     >
-                        Enter the interface
+                        ENTER THE RESONANCE
                     </button>
                 </div>
 
                 <div className="welcome-features">
-                    <div className="feature-pill">◈ CGEI Reactive Atmosphere</div>
-                    <div className="feature-pill">◈ Shared Soul-Song Weaving</div>
-                    <div className="feature-pill">◈ Eternal Memory Archiving</div>
+                    <div className="feature-pill">◈ Generative Vibe-Architecture</div>
+                    <div className="feature-pill">◈ Neural Soul-Song Weaving</div>
+                    <div className="feature-pill">◈ Permanent Soul-Archive</div>
                 </div>
             </div>
         </div>

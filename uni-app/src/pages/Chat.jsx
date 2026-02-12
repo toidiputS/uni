@@ -47,6 +47,59 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
     const [soulSong, setSoulSong] = useState(null);
     const [toast, setToast] = useState('');
     const [bellState, setBellState] = useState('idle');
+    const [bubblePositions, setBubblePositions] = useState([]);
+    const bellRef = useRef(null);
+    const messagesContainerRef = useRef(null);
+    const [bellPos, setBellPos] = useState({ x: 0, y: 0 });
+
+    // Track Bell's position for gravity calculations
+    useEffect(() => {
+        const updateBellPos = () => {
+            if (bellRef.current) {
+                const rect = bellRef.current.getBoundingClientRect();
+                setBellPos({
+                    x: rect.left + rect.width / 2,
+                    y: rect.top + rect.height / 2
+                });
+            }
+        };
+        updateBellPos();
+        window.addEventListener('resize', updateBellPos);
+        return () => window.removeEventListener('resize', updateBellPos);
+    }, []);
+
+    // Track bubble positions for "morphing" energy effects
+    useEffect(() => {
+        const updateBubblePositions = () => {
+            if (messagesContainerRef.current) {
+                const bubbles = messagesContainerRef.current.querySelectorAll('.bubble');
+                const positions = Array.from(bubbles).map(b => {
+                    const rect = b.getBoundingClientRect();
+                    return {
+                        x: rect.left + rect.width / 2,
+                        y: rect.top + rect.height / 2,
+                        width: rect.width,
+                        height: rect.height,
+                        sentiment: b.getAttribute('data-sentiment') || 'neutral'
+                    };
+                });
+                setBubblePositions(positions);
+            }
+        };
+
+        // Update when messages change or scroll
+        updateBubblePositions();
+        const container = messagesContainerRef.current;
+        if (container) {
+            container.addEventListener('scroll', updateBubblePositions);
+        }
+
+        const timer = setTimeout(updateBubblePositions, 500); // Wait for animations
+        return () => {
+            if (container) container.removeEventListener('scroll', updateBubblePositions);
+            clearTimeout(timer);
+        };
+    }, [messages]);
 
     const handleFeedbackSubmit = async (data) => {
         if (!user || !roomId) return;
@@ -73,11 +126,26 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
         setTimeout(() => setToast(''), 3000);
     };
 
+    const handleSponsor = async (type, amount) => {
+        if (!user) return;
+        setBellState('thinking');
+        showToast("Preparing the Gateway...");
+        try {
+            await redirectToCheckout(type, user.email, hasDiscount);
+        } catch (err) {
+            console.error('[UNI] Stripe Redirect failed:', err);
+            showToast(err.message || "The Gateway is closed. Try later.");
+        } finally {
+            setBellState('idle');
+        }
+    };
+
     // Handle return from Stripe
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
+        const success = params.get('success');
         const sessionId = params.get('session_id');
-        if (sessionId && user) {
+        if (success === 'true' && sessionId && user) {
             const userRef = doc(db, 'users', user.uid);
             updateDoc(userRef, {
                 isSubscriber: true,
@@ -89,21 +157,6 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
             });
         }
     }, [user]);
-
-    const handleSponsor = async (type, amount) => {
-        if (!user) return;
-        setBellState('thinking');
-        showToast("Preparing the Gateway...");
-        try {
-            // amount can be used here if stripe helper supports it
-            await redirectToCheckout(type, user.email);
-        } catch (err) {
-            console.error('[UNI] Stripe Redirect failed:', err);
-            showToast("The Gateway is closed. Try later.");
-        } finally {
-            setBellState('idle');
-        }
-    };
 
 
     const handleWeave = async () => {
@@ -289,7 +342,7 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
                     <button className="chat-back" onClick={onUnpair} title="Back">←</button>
                     <span className="chat-partner-name">{partnerName}</span>
                 </div>
-                <div className="bell-dot-center"><BellDot state={bellState} size={10} /></div>
+                <div className="chat-header-center-phantom" />
                 <div className="chat-header-actions">
                     <button
                         className="btn btn-glass btn-sm"
@@ -309,7 +362,7 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
                     <button className="btn btn-glass btn-icon" onClick={onLogout} title="Sign out" style={{ fontSize: 14 }}>⚙</button>
                 </div>
             </div>
-            <div className="messages-container">
+            <div className="messages-container" ref={messagesContainerRef}>
                 {messages.length === 0 ? (
                     <div className="empty-chat"><BellDot state="idle" size={16} /><p style={{ marginTop: 16, color: 'var(--uni-chrome)' }}>Your canvas is ready.</p></div>
                 ) : (
@@ -325,12 +378,26 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
                 )}
                 <div ref={messagesEndRef} />
             </div>
+
+            {/* Bell's New Gravitational Home */}
+            <div className="bell-gravitation-well" ref={bellRef}>
+                <BellDot state={bellState} size={22} />
+            </div>
+
             <div className="input-bar">
                 <input ref={inputRef} className="input" type="text" placeholder="Say something…" value={text} onChange={handleTextChange} onKeyDown={handleKeyDown} disabled={sending} autoFocus />
                 <button className="send-btn" onClick={sendMessage} disabled={!text.trim() || sending} title="Send">{sending ? '·' : '↑'}</button>
             </div>
             <div className={`presence-pulse ${partnerPresent ? 'active' : ''}`} />
-            <AtmosphereCanvas mood={mood} intensity={intensity} bubbleEmit={bubbleEmit} drawEmit={drawEmit} onDraw={handleDraw} />
+            <AtmosphereCanvas
+                mood={mood}
+                intensity={intensity}
+                bubbleEmit={bubbleEmit}
+                drawEmit={drawEmit}
+                onDraw={handleDraw}
+                bellPos={bellPos}
+                bubblePositions={bubblePositions}
+            />
             {showMemory && <MemoryCard roomId={roomId} messages={messages} mood={mood} partnerName={partnerName} userName={user?.displayName || 'You'} onClose={() => setShowMemory(false)} onToast={handleMemoryToast} />}
             {showArtifact && soulSong && <ArtifactFrame title={soulSong.title} lyrics={soulSong.lyrics} date={new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} participants={[user?.displayName || 'You', partnerName]} onClose={() => setShowArtifact(false)} />}
             {showPricing && (

@@ -61,16 +61,21 @@ export default function MemoryCard({ roomId, messages, mood, partnerName, userNa
 
     const handleSave = async () => {
         if (isSaving || !roomId) return;
-        setIsSaving(true);
 
+        if (cardMessages.length === 0) {
+            onToast('Conversation is too quiet to archive ✦');
+            return;
+        }
+
+        setIsSaving(true);
         try {
             // Save to Firestore Permanent Archive
             await addDoc(collection(db, 'chatRooms', roomId, 'memories'), {
                 title,
-                messages: cardMessages.map(m => ({ text: m.text, senderName: m.senderName })),
+                messages: cardMessages.map(m => ({ text: m.text, senderName: m.senderName || 'Anonymous' })),
                 mood,
                 date: dateStr,
-                participants: [userName, partnerName],
+                participants: [userName || 'You', partnerName || 'Partner'],
                 createdAt: serverTimestamp()
             });
 
@@ -78,7 +83,7 @@ export default function MemoryCard({ roomId, messages, mood, partnerName, userNa
             onClose();
         } catch (err) {
             console.error('[UNI] Memory save failed:', err);
-            onToast('Archiving failed. Try again.');
+            onToast(`Archiving failed: ${err.message || 'Server error'}`);
         } finally {
             setIsSaving(false);
         }

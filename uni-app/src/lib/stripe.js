@@ -1,31 +1,44 @@
-import { loadStripe } from '@stripe/stripe-js';
+/**
+ * •UNI• Stripe Integration v4 (2026 Compatible)
+ * Using Secure Stripe Payment Links to bypass 'Client-only' deprecation.
+ */
 
-// YOUR ACTION: Replace this with your actual Stripe Publishable Key from the dashboard
-const STRIPE_PUBLIC_KEY = 'pk_live_51Rkc9jEEe6fVBpFcgw08JASKpgOC7EwUWbgnlUW344iCbr2EOucu0gusOQ3qrujR1kzVmoAItjVoqaM10wxiNMgd00Scaj4wUm';
-
-// YOUR ACTION: Replace these with your actual Price IDs from Stripe Dashboard
-const PRICE_IDS = {
-    lifetime: 'price_1SzXqVEEe6fVBpFcUaCBSRIL',
-    monthly: 'price_1SzXsuEEe6fVBpFckwUpRs2b'
+const PAYMENT_LINKS = {
+    lifetime: 'https://buy.stripe.com/7sY4gz0iL63J2g6cUb6Na02',        // Standard $25
+    lifetime_discount: 'https://buy.stripe.com/fZudR90iL1NtaMC8DV6Na03' // Study Reward $20
 };
 
-export async function redirectToCheckout(type, userEmail) {
-    const stripe = await loadStripe(STRIPE_PUBLIC_KEY);
+/**
+ * Redirects the user to a secure Stripe-hosted checkout page.
+ * Prefills user information to minimize friction.
+ * 
+ * @param {string} type - 'lifetime'
+ * @param {string} userEmail - Used to prefill the checkout form
+ * @param {boolean} hasDiscount - Whether the user earned the 'Study Reward'
+ */
+export async function redirectToCheckout(type, userEmail, hasDiscount = false) {
+    console.log('[•UNI•] Initializing secure checkout sequence...');
 
-    // Stripe Checkout handles the payment and redirects back to UNI
-    const { error } = await stripe.redirectToCheckout({
-        lineItems: [{
-            price: PRICE_IDS[type],
-            quantity: 1,
-        }],
-        mode: type === 'lifetime' ? 'payment' : 'subscription',
-        successUrl: `${window.location.origin}?session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl: `${window.location.origin}`,
-        customerEmail: userEmail,
-    });
+    // Determine target link based on discount status
+    const baseUrl = (type === 'lifetime' && hasDiscount)
+        ? PAYMENT_LINKS.lifetime_discount
+        : PAYMENT_LINKS.lifetime;
 
-    if (error) {
-        console.error('[•UNI•] Stripe Error:', error);
-        throw error;
+    if (!baseUrl) {
+        console.error('[•UNI•] Fatal: No valid payment link found for type:', type);
+        throw new Error('Sanctuary selection unavailable.');
     }
+
+    // Optimize UX: Prefill the user's email so they don't have to re-type it.
+    // Also ensures we can match the payment to the correct internal user easily.
+    const checkoutUrl = new URL(baseUrl);
+    if (userEmail) {
+        checkoutUrl.searchParams.set('prefilled_email', userEmail);
+    }
+
+    // 'client_reference_id' can be added if needed for webhooks, but for now 
+    // the successUrl return flow in Chat.jsx handles the status update.
+
+    console.log('[•UNI•] Redirecting to Stripe...');
+    window.location.href = checkoutUrl.toString();
 }

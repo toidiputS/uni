@@ -43,13 +43,23 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
             }
         })();
 
-        // Listen for when someone else pairs with ME
-        const unsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
-            if (snap.exists()) {
-                const data = snap.data();
-                if (data.pairedWith && data.lastRoomId) {
-                    setResonance(true);
-                    setTimeout(() => onPaired(data.lastRoomId), 3500);
+        // Listen for when we are paired AND both are ready
+        const unsub = onSnapshot(doc(db, 'users', user.uid), (userSnap) => {
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                if (userData.pairedWith && userData.lastRoomId) {
+                    // Check room readiness
+                    const roomUnsub = onSnapshot(doc(db, 'chatRooms', userData.lastRoomId), (roomSnap) => {
+                        if (roomSnap.exists()) {
+                            const room = roomSnap.data();
+                            const partnerId = userData.pairedWith;
+                            if (room[`ready_${user.uid}`] && room[`ready_${partnerId}`]) {
+                                setResonance(true);
+                                setTimeout(() => onPaired(userData.lastRoomId), 3000);
+                                roomUnsub(); // Stop listening to room
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -114,7 +124,10 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
             };
 
             // 4. Set the room & update users
-            await setDoc(doc(db, 'chatRooms', roomId), roomData, { merge: true });
+            await setDoc(doc(db, 'chatRooms', roomId), {
+                ...roomData,
+                [`ready_${user.uid}`]: true
+            }, { merge: true });
 
             await updateDoc(myRef, {
                 pairedWith: partnerId,
@@ -126,8 +139,10 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
                 lastRoomId: roomId
             });
 
+            // We don't transition here anymore. 
+            // We let the listener below handle it when BOTH are ready.
+            setLoading(false);
             setResonance(true);
-            setTimeout(() => onPaired(roomId), 3500);
 
         } catch (err) {
             console.error('[UNI] Pairing error:', err);
@@ -142,8 +157,10 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
                 <div className="resonance-ring" />
                 <div className="resonance-content">
                     <div className="wordmark">•UNI•</div>
-                    <p>Resonance Achieved</p>
-                    <div className="resonance-status">Creating your sanctuary...</div>
+                    <p>Resonance Initialized</p>
+                    <div className="resonance-status">
+                        Waiting for partner to connect...
+                    </div>
                 </div>
             </div>
         );

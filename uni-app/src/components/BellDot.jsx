@@ -35,7 +35,7 @@ export default function BellDot({ state = 'idle', size = 28 }) {
                 <circle
                     cx="60"
                     cy="60"
-                    r="10"
+                    r="20"
                     fill="white"
                     className="bell-core"
                 />
@@ -44,7 +44,7 @@ export default function BellDot({ state = 'idle', size = 28 }) {
                 <circle
                     cx="60"
                     cy="60"
-                    r="10"
+                    r="20"
                     fill="none"
                     stroke="white"
                     strokeWidth="2"

@@ -143,6 +143,34 @@ export function createBounce(canvasW, canvasH) {
     };
 }
 
+export function createEnergy(originX, originY, targetX, targetY, color) {
+    return {
+        type: 'energy',
+        x: originX,
+        y: originY,
+        tx: targetX,
+        ty: targetY,
+        vx: 0,
+        vy: 0,
+        life: 1,
+        maxLife: 1,
+        size: 2 + Math.random() * 3,
+        opacity: 1,
+        color: color || '255, 255, 255',
+        speed: 0.05 + Math.random() * 0.05,
+    };
+}
+
+export function createMorphingBubble(x, y, w, h, color) {
+    return {
+        type: 'morph',
+        x, y, w, h,
+        life: 1,
+        phase: Math.random() * Math.PI * 2,
+        color: color || '255, 255, 255'
+    };
+}
+
 
 // ─── Shape Helpers ───
 
@@ -415,6 +443,8 @@ export function spawnParticle(type, canvasW, canvasH, intensity, origin) {
         case 'cloud': return createCloud(canvasW, canvasH);
         case 'bird': return createBird(canvasW, canvasH);
         case 'bounce': return createBounce(canvasW, canvasH);
+        case 'energy': return createEnergy(origin?.x, origin?.y, origin?.tx, origin?.ty, origin?.color);
+        case 'morph': return createMorphingBubble(origin?.x, origin?.y, origin?.w, origin?.h, origin?.color);
         default: return null;
     }
 }
@@ -481,6 +511,23 @@ export function updateParticle(p, w, h, dt) {
             if (p.x < 0 || p.x > w) p.vx *= -1;
             if (p.y < 0 || p.y > h) p.vy *= -1;
             break;
+        case 'energy':
+            // Gravitate towards target
+            const dx = p.tx - p.x;
+            const dy = p.ty - p.y;
+            p.vx += dx * p.speed * dt;
+            p.vy += dy * p.speed * dt;
+            p.vx *= 0.9;
+            p.vy *= 0.9;
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.opacity = p.life;
+            if (Math.abs(dx) < 5 && Math.abs(dy) < 5) p.life = 0;
+            break;
+        case 'morph':
+            p.phase += 0.05 * dt;
+            p.life -= 0.01 * dt;
+            break;
     }
 }
 
@@ -523,6 +570,25 @@ export function renderParticle(ctx, p) {
         ctx.moveTo(p.x, p.y);
         ctx.lineTo(p.x + p.vx * 0.2, p.y + p.vy * 0.2);
         ctx.stroke();
+    } else if (p.type === 'energy') {
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 3);
+        grad.addColorStop(0, `rgba(${p.color}, ${p.opacity})`);
+        grad.addColorStop(1, `rgba(${p.color}, 0)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+        ctx.fill();
+    } else if (p.type === 'morph') {
+        ctx.save();
+        ctx.globalAlpha = p.life * 0.4;
+        const driftX = Math.sin(p.phase) * 10;
+        const driftY = Math.cos(p.phase) * 10;
+        const grad = ctx.createRadialGradient(p.x + driftX, p.y + driftY, 0, p.x, p.y, Math.max(p.w, p.h) * 0.8);
+        grad.addColorStop(0, `rgba(${p.color}, 0.2)`);
+        grad.addColorStop(1, `rgba(${p.color}, 0)`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(p.x - p.w / 2 - 20, p.y - p.h / 2 - 20, p.w + 40, p.h + 40);
+        ctx.restore();
     } else {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);

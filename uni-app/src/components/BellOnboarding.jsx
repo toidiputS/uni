@@ -14,44 +14,55 @@ export default function BellOnboarding({ onComplete, onSceneChange }) {
     const [showFinal, setShowFinal] = useState(false);
     const containerRef = useRef(null);
 
-    useEffect(() => {
+    // Advancing logic — now manual
+    const handleNext = () => {
         if (stepIndex >= SEQUENCE.length) {
             markOnboardingComplete();
-            setTimeout(() => onComplete(), 1000);
+            onComplete();
             return;
         }
 
         const step = SEQUENCE[stepIndex];
+        setBellState(step.bellState);
 
-        const timer = setTimeout(() => {
-            setBellState(step.bellState);
+        if (step.sceneColors && onSceneChange) {
+            onSceneChange(step.sceneColors);
+        }
 
-            if (step.sceneColors && onSceneChange) {
-                onSceneChange(step.sceneColors);
-            }
+        if (step.text) {
+            setMessages(prev => [...prev, {
+                text: step.text,
+                sentiment: step.sentiment,
+                demoLabel: step.demoLabel,
+                isUni: true,
+            }]);
+        }
 
-            if (step.text) {
-                setMessages(prev => [...prev, {
-                    text: step.text,
-                    sentiment: step.sentiment,
-                    demoLabel: step.demoLabel,
-                    isUni: true,
-                }]);
-            }
+        if (step.futureFeatures) {
+            setFutureFeatures(step.futureFeatures);
+        }
 
-            if (step.futureFeatures) {
-                setFutureFeatures(step.futureFeatures);
-            }
+        if (step.isFinal) {
+            setShowFinal(true);
+        }
 
-            if (step.isFinal) {
-                setShowFinal(true);
-            }
+        setStepIndex(prev => prev + 1);
+    };
 
-            setStepIndex(prev => prev + 1);
-        }, step.delay);
+    // Initial step
+    useEffect(() => {
+        if (stepIndex === 0) {
+            handleNext();
+        }
+    }, []);
 
-        return () => clearTimeout(timer);
-    }, [stepIndex, onComplete, onSceneChange]);
+    // Effect for handling auto-progression if needed, but we'll stick to manual
+    /*
+    useEffect(() => {
+        if (stepIndex >= SEQUENCE.length) return;
+        // ...
+    }, [stepIndex]);
+    */
 
     // Auto-scroll
     useEffect(() => {
@@ -64,7 +75,7 @@ export default function BellOnboarding({ onComplete, onSceneChange }) {
         <div className="onboarding-page">
             {/* Bell's dot — top center, gravitational */}
             <div className="onboarding-dot">
-                <BellDot state={bellState} size={14} />
+                <BellDot state={bellState} size={24} />
             </div>
 
             {/* Message stream */}
@@ -103,12 +114,17 @@ export default function BellOnboarding({ onComplete, onSceneChange }) {
                         Begin
                     </button>
                 ) : (
-                    <button className="onboarding-skip" onClick={() => {
-                        markOnboardingComplete();
-                        onComplete();
-                    }}>
-                        Skip
-                    </button>
+                    <div className="onboarding-nav">
+                        <button className="onboarding-skip" onClick={() => {
+                            markOnboardingComplete();
+                            onComplete();
+                        }}>
+                            Skip
+                        </button>
+                        <button className="onboarding-btn-next" onClick={handleNext}>
+                            Tap to continue
+                        </button>
+                    </div>
                 )}
             </div>
         </div>
