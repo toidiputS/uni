@@ -462,7 +462,12 @@ export function updateParticle(p, w, h, dt) {
         return;
     }
 
-    p.life -= 0.005 * dt;
+    // Environmental particles persist until off-screen
+    const isEnvironmental = p.type === 'rain' || p.type === 'cloud' || p.type === 'bird';
+    if (!isEnvironmental) {
+        p.life -= 0.005 * dt;
+    }
+
     if (p.x < -100 || p.x > w + 100 || p.y < -100 || p.y > h + 100) p.life = 0;
 
     switch (p.type) {
@@ -587,30 +592,35 @@ export function renderParticle(ctx, p) {
         ctx.lineTo(p.x + p.vx * 2, p.y + p.vy * 4);
         ctx.stroke();
     } else if (p.type === 'energy') {
-        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 3);
-        grad.addColorStop(0, `rgba(${p.color}, ${p.opacity})`);
+        const glowSize = p.size * (4 + Math.sin(p.phase) * 2);
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowSize);
+        grad.addColorStop(0, `rgba(${p.color}, ${p.opacity * 0.4})`);
         grad.addColorStop(1, `rgba(${p.color}, 0)`);
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size * 3, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, glowSize, 0, Math.PI * 2);
         ctx.fill();
     } else if (p.type === 'morph') {
         ctx.save();
-        // Burst Decay: sudden drop then slow linger
         const alpha = Math.pow(p.life, 3) * 0.35;
         const driftX = Math.sin(p.phase) * 20;
         const driftY = Math.cos(p.phase) * 20;
         const size = Math.max(p.w, p.h);
+        const radius = size * 3.5;
+
         const grad = ctx.createRadialGradient(
             p.x + driftX, p.y + driftY, 0,
-            p.x, p.y, size * 3
+            p.x + driftX, p.y + driftY, radius
         );
         grad.addColorStop(0, `rgba(${p.color}, ${alpha})`);
-        grad.addColorStop(0.4, `rgba(${p.color}, ${alpha * 0.2})`);
+        grad.addColorStop(0.3, `rgba(${p.color}, ${alpha * 0.1})`);
         grad.addColorStop(1, `rgba(${p.color}, 0)`);
+
         ctx.fillStyle = grad;
-        // Massive dispersion area
-        ctx.fillRect(p.x - size * 2, p.y - size * 2, size * 4, size * 4);
+        ctx.beginPath();
+        // Circle instead of Rect to kill the "Squares"
+        ctx.arc(p.x + driftX, p.y + driftY, radius, 0, Math.PI * 2);
+        ctx.fill();
         ctx.restore();
     } else {
         ctx.beginPath();
