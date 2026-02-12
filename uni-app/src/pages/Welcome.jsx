@@ -89,8 +89,9 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
         }
 
         // Add Message with Cadence
-        if (current.text) {
+        if (current.text || current.futureFeatures) {
             setMessages(prev => [...prev, {
+                id: Date.now(),
                 text: current.text,
                 label: current.demoLabel,
                 features: current.futureFeatures
@@ -158,16 +159,28 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                 {/* ACT 2: SPEAKING (Scripted Stream) */}
                 {step === 'onboarding' && (
-                    <div className="onboarding-float flex flex-col items-center justify-center gap-12" style={{ height: '35vh', width: '100%', position: 'relative', textAlign: 'center' }}>
-                        {messages.slice(-1).map((msg, i) => (
-                            <div key={messages.length} className="text-center fade-float-up flex flex-col items-center">
-                                {msg.label && <div className="onboarding-label" style={{ color: 'var(--uni-accent-1)', fontSize: 10, letterSpacing: '0.15em', marginBottom: 12 }}>{msg.label}</div>}
-                                <p className="onboarding-text" style={{ fontSize: 24, fontWeight: 300, lineHeight: 1.5, maxWidth: 600, width: '100%', margin: '0 auto' }}>{msg.text}</p>
+                    <div
+                        ref={scrollRef}
+                        className="onboarding-stream flex flex-col items-center gap-6 py-8"
+                        style={{
+                            height: '45vh',
+                            overflowY: 'auto',
+                            width: '100%',
+                            maxWidth: 600,
+                            maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)',
+                            WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)',
+                            scrollBehavior: 'smooth'
+                        }}
+                    >
+                        {messages.map((msg, i) => (
+                            <div key={msg.id || i} className="text-center fade-in flex flex-col items-center w-full mb-4" style={{ opacity: i === messages.length - 1 ? 1 : 0.5, transition: 'opacity 0.5s' }}>
+                                {msg.label && <div className="onboarding-label" style={{ color: 'var(--uni-accent-1)', fontSize: 10, letterSpacing: '0.15em', marginBottom: 6 }}>{msg.label}</div>}
+                                {msg.text && <p className="onboarding-text" style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.6, maxWidth: 480, margin: '0 auto' }}>{msg.text}</p>}
 
                                 {msg.features && (
-                                    <div className="flex flex-wrap justify-center gap-3 mt-10">
+                                    <div className="flex flex-wrap justify-center gap-2 mt-4">
                                         {msg.features.map((f, j) => (
-                                            <div key={j} className="onboarding-future-card" style={{ fontSize: 12, padding: '8px 18px' }}>{f}</div>
+                                            <div key={j} className="onboarding-future-card" style={{ fontSize: 11, padding: '6px 14px' }}>{f}</div>
                                         ))}
                                     </div>
                                 )}
@@ -181,11 +194,11 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                     <div className="flex flex-col items-center justify-center gap-6 fade-in w-full text-center" style={{ flex: 1 }}>
                         <div className="vday-badge" style={{ margin: '0 auto' }}>🌹 Limited Founder's Sanctum — Ends 2.15</div>
 
-                        <div className="vday-timer flex justify-center items-center w-full" style={{ gap: '32px', margin: '40px auto' }}>
+                        <div className="vday-timer flex justify-center items-center w-full mx-auto" style={{ gap: '24px', margin: '40px auto' }}>
                             {Object.entries(timeLeft).map(([label, val]) => (
-                                <div key={label} className="timer-unit">
-                                    <span className="timer-val">{String(val).padStart(2, '0')}</span>
-                                    <span className="timer-label">{label}</span>
+                                <div key={label} className="timer-unit flex flex-col items-center" style={{ minWidth: '60px' }}>
+                                    <span className="timer-val" style={{ fontSize: 32 }}>{String(val).padStart(2, '0')}</span>
+                                    <span className="timer-label" style={{ fontSize: 10 }}>{label}</span>
                                 </div>
                             ))}
                         </div>
