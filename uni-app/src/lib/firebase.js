@@ -18,7 +18,15 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
-export const analytics = getAnalytics(app);
+
+let analytics;
+try {
+    analytics = getAnalytics(app);
+} catch (e) {
+    console.warn('[•UNI•] Analytics inhibited:', e);
+}
+export { analytics };
+
 export const googleProvider = new GoogleAuthProvider();
 export default app;
 

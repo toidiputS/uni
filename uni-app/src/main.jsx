@@ -15,8 +15,14 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>
-)
+try {
+    ReactDOM.createRoot(document.getElementById('root')).render(
+        <React.StrictMode>
+            <App />
+        </React.StrictMode>
+    )
+} catch (err) {
+    console.error('[•UNI•] Fatal Boot Error:', err);
+    document.body.innerHTML = `<div style="padding:40px; color:white; background:black; font-family:sans-serif;"><h1>Boot Error</h1><pre>${err.stack || err.message}</pre></div>`;
+}
+
