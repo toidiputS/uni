@@ -119,6 +119,19 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
         if (!isPlaying) onToggleAudio();
     };
 
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            setMousePos({
+                x: (e.clientX / window.innerWidth - 0.5) * 20,
+                y: (e.clientY / window.innerHeight - 0.5) * 20
+            });
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, []);
+
     return (
         <div className="welcome">
             {/* UI Chrome — System Layer */}
@@ -143,12 +156,14 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                 {/* 1. Bell (Pure Center) */}
                 {/* 1. Bell (Pure Center) */}
                 <div className={`welcome-bell ${['onboarding', 'urgency'].includes(step) ? 'bell-raised' : ''}`} style={{
-                    transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                    transition: 'transform 0.3s ease-out, margin 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     width: '100%',
-                    marginBottom: step === 'onboarding' ? 0 : 32
+                    marginBottom: step === 'onboarding' ? 0 : 32,
+                    animation: 'float 5s ease-in-out infinite',
+                    transform: `translate(${mousePos.x}px, ${mousePos.y}px) rotate(${mousePos.x * 0.5}deg)`
                 }}>
                     <BellDot state={bellStatus} size={32} />
                     <span className="bell-label" style={{ opacity: 0.6, marginTop: 8, fontSize: 10, letterSpacing: '0.1em' }}>Bell</span>
@@ -184,7 +199,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                 {/* ACT 2: SPEAKING (Sovereign Stack) */}
                 {step === 'onboarding' && (
                     <div className="flex flex-col items-center w-full fade-in" style={{ flex: 1, paddingTop: '5vh' }}>
-                        <div className="flex flex-col items-center w-full" style={{ gap: 20 }}>
+                        <div className="flex flex-col items-center w-full" style={{ gap: 48 }}>
                             {messages.map((msg, i) => (
                                 <div key={msg.id || i} className="onboarding-msg flex flex-col items-center w-full" style={{
                                     opacity: i === messages.length - 1 ? 1 : 0.25,
@@ -198,7 +213,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                                     )}
 
                                     {msg.features && (
-                                        <div className="flex flex-wrap justify-center gap-4 mt-8" style={{ maxWidth: 540 }}>
+                                        <div className="flex flex-wrap justify-center gap-6 mt-12" style={{ maxWidth: 540 }}>
                                             {msg.features.map((f, j) => (
                                                 <div key={j} className="onboarding-future-card"
                                                     style={{
@@ -259,7 +274,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                 {/* 4. •UNI• (Base Identity) */}
                 <div className="wordmark-reflect" style={{
                     position: 'fixed',
-                    bottom: '2vh',
+                    bottom: '22vh',
                     left: 0,
                     right: 0,
                     margin: 0,
