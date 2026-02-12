@@ -1517,12 +1517,6 @@ body,
   line-height: 1.6;
   color: var(--uni-text);
   font-weight: 300;
-  background: var(--uni-glass);
-  padding: 12px 24px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--uni-glass-border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   max-width: 420px;
   text-align: center;
 }
@@ -1967,6 +1961,36 @@ body,
 
 .upload-section .btn {
   font-size: 12px;
+}
+
+/* Bell Raised & Floating - Act 2 */
+.bell-raised {
+  transform: translateY(-8vh);
+  animation: bell-orbital-float 20s ease-in-out infinite;
+  position: relative;
+  z-index: 10;
+}
+
+@keyframes bell-orbital-float {
+  0% {
+    transform: translate(0, -8vh);
+  }
+
+  25% {
+    transform: translate(45px, calc(-8vh - 15px));
+  }
+
+  50% {
+    transform: translate(-15px, calc(-8vh - 50px));
+  }
+
+  75% {
+    transform: translate(-50px, calc(-8vh - 20px));
+  }
+
+  100% {
+    transform: translate(0, -8vh);
+  }
 }
 
 /* Custom Scrollbar for Song List */

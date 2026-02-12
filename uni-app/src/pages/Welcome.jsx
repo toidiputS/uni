@@ -125,7 +125,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
             <div className={`welcome-content ${visible ? 'visible' : ''}`} style={{ textAlign: 'center' }}>
 
                 {/* 1. Bell (Pure Center) */}
-                <div className="welcome-bell" style={{ transition: 'all 1s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                <div className={`welcome-bell ${['onboarding', 'urgency'].includes(step) ? 'bell-raised' : ''}`} style={{ transition: 'all 1s ease', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
                     <BellDot state={bellStatus} size={32} />
                     <span className="bell-label" style={{ opacity: 0.6, marginTop: 12 }}>Bell</span>
                 </div>
@@ -157,30 +157,36 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                     </div>
                 )}
 
-                {/* ACT 2: SPEAKING (Scripted Stream) */}
+                {/* ACT 2: SPEAKING (Floating Protocol) */}
                 {step === 'onboarding' && (
-                    <div
-                        ref={scrollRef}
-                        className="onboarding-stream flex flex-col items-center gap-6 py-8"
-                        style={{
-                            height: '45vh',
-                            overflowY: 'auto',
-                            width: '100%',
-                            maxWidth: 600,
-                            maskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)',
-                            WebkitMaskImage: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)',
-                            scrollBehavior: 'smooth'
-                        }}
-                    >
-                        {messages.map((msg, i) => (
-                            <div key={msg.id || i} className="text-center fade-in flex flex-col items-center w-full mb-4" style={{ opacity: i === messages.length - 1 ? 1 : 0.5, transition: 'opacity 0.5s' }}>
-                                {msg.label && <div className="onboarding-label" style={{ color: 'var(--uni-accent-1)', fontSize: 10, letterSpacing: '0.15em', marginBottom: 6 }}>{msg.label}</div>}
-                                {msg.text && <p className="onboarding-text" style={{ fontSize: 16, fontWeight: 300, lineHeight: 1.6, maxWidth: 480, margin: '0 auto' }}>{msg.text}</p>}
+                    <div className="flex flex-col items-center justify-center w-full min-h-[40vh] fade-in">
+                        {messages.slice(-1).map((msg, i) => (
+                            <div key={msg.id || i} className="onboarding-msg flex flex-col items-center">
+                                {msg.text && (
+                                    <p className="onboarding-text" style={{
+                                        fontSize: 'clamp(16px, 4vw, 20px)',
+                                        fontWeight: 300,
+                                        lineHeight: 1.6,
+                                        maxWidth: 540,
+                                        margin: '0 auto',
+                                        animation: 'fadeSlideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                                    }}>
+                                        {msg.text}
+                                    </p>
+                                )}
 
                                 {msg.features && (
-                                    <div className="flex flex-wrap justify-center gap-2 mt-4">
+                                    <div className="flex flex-wrap justify-center gap-3 mt-12" style={{ animation: 'fade-in 1.5s ease forwards' }}>
                                         {msg.features.map((f, j) => (
-                                            <div key={j} className="onboarding-future-card" style={{ fontSize: 11, padding: '6px 14px' }}>{f}</div>
+                                            <div key={j} className="onboarding-future-card" style={{
+                                                background: 'var(--uni-glass)',
+                                                border: '1px solid var(--uni-glass-border)',
+                                                padding: '10px 20px',
+                                                borderRadius: 'var(--radius-full)',
+                                                fontSize: 12,
+                                                color: 'var(--uni-text-dim)',
+                                                backdropFilter: 'blur(8px)'
+                                            }}>{f}</div>
                                         ))}
                                     </div>
                                 )}
