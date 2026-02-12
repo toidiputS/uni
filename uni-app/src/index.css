@@ -72,8 +72,13 @@
   --scene-1: #0d0d18;
   --scene-2: #0a0f1a;
 
-  /* Bell dim — the billion-dollar detail */
   --bell-dim: 1;
+
+  /* Morphic Layer - Moral Diagnostic controls */
+  --moral-entropy: 0;
+  --atmosphere-clarity: 1;
+  /* 1 = crystal clear, 0 = pure static/glitch */
+  --aura-dispersion: 60px;
 }
 
 /* ─── Reset ─── */
@@ -531,6 +536,8 @@ body,
   inset: 0;
   z-index: 1;
   pointer-events: none;
+  filter: blur(calc(var(--moral-entropy) * 15px)) brightness(calc(1 - var(--moral-entropy) * 0.2));
+  transition: filter 2s var(--ease);
 }
 
 /* ─── Welcome Page ─── */
@@ -1032,16 +1039,17 @@ body,
   position: relative;
   max-width: 100%;
   word-wrap: break-word;
-  background: var(--uni-glass);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--uni-glass-border);
+  background: rgba(255, 255, 255, 0.015);
+  /* Almost invisible background */
+  backdrop-filter: blur(calc(var(--atmosphere-clarity) * 4px));
+  -webkit-backdrop-filter: blur(calc(var(--atmosphere-clarity) * 4px));
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  /* Whisper-thin border */
   color: var(--uni-text);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   /* Physicality Layer */
   --aura-color: transparent;
   --aura-intensity: 0.2;
-  transition: all 0.6s var(--ease);
+  transition: all 1s var(--ease);
   animation: bubble-float 6s ease-in-out infinite;
 }
 
@@ -1088,14 +1096,28 @@ body,
 .bubble::after {
   content: '';
   position: absolute;
-  inset: -15px;
+  inset: -2px;
+  /* Tighter in on the sentence */
   background: var(--aura-color);
   opacity: 0;
-  filter: blur(30px);
+  filter: blur(var(--aura-dispersion));
+  /* Higher dispersion */
   z-index: -1;
   border-radius: inherit;
-  transition: opacity 1s var(--ease), transform 1s var(--ease);
+  transition: opacity 2s var(--ease), transform 2s var(--ease);
   pointer-events: none;
+}
+
+/* Bubble Decay - Older messages lose their aura */
+.msg-row.archived .bubble::after {
+  opacity: 0 !important;
+  transform: scale(0.8);
+}
+
+.msg-row.archived .bubble {
+  border-color: transparent;
+  background: transparent;
+  transform: scale(0.98);
 }
 
 /* Aura Activation */

@@ -11,7 +11,7 @@ export default function PricingOverlay({ onClose, onSponsor, hasDiscount, onOpen
                 <div className="artifact-paper" style={{ minHeight: 'auto', padding: '40px 30px' }}>
                     <div className="artifact-header">
                         <div className="artifact-uni-dot" style={{ background: 'var(--emo-happy)' }} />
-                        <span>•UNI• {hasDiscount ? 'SPECIAL DISCOUNT APPLIED' : "FOUNDER'S TIER EXPIRES 2.15"}</span>
+                        <span>•UNI• {hasDiscount ? 'SPECIAL DISCOUNT APPLIED' : "FOUNDER'S TIER: PRICES DOUBLE ON 2.15"}</span>
                     </div>
 
                     <h1 className="artifact-title" style={{ fontSize: 24, marginBottom: 16 }}>Choose Your Path</h1>
@@ -28,8 +28,9 @@ export default function PricingOverlay({ onClose, onSponsor, hasDiscount, onOpen
                             style={cardStyle(selected === 'lifetime')}
                         >
                             <div style={labelStyle}>Lifetime Access</div>
-                            <div style={priceStyle}>${lifetimePrice.toFixed(2)}</div>
-                            <div style={descStyle}>One-time payment.<br />Own your sanctuary forever.</div>
+                            <div style={priceStyle}>${lifetimePrice.toFixed(0)}</div>
+                            <div style={descStyle}>One-time payment.<br />Own it forever.</div>
+                            {!hasDiscount && <div style={{ fontSize: 9, color: 'var(--emo-angry)', marginTop: 8 }}>$50.00 after 2.15</div>}
                         </div>
 
                         <div
@@ -39,7 +40,8 @@ export default function PricingOverlay({ onClose, onSponsor, hasDiscount, onOpen
                         >
                             <div style={labelStyle}>Monthly Bloom</div>
                             <div style={priceStyle}>$2.99<span>/mo</span></div>
-                            <div style={descStyle}>Low friction entry.<br />Cancel anytime.</div>
+                            <div style={descStyle}>Cancel anytime.<br />Boutique entry.</div>
+                            <div style={{ fontSize: 9, color: 'var(--emo-angry)', marginTop: 8 }}>$4.99/mo after 2.15</div>
                         </div>
                     </div>
 

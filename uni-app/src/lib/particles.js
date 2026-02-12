@@ -23,20 +23,20 @@ export function createRaindrop(canvasW, canvasH, intensity = 0.7) {
 }
 
 export function createHeart(x, y, canvasW) {
-    const drift = (Math.random() - 0.5) * 1.2;
+    const drift = (Math.random() - 0.5) * 3; // Wider drift
     return {
         type: 'heart',
         x: x || Math.random() * canvasW,
-        y: y || canvasW, // start from bottom if no position
+        y: y || canvasW,
         vx: drift,
-        vy: -(1.2 + Math.random() * 1.5),
+        vy: -(0.8 + Math.random() * 2), // Slightly slower rise
         life: 1,
         maxLife: 1,
-        size: 8 + Math.random() * 10,
-        opacity: 0.4 + Math.random() * 0.4,
-        color: '255, 107, 157',
-        phase: Math.random() * Math.PI * 2, // for sine drift
-        phaseSpeed: 0.02 + Math.random() * 0.02,
+        size: 10 + Math.random() * 15, // Bigger hearts
+        opacity: 0.3 + Math.random() * 0.4,
+        color: '255, 120, 160',
+        phase: Math.random() * Math.PI * 2,
+        phaseSpeed: 0.01 + Math.random() * 0.03,
     };
 }
 
@@ -113,17 +113,17 @@ export function createBird(canvasW, canvasH) {
     const fromLeft = Math.random() > 0.5;
     return {
         type: 'bird',
-        x: fromLeft ? -30 : canvasW + 30,
-        y: 40 + Math.random() * canvasH * 0.25,
-        vx: fromLeft ? (1.5 + Math.random() * 2) : -(1.5 + Math.random() * 2),
-        vy: -0.3 + Math.random() * 0.6,
+        x: fromLeft ? -50 : canvasW + 50,
+        y: 20 + Math.random() * canvasH * 0.5, // Wider vertical range
+        vx: fromLeft ? (1.2 + Math.random() * 2.5) : -(1.2 + Math.random() * 2.5),
+        vy: (Math.random() - 0.5) * 0.5,
         life: 1,
         maxLife: 1,
-        size: 6 + Math.random() * 6,
-        opacity: 0.4 + Math.random() * 0.3,
-        color: '200, 200, 220',
-        wingPhase: 0,
-        wingSpeed: 0.06 + Math.random() * 0.03,
+        size: 5 + Math.random() * 10,
+        opacity: 0.3 + Math.random() * 0.4,
+        color: '180, 180, 200',
+        wingPhase: Math.random() * Math.PI * 2, // Desynced wings
+        wingSpeed: 0.05 + Math.random() * 0.04,
     };
 }
 
@@ -150,14 +150,16 @@ export function createEnergy(originX, originY, targetX, targetY, color) {
         y: originY,
         tx: targetX,
         ty: targetY,
-        vx: 0,
-        vy: 0,
+        vx: (Math.random() - 0.5) * 2,
+        vy: (Math.random() - 0.5) * 2,
         life: 1,
         maxLife: 1,
-        size: 2 + Math.random() * 3,
-        opacity: 1,
-        color: color || '255, 255, 255',
-        speed: 0.05 + Math.random() * 0.05,
+        size: 3 + Math.random() * 4,
+        opacity: 0.8,
+        color: color || '220, 220, 255',
+        speed: 0.03 + Math.random() * 0.04, // Slower, more magentic
+        phase: Math.random() * Math.PI * 2,
+        oscFreq: 0.1 + Math.random() * 0.2
     };
 }
 
@@ -165,9 +167,10 @@ export function createMorphingBubble(x, y, w, h, color) {
     return {
         type: 'morph',
         x, y, w, h,
-        life: 1,
+        life: 0.5 + Math.random() * 1.5, // Variable life for 'remnant' effect
         phase: Math.random() * Math.PI * 2,
-        color: color || '255, 255, 255'
+        color: color || '255, 255, 255',
+        speed: 0.005 + Math.random() * 0.01
     };
 }
 
@@ -235,8 +238,8 @@ export const WEATHER_PRESETS = {
             'https://images.unsplash.com/photo-1490750967868-58cb9bdda6fa?auto=format&fit=crop&q=80&w=1200'  // Warm Sunset
         ],
         particles: {
-            heart: { count: 12, spawnRate: 0.4 },
-            firefly: { count: 18, spawnRate: 0.15 },
+            heart: { count: 20, spawnRate: 0.6 },
+            firefly: { count: 20, spawnRate: 0.2 },
         },
         lightning: false,
     },
@@ -300,7 +303,7 @@ export const WEATHER_PRESETS = {
         ],
         particles: {
             firefly: { count: 25, spawnRate: 0.2 },
-            bird: { count: 2, spawnRate: 0.01 },
+            bird: { count: 4, spawnRate: 0.02 },
         },
         lightning: false,
     },
@@ -313,7 +316,7 @@ export const WEATHER_PRESETS = {
         ],
         particles: {
             firefly: { count: 12, spawnRate: 0.1 },
-            bird: { count: 1, spawnRate: 0.005 },
+            bird: { count: 2, spawnRate: 0.01 },
         },
     },
     valentine: {
@@ -325,7 +328,7 @@ export const WEATHER_PRESETS = {
         ],
         particles: {
             rose: { count: 30, spawnRate: 0.5 },
-            heart: { count: 10, spawnRate: 0.1 },
+            heart: { count: 20, spawnRate: 0.2 },
             spark: { count: 15, spawnRate: 0.2 },
         },
         lightning: false,
@@ -466,9 +469,10 @@ export function updateParticle(p, w, h, dt) {
             p.x += p.vx * dt;
             break;
         case 'heart':
-            p.y -= p.vy * dt;
-            p.x += Math.sin(p.y / 50) * 1.5 * dt;
-            p.opacity = Math.min(0.7, p.life * 4);
+            p.y += p.vy * dt; // vy is negative, so moves up
+            p.phase += p.phaseSpeed * dt;
+            p.x += Math.sin(p.phase) * 2 * dt;
+            p.opacity = Math.min(0.6, p.life * 3);
             break;
         case 'spark':
             p.x += p.vx * dt;
@@ -512,21 +516,30 @@ export function updateParticle(p, w, h, dt) {
             if (p.y < 0 || p.y > h) p.vy *= -1;
             break;
         case 'energy':
-            // Gravitate towards target
-            const dx = p.tx - p.x;
-            const dy = p.ty - p.y;
-            p.vx += dx * p.speed * dt;
-            p.vy += dy * p.speed * dt;
-            p.vx *= 0.9;
-            p.vy *= 0.9;
+            // Magnetic Drift (Sentinel whisper)
+            p.phase += p.oscFreq * dt;
+            const targetDx = p.tx - p.x;
+            const targetDy = p.ty - p.y;
+
+            // Homing force
+            p.vx += targetDx * p.speed * dt;
+            p.vy += targetDy * p.speed * dt;
+
+            // Lateral "Wiggle"
+            p.x += Math.cos(p.phase) * 1.5 * dt;
+            p.y += Math.sin(p.phase) * 1.5 * dt;
+
+            p.vx *= 0.85; // Heavier drag
+            p.vy *= 0.85;
             p.x += p.vx * dt;
             p.y += p.vy * dt;
+
             p.opacity = p.life;
-            if (Math.abs(dx) < 5 && Math.abs(dy) < 5) p.life = 0;
+            if (Math.abs(targetDx) < 10 && Math.abs(targetDy) < 10) p.life = 0;
             break;
         case 'morph':
             p.phase += 0.05 * dt;
-            p.life -= 0.01 * dt;
+            p.life -= p.speed * dt;
             break;
     }
 }
@@ -580,14 +593,21 @@ export function renderParticle(ctx, p) {
         ctx.fill();
     } else if (p.type === 'morph') {
         ctx.save();
-        ctx.globalAlpha = p.life * 0.4;
-        const driftX = Math.sin(p.phase) * 10;
-        const driftY = Math.cos(p.phase) * 10;
-        const grad = ctx.createRadialGradient(p.x + driftX, p.y + driftY, 0, p.x, p.y, Math.max(p.w, p.h) * 0.8);
-        grad.addColorStop(0, `rgba(${p.color}, 0.2)`);
+        ctx.globalAlpha = Math.min(0.25, p.life * 0.4);
+        const driftX = Math.sin(p.phase) * 15;
+        const driftY = Math.cos(p.phase) * 15;
+        // Tighter center, massive dispersion
+        const size = Math.max(p.w, p.h);
+        const grad = ctx.createRadialGradient(
+            p.x + driftX, p.y + driftY, 0,
+            p.x, p.y, size * 1.5
+        );
+        grad.addColorStop(0, `rgba(${p.color}, 0.35)`);
+        grad.addColorStop(0.2, `rgba(${p.color}, 0.1)`);
         grad.addColorStop(1, `rgba(${p.color}, 0)`);
         ctx.fillStyle = grad;
-        ctx.fillRect(p.x - p.w / 2 - 20, p.y - p.h / 2 - 20, p.w + 40, p.h + 40);
+        // Cover a larger area with the dispersion
+        ctx.fillRect(p.x - size, p.y - size, size * 2, size * 2);
         ctx.restore();
     } else {
         ctx.beginPath();

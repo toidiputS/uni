@@ -19,6 +19,7 @@ import FeedbackModal from '../components/FeedbackModal';
 import { analyzeMessage, composeSoulSong } from '../lib/gemini';
 import { getDocs, updateDoc } from 'firebase/firestore';
 import { redirectToCheckout } from '../lib/stripe';
+import { AD_SCENES, simulateTyping } from '../lib/director';
 
 // Bubble effect → particle type mapping
 const BUBBLE_PARTICLE_MAP = {
@@ -51,6 +52,9 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
     const bellRef = useRef(null);
     const messagesContainerRef = useRef(null);
     const [bellPos, setBellPos] = useState({ x: 0, y: 0 });
+    const [isDirector, setIsDirector] = useState(false);
+    const [entropy, setEntropy] = useState(0); // 0 (Peace) to 1 (Dissolution)
+    const [clarity, setClarity] = useState(1); // 1 (Clear) to 0 (Blur)
 
     // Track Bell's position for gravity calculations
     useEffect(() => {
@@ -100,6 +104,51 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
             clearTimeout(timer);
         };
     }, [messages]);
+
+    // ─── Moral Diagnostic: Behavioral Sensors ───
+    useEffect(() => {
+        let lastScroll = Date.now();
+        let scrollVelocity = 0;
+
+        const handleBehavior = () => {
+            // Passive recovery toward Peace (Evolution)
+            setEntropy(prev => Math.max(0, prev - 0.005));
+        };
+
+        const onScroll = () => {
+            const now = Date.now();
+            const delta = now - lastScroll;
+            if (delta < 50) { // High frequency scroll = Dissolution
+                setEntropy(prev => Math.min(1, prev + 0.05));
+            }
+            lastScroll = now;
+        };
+
+        const onSelection = () => {
+            // Highlighting/Searching for info = Focus/Tension
+            setEntropy(prev => Math.min(0.8, prev + 0.1));
+        };
+
+        const interval = setInterval(handleBehavior, 100);
+        window.addEventListener('scroll', onScroll, true);
+        document.addEventListener('selectionchange', onSelection);
+
+        return () => {
+            clearInterval(interval);
+            window.removeEventListener('scroll', onScroll, true);
+            document.removeEventListener('selectionchange', onSelection);
+        };
+    }, []);
+
+    // Sync Entropy to CSS Roots
+    useEffect(() => {
+        const root = document.documentElement;
+        root.style.setProperty('--moral-entropy', entropy);
+        // Clarity is the Inverse of Entropy, but stabilized
+        const targetClarity = entropy > 0.3 ? 0 : 1;
+        setClarity(prev => prev + (targetClarity - prev) * 0.1);
+        root.style.setProperty('--atmosphere-clarity', clarity);
+    }, [entropy, clarity]);
 
     const handleFeedbackSubmit = async (data) => {
         if (!user || !roomId) return;
@@ -157,6 +206,53 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
             });
         }
     }, [user]);
+
+    // ─── Cinematic Director Mode ───
+    const runScene = async (sceneId) => {
+        const scene = AD_SCENES[sceneId];
+        if (!scene) return;
+        setIsDirector(true);
+        setBellState('idle');
+
+        for (const action of scene) {
+            await new Promise(r => setTimeout(r, action.delay));
+            if (action.role === 'user') {
+                await simulateTyping(action.text, setText);
+                const msgText = action.text;
+                setText('');
+                await addDoc(collection(db, 'chatRooms', roomId, 'messages'), {
+                    text: msgText,
+                    sender: user.uid,
+                    createdAt: serverTimestamp(),
+                    isUni: false
+                });
+            } else {
+                setBellState('thinking');
+                await new Promise(r => setTimeout(r, 1500));
+                await addDoc(collection(db, 'chatRooms', roomId, 'messages'), {
+                    text: action.text,
+                    sender: 'uni',
+                    createdAt: serverTimestamp(),
+                    isUni: true,
+                    sentiment: action.sentiment,
+                    bubbleEffect: 'breathe'
+                });
+                setBellState('idle');
+            }
+        }
+        setTimeout(() => setIsDirector(false), 2000);
+    };
+
+    useEffect(() => {
+        const handleKeys = (e) => {
+            if (e.ctrlKey && e.altKey && e.key === 'd') {
+                const choice = prompt("Enter Scene ID: (vibration_hook, sanctuary_intro, entropy_clash)");
+                if (choice) runScene(choice);
+            }
+        };
+        window.addEventListener('keydown', handleKeys);
+        return () => window.removeEventListener('keydown', handleKeys);
+    }, [roomId, user]);
 
 
     const handleWeave = async () => {
@@ -343,35 +439,49 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
                     <span className="chat-partner-name">{partnerName}</span>
                 </div>
                 <div className="chat-header-center-phantom" />
-                <div className="chat-header-actions">
-                    <button
-                        className="btn btn-glass btn-sm"
-                        onClick={() => setShowSurvey(true)}
-                        title="Share your thoughts"
-                        style={{ color: hasDiscount ? 'var(--emo-happy)' : 'inherit' }}
-                    >
-                        ★
-                    </button>
-                    <button className={`btn btn-glass btn-sm ${isPlaying ? 'resonance-active-btn' : ''}`} onClick={() => setShowMusic(true)} title="Shared Resonance">♫</button>
+                {!isDirector && (
+                    <div className="chat-header-actions">
+                        <button
+                            className="btn btn-glass btn-sm"
+                            onClick={() => setShowSurvey(true)}
+                            title="Share your thoughts"
+                            style={{ color: hasDiscount ? 'var(--emo-happy)' : 'inherit' }}
+                        >
+                            ★
+                        </button>
+                        <button className={`btn btn-glass btn-sm ${isPlaying ? 'resonance-active-btn' : ''}`} onClick={() => setShowMusic(true)} title="Shared Resonance">♫</button>
 
-                    <button className="btn btn-glass btn-sm" onClick={handleWeave} title="Weave Soul Song" disabled={sending}>⟢</button>
-                    {!roomData?.isSanctified && (
-                        <button className="btn btn-glass btn-sm" onClick={() => setShowPricing(true)} title="Sanctify the Room" style={{ color: 'var(--emo-happy)' }}>🕯️</button>
-                    )}
-                    <button className="btn btn-glass btn-sm" onClick={() => setShowMemory(true)} title="Save this moment">✦</button>
-                    <button className="btn btn-glass btn-icon" onClick={onLogout} title="Sign out" style={{ fontSize: 14 }}>⚙</button>
-                </div>
+                        <button className="btn btn-glass btn-sm" onClick={handleWeave} title="Weave Soul Song" disabled={sending}>⟢</button>
+                        {!roomData?.isSanctified && (
+                            <button className="btn btn-glass btn-sm" onClick={() => setShowPricing(true)} title="Sanctify the Room" style={{ color: 'var(--emo-happy)' }}>🕯️</button>
+                        )}
+                        <button className="btn btn-glass btn-sm" onClick={() => setShowMemory(true)} title="Save this moment">✦</button>
+                        <button className="btn btn-glass btn-icon" onClick={onLogout} title="Sign out" style={{ fontSize: 14 }}>⚙</button>
+                    </div>
+                )}
             </div>
             <div className="messages-container" ref={messagesContainerRef}>
                 {messages.length === 0 ? (
                     <div className="empty-chat"><BellDot state="idle" size={16} /><p style={{ marginTop: 16, color: 'var(--uni-chrome)' }}>Your canvas is ready.</p></div>
                 ) : (
-                    messages.map((msg) => {
+                    messages.map((msg, idx) => {
                         const isMe = msg.sender === user?.uid;
                         const isUni = msg.isUni;
+                        // Messaging Aging: Last 12 messages are "Alive", others are "Archived"
+                        const isArchived = messages.length > 12 && idx < messages.length - 12;
+
                         return (
-                            <div key={msg.id} className={`msg-row ${isUni ? 'uni-msg' : isMe ? 'sent' : 'received'}`}>
-                                <div><div className={`bubble ${isUni ? 'uni' : isMe ? 'sent' : 'received'}`} data-sentiment={msg.sentiment || 'neutral'} data-effect={msg.bubbleEffect || 'breathe'}>{msg.text}</div>{!isUni && <div className="msg-time">{formatTime(msg.createdAt)}</div>}</div>
+                            <div key={msg.id} className={`msg-row ${isUni ? 'uni-msg' : isMe ? 'sent' : 'received'} ${isArchived ? 'archived' : ''}`}>
+                                <div>
+                                    <div
+                                        className={`bubble ${isUni ? 'uni' : isMe ? 'sent' : 'received'}`}
+                                        data-sentiment={msg.sentiment || 'neutral'}
+                                        data-effect={isArchived ? 'none' : (msg.bubbleEffect || 'breathe')}
+                                    >
+                                        {msg.text}
+                                    </div>
+                                    {!isUni && !isArchived && <div className="msg-time">{formatTime(msg.createdAt)}</div>}
+                                </div>
                             </div>
                         );
                     })

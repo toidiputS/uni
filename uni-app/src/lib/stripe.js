@@ -4,25 +4,28 @@
  */
 
 const PAYMENT_LINKS = {
-    lifetime: 'https://buy.stripe.com/7sY4gz0iL63J2g6cUb6Na02',        // Standard $25
-    lifetime_discount: 'https://buy.stripe.com/fZudR90iL1NtaMC8DV6Na03' // Study Reward $20
+    lifetime: 'https://buy.stripe.com/7sY4gz0iL63J2g6cUb6Na02',         // Standard $25
+    lifetime_discount: 'https://buy.stripe.com/fZudR90iL1NtaMC8DV6Na03', // Study Reward $20
+    monthly: 'https://buy.stripe.com/5kQcN5c1t3VBaMCbQ76Na04'           // $2.99 / mo
 };
 
 /**
  * Redirects the user to a secure Stripe-hosted checkout page.
  * Prefills user information to minimize friction.
  * 
- * @param {string} type - 'lifetime'
+ * @param {string} type - 'lifetime' | 'monthly'
  * @param {string} userEmail - Used to prefill the checkout form
  * @param {boolean} hasDiscount - Whether the user earned the 'Study Reward'
  */
 export async function redirectToCheckout(type, userEmail, hasDiscount = false) {
     console.log('[•UNI•] Initializing secure checkout sequence...');
 
-    // Determine target link based on discount status
-    const baseUrl = (type === 'lifetime' && hasDiscount)
-        ? PAYMENT_LINKS.lifetime_discount
-        : PAYMENT_LINKS.lifetime;
+    // Determine target link based on type and discount status
+    let baseUrl = PAYMENT_LINKS[type];
+
+    if (type === 'lifetime' && hasDiscount) {
+        baseUrl = PAYMENT_LINKS.lifetime_discount;
+    }
 
     if (!baseUrl) {
         console.error('[•UNI•] Fatal: No valid payment link found for type:', type);
