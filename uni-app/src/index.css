@@ -556,8 +556,10 @@ body,
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: wordmarkGlow 4s ease-in-out infinite, breathe 6s ease-in-out infinite;
-  margin-top: 8vh;
+  margin-top: 8.5vh;
+  /* Deploy Sync 21:18 */
   margin-bottom: 8px;
+
 
 
   user-select: none;
