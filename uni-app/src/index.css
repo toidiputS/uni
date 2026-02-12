@@ -1020,7 +1020,12 @@ body,
   color: var(--uni-chrome);
   padding: 8px 20px;
   text-align: center;
-  --aura-intensity: 0.1;
+  --aura-intensity: 0;
+  /* UNI messages don't need auras */
+}
+
+.bubble.uni::after {
+  display: none !important;
 }
 
 
@@ -1265,10 +1270,12 @@ body,
 
 .memory-card-inner {
   background: var(--uni-surface);
+  /* Force dark background */
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   padding: 40px 30px;
   text-align: center;
+  color: var(--uni-text);
 }
 
 .memory-card-header {

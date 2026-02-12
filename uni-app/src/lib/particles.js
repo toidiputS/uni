@@ -602,35 +602,35 @@ export function renderParticle(ctx, p) {
         ctx.fill();
     } else if (p.type === 'morph') {
         ctx.save();
+        // Stability: Clamp life to 0-1 for predictable alpha
+        const safeLife = Math.max(0, Math.min(1, p.life));
+
         // Cosmic Burst: high-impact, razor-sharp initial flash
         const alpha = p.isBurst
-            ? Math.pow(p.life, 4) * 0.6 // Sharper curve, brighter peak
-            : p.life * (0.05 + Math.sin(p.phase) * 0.03);
+            ? Math.pow(safeLife, 4) * 0.45 // Lowered peak
+            : safeLife * (0.04 + Math.sin(p.phase) * 0.02);
 
-        const driftX = Math.sin(p.phase) * (p.isBurst ? 5 : 10);
-        const driftY = Math.cos(p.phase) * (p.isBurst ? 5 : 10);
+        const driftX = Math.sin(p.phase) * (p.isBurst ? 5 : 8);
+        const driftY = Math.cos(p.phase) * (p.isBurst ? 5 : 8);
         const size = Math.max(p.w, p.h);
 
         // Explosion expansion: start tight, end wide and thin
-        const expansion = (1.0 - p.life) * 2;
-        const radius = size * (p.isBurst ? 0.8 + expansion : 1.0 + (p.life * 0.2));
+        // Cap expansion to avoid "The Pillar"
+        const expansion = Math.min(1.5, (1.0 - safeLife) * 1.5);
+        const radius = size * (p.isBurst ? 0.8 + expansion : 1.0 + (safeLife * 0.1));
 
         const grad = ctx.createRadialGradient(
             p.x + driftX, p.y + driftY, 0,
             p.x + driftX, p.y + driftY, radius
         );
         grad.addColorStop(0, `rgba(${p.color}, ${alpha})`);
-        grad.addColorStop(0.2, `rgba(${p.color}, ${alpha * 0.3})`);
+        grad.addColorStop(0.3, `rgba(${p.color}, ${alpha * 0.2})`);
         grad.addColorStop(1, `rgba(${p.color}, 0)`);
 
         ctx.fillStyle = grad;
         ctx.beginPath();
-        // Ellipse instead of circle if it's a burst to match the bubble shape
-        if (p.isBurst) {
-            ctx.ellipse(p.x + driftX, p.y + driftY, radius * 1.5, radius * 0.8, 0, 0, Math.PI * 2);
-        } else {
-            ctx.arc(p.x + driftX, p.y + driftY, radius, 0, Math.PI * 2);
-        }
+        // Use Arc (Circle) for better center-masking - Ellipse was causing "Pillars"
+        ctx.arc(p.x + driftX, p.y + driftY, radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
     } else {
