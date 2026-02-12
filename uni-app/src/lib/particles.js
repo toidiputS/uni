@@ -154,12 +154,12 @@ export function createEnergy(originX, originY, targetX, targetY, color) {
         vy: (Math.random() - 0.5) * 2,
         life: 1,
         maxLife: 1,
-        size: 3 + Math.random() * 4,
-        opacity: 0.8,
+        size: 2 + Math.random() * 2,
+        opacity: 0.5, // Fainter, more ghost-like
         color: color || '220, 220, 255',
-        speed: 0.03 + Math.random() * 0.04, // Slower, more magentic
+        speed: 0.02 + Math.random() * 0.03,
         phase: Math.random() * Math.PI * 2,
-        oscFreq: 0.1 + Math.random() * 0.2
+        oscFreq: 0.05 + Math.random() * 0.1
     };
 }
 
@@ -167,10 +167,11 @@ export function createMorphingBubble(x, y, w, h, color) {
     return {
         type: 'morph',
         x, y, w, h,
-        life: 0.5 + Math.random() * 1.5, // Variable life for 'remnant' effect
+        life: 1.0,
         phase: Math.random() * Math.PI * 2,
         color: color || '255, 255, 255',
-        speed: 0.005 + Math.random() * 0.01
+        speed: 0.01 + Math.random() * 0.01,
+        isBurst: true
     };
 }
 
@@ -579,10 +580,11 @@ export function renderParticle(ctx, p) {
         ctx.fill();
     } else if (p.type === 'rain') {
         ctx.strokeStyle = `rgba(${p.color}, ${p.opacity})`;
-        ctx.lineWidth = 1;
+        ctx.lineWidth = p.size;
         ctx.beginPath();
         ctx.moveTo(p.x, p.y);
-        ctx.lineTo(p.x + p.vx * 0.2, p.y + p.vy * 0.2);
+        // Long streaks for "Wet Screen" look
+        ctx.lineTo(p.x + p.vx * 2, p.y + p.vy * 4);
         ctx.stroke();
     } else if (p.type === 'energy') {
         const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 3);
@@ -594,17 +596,17 @@ export function renderParticle(ctx, p) {
         ctx.fill();
     } else if (p.type === 'morph') {
         ctx.save();
-        ctx.globalAlpha = Math.min(0.2, p.life * 0.3);
+        // Burst Decay: sudden drop then slow linger
+        const alpha = Math.pow(p.life, 3) * 0.35;
         const driftX = Math.sin(p.phase) * 20;
         const driftY = Math.cos(p.phase) * 20;
-        // Middle-ground dispersion: wider than words, but focused on sentiment
         const size = Math.max(p.w, p.h);
         const grad = ctx.createRadialGradient(
             p.x + driftX, p.y + driftY, 0,
-            p.x, p.y, size * 2.5
+            p.x, p.y, size * 3
         );
-        grad.addColorStop(0, `rgba(${p.color}, 0.25)`);
-        grad.addColorStop(0.3, `rgba(${p.color}, 0.08)`);
+        grad.addColorStop(0, `rgba(${p.color}, ${alpha})`);
+        grad.addColorStop(0.4, `rgba(${p.color}, ${alpha * 0.2})`);
         grad.addColorStop(1, `rgba(${p.color}, 0)`);
         ctx.fillStyle = grad;
         // Massive dispersion area
