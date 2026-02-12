@@ -610,78 +610,67 @@ body,
   font-weight: 600;
 }
 
-/* ─── Buttons ─── */
-.btn {
+/* ─── Reflective Commands ─── */
+.btn-reflect-base {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 14px 36px;
-  border: none;
-  border-radius: var(--radius-full);
-  font-family: var(--font);
-  font-size: 15px;
-  font-weight: 600;
+  padding: 10px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s var(--ease);
+  transition: all 0.4s var(--ease);
   position: relative;
-  overflow: hidden;
-  letter-spacing: 0.03em;
-}
-
-.btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.btn:hover::before {
-  opacity: 1;
-}
-
-.btn-primary {
-  background: var(--uni-gradient);
-  color: white;
-  box-shadow: 0 4px 24px rgba(102, 126, 234, 0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.5);
-}
-
-.btn-primary:active {
-  transform: translateY(0);
-}
-
-.btn-glass {
-  background: var(--uni-glass);
+  background: rgba(255, 255, 255, 0.03);
   color: var(--uni-text);
-  border: 1px solid var(--uni-glass-border);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* The Secret Sauce */
+  -webkit-box-reflect: below 2px linear-gradient(transparent, transparent 40%, rgba(255, 255, 255, 0.15));
 }
 
-.btn-glass:hover {
-  background: var(--uni-glass-hover);
-  border-color: var(--uni-glass-strong);
-  transform: translateY(-1px);
+.btn-reflect-base:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
 }
 
-.btn-sm {
-  padding: 10px 20px;
-  font-size: 13px;
+.btn-reflect-primary {
+  background: white;
+  color: black;
+  border: none;
+  -webkit-box-reflect: below 2px linear-gradient(transparent, transparent 40%, rgba(255, 255, 255, 0.25));
 }
 
-.btn-icon {
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border-radius: 50%;
-  font-size: 18px;
+.btn-reflect-primary:hover {
+  background: #f0f0f0;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.btn-reflect-sm {
+  padding: 8px 16px;
+  font-size: 9px;
+}
+
+.wordmark-reflect {
+  font-family: var(--font-display);
+  font-size: clamp(60px, 15vw, 120px);
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: white;
+  line-height: 1;
+  text-transform: uppercase;
+  font-style: italic;
+  margin-top: auto;
+  margin-bottom: 20px;
+  /* The Big Reflection */
+  -webkit-box-reflect: below -20px linear-gradient(transparent, transparent 20%, rgba(255, 255, 255, 0.2));
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1));
 }
 
 .welcome-actions {
@@ -1609,16 +1598,35 @@ body,
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  padding: 10vh 0 5vh;
   opacity: 0;
-  transform: translateY(20px);
-  transition: all 1s var(--ease);
+  transition: opacity 1s var(--ease);
   position: relative;
   z-index: 2;
 }
 
 .welcome-content.visible {
   opacity: 1;
-  transform: translateY(0);
+}
+
+.welcome-bell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.bell-label {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--uni-chrome);
+  margin-top: 12px;
+  opacity: 0.6;
 }
 
 .tagline-container {
