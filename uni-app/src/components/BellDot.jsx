@@ -118,36 +118,37 @@ export default function BellDot({
                     </path>
                 ))}
 
-                {/* The "Orbit" — Intelligence manifestation */}
-                <circle
-                    cx="50" cy="50" r="42"
-                    fill="none" stroke={color}
-                    strokeWidth="0.25" strokeDasharray="1 10"
-                    className="bell-orbit"
-                />
+                {/* Atmospheric Orbital Rings */}
+                <circle cx="50" cy="50" r="42" fill="none" stroke={color} strokeWidth="0.15" strokeOpacity="0.1" />
+                <circle cx="50" cy="50" r="34" fill="none" stroke={color} strokeWidth="0.2" strokeOpacity="0.15" />
 
-                {/* Inner Breathing Rings */}
-                <circle cx="50" cy="50" r="12" fill="none" stroke={color} strokeWidth="0.5" strokeOpacity="0.3">
-                    <animate attributeName="r" values="10;14;10" dur="6s" repeatCount="indefinite" />
+                {/* Inner Beating Ring */}
+                <circle cx="50" cy="50" r="24" fill="none" stroke={color} strokeWidth="0.3" strokeOpacity="0.2">
+                    <animate attributeName="r" values="22;26;22" dur="6s" repeatCount="indefinite" />
                 </circle>
 
-                <circle cx="50" cy="50" r="18" fill="none" stroke={color} strokeWidth="0.2" strokeOpacity="0.1">
-                    <animate attributeName="r" values="15;20;15" dur="8s" repeatCount="indefinite" />
+                {/* Inner Rotating Ring */}
+                <circle cx="50" cy="50" r="18" fill="none" stroke={color} strokeWidth="0.4" strokeOpacity="0.25" strokeDasharray="2 6" className="bell-orbit">
+                    <animate attributeName="r" values="16;20;16" dur="8s" repeatCount="indefinite" />
+                    {isActive && (
+                        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="15s" repeatCount="indefinite" />
+                    )}
                 </circle>
 
-                {/* The Central Nucleus — Pure Intellect */}
+                {/* The Central Core — Pure White Intellect */}
                 <circle
-                    cx="50" cy="50" r="4"
+                    cx="50" cy="50" r="8"
                     fill="#FFFFFF"
                     className="bell-core"
-                    style={{ filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.9))' }}
+                    style={{ filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.9))' }}
                 >
-                    <animate attributeName="r" values="3.5;5.5;3.5" dur="3.333s" repeatCount="indefinite" />
+                    <animate attributeName="r" values="7;9;7" dur="3.333s" repeatCount="indefinite" />
+                    <animate attributeName="fill-opacity" values="0.9;1;0.9" dur="3.333s" repeatCount="indefinite" />
                 </circle>
 
                 {/* Firing Neurons (Animated Particles) */}
                 {isActive && particles.map((p) => (
-                    <circle key={`dot-${p.id}`} r="0.8" fill="#FFFFFF" opacity="0">
+                    <circle key={`dot-${p.id}`} r="0.6" fill="#FFFFFF" opacity="0">
                         <animate
                             attributeName="opacity"
                             values={p.valuesOpacity}
@@ -159,13 +160,6 @@ export default function BellDot({
                         <animate attributeName="cy" values={p.valuesY} dur={p.dur} begin={p.begin} repeatCount="indefinite" />
                     </circle>
                 ))}
-
-                {/* Glow Ring (Pulse event) */}
-                <circle
-                    cx="50" cy="50" r="10"
-                    fill="none" stroke={color}
-                    className="bell-glow-ring"
-                />
             </svg>
         </div>
     );
