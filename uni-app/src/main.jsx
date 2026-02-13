@@ -5,6 +5,7 @@ import './index.css'
 import './artifacts.css'
 
 import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 
 try {
     const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -12,6 +13,7 @@ try {
         <React.StrictMode>
             <App />
             <Analytics />
+            <SpeedInsights />
         </React.StrictMode>
     );
     console.log('[•UNI•] Sanctuary Manifested.');
