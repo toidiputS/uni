@@ -65,7 +65,7 @@ The original React Native / Expo prototype. Kept for historical reference and as
 ## 📱 Live Deployment
 
 •UNI• is live on Vercel:
-[https://uni-itstrader.vercel.app](https://uni-itstrader.vercel.app)
+https://uni.itsai.chat
 
 ---
 
