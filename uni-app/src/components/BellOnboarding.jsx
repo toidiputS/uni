@@ -4,6 +4,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import SEQUENCE, { markOnboardingComplete } from '../lib/onboarding';
+import { ReflectiveButton } from './ReflectiveButton';
 
 export default function BellOnboarding({ onComplete, onSceneChange, setBellConfig }) {
     const [stepIndex, setStepIndex] = useState(0);
@@ -113,23 +114,32 @@ export default function BellOnboarding({ onComplete, onSceneChange, setBellConfi
             {/* Skip / Continue */}
             <div className="onboarding-actions">
                 {showFinal ? (
-                    <button className="btn btn-primary btn-glow" onClick={() => {
-                        markOnboardingComplete();
-                        onComplete();
-                    }}>
-                        Begin
-                    </button>
+                    <ReflectiveButton
+                        variant="primary"
+                        size="md"
+                        onClick={() => {
+                            markOnboardingComplete();
+                            onComplete();
+                        }}
+                    >
+                        Begin Your Journey
+                    </ReflectiveButton>
                 ) : (
                     <div className="onboarding-nav">
-                        <button className="onboarding-skip" onClick={() => {
+                        <button className="onboarding-skip" onClick={(e) => {
+                            e.preventDefault();
                             markOnboardingComplete();
                             onComplete();
                         }}>
-                            Skip
+                            Skip Sequence
                         </button>
-                        <button className="onboarding-btn-next" onClick={handleNext}>
-                            Tap to continue
-                        </button>
+                        <ReflectiveButton
+                            variant="primary"
+                            size="md"
+                            onClick={handleNext}
+                        >
+                            Continue
+                        </ReflectiveButton>
                     </div>
                 )}
             </div>
