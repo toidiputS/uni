@@ -8,7 +8,7 @@ import {
     drawVolumetricCloud,
 } from '../lib/particles';
 
-export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bubbleEmit, drawEmit, onDraw, bellPos, bubblePositions = [] }) {
+export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, keywords: contextKeywords, bubbleEmit, drawEmit, onDraw, bellPos, bubblePositions = [] }) {
     const canvasRef = useRef(null);
     const particles = useRef([]);
     const animFrame = useRef(null);
@@ -26,17 +26,28 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bu
     // Load background images
     useEffect(() => {
         const preset = WEATHER_PRESETS[mood];
-        if (preset?.skyImages && preset.skyImages.length > 0) {
-            // Pick a random image from the pool
-            const randomImgUrl = preset.skyImages[Math.floor(Math.random() * preset.skyImages.length)];
+        const pool = preset?.skyImages || [];
+        // Prioritize specific context keywords (e.g. from onboarding or chat content)
+        const activeKeywords = contextKeywords || preset?.keywords || 'nebula,stars,space,abstract';
+
+        // Generative Logic: 50% chance to fetch a TRULY fresh image from Unsplash using keywords
+        // OR pick from the curated pool. This ensures variety + safety.
+        let selectedSrc;
+        if (Math.random() > 0.4 && activeKeywords) {
+            const seed = Math.floor(Math.random() * 1000000);
+            // Append 'abstract' or 'bg' to avoid literal objects like cars/buildings
+            const refinedQuery = `${activeKeywords},abstract,nature`;
+            selectedSrc = `https://images.unsplash.com/featured/1600x900/?${refinedQuery}&v=${seed}`;
+        } else if (pool.length > 0) {
+            const idx = Math.floor(Math.random() * pool.length);
+            selectedSrc = pool[idx];
+        }
+
+        if (selectedSrc) {
             const img = new Image();
-            img.src = randomImgUrl;
-            img.onload = () => {
-                targetBgImage.current = img;
-            };
-        } else if (preset?.skyImage) {
-            const img = new Image();
-            img.src = preset.skyImage;
+            // Handle both full URLs and Unsplash IDs
+            img.src = selectedSrc.includes('?') ? selectedSrc : `${selectedSrc}?auto=format&fit=crop&q=80&w=1600`;
+            img.crossOrigin = "anonymous";
             img.onload = () => {
                 targetBgImage.current = img;
             };

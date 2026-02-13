@@ -28,6 +28,7 @@ export default function App() {
     const [sceneColors, setSceneColors] = useState(['#0d0d18', '#0a0f1a']);
     const [bubbleEmit, setBubbleEmit] = useState(null);
     const [drawEmit, setDrawEmit] = useState(null);
+    const [keywords, setKeywords] = useState(null);
     const [bubblePositions, setBubblePositions] = useState([]);
     const [bellPos, setBellPos] = useState({ x: 0, y: 0 });
 
@@ -93,10 +94,11 @@ export default function App() {
         }
     }, [isPlaying]);
 
-    const playSong = useCallback((url, title) => {
+    const playSong = useCallback((url, title, trackKeywords) => {
         if (!audioRef.current) return;
         setCurrentSong(url);
         setCurrentSongTitle(title || 'Shared Resonance');
+        if (trackKeywords) setKeywords(trackKeywords);
 
         // Wait for next tick to ensure src is updated
         setTimeout(() => {
@@ -110,6 +112,7 @@ export default function App() {
         if (moodBundle.mood) setMood(moodBundle.mood);
         if (moodBundle.intensity !== undefined) setIntensity(moodBundle.intensity);
         if (moodBundle.sceneColors) setSceneColors(moodBundle.sceneColors);
+        if (moodBundle.keywords !== undefined) setKeywords(moodBundle.keywords);
     }, []);
 
     const handleBubbleEmit = useCallback((emission) => {
@@ -226,6 +229,7 @@ export default function App() {
             <AtmosphereCanvas
                 mood={mood}
                 intensity={intensity}
+                keywords={keywords}
                 bubbleEmit={bubbleEmit}
                 drawEmit={drawEmit}
                 bellPos={bellPos}

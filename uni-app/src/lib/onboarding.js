@@ -20,6 +20,7 @@ const SEQUENCE = [
         sceneColors: ['#0d0d18', '#0a0f1a'],
         delay: 1500,
         sentiment: 'neutral',
+        keywords: 'glimmer,ethereal,soft,light'
     },
     {
         text: "I'm the heart of •UNI• — the resonance between U and I.",
@@ -27,6 +28,7 @@ const SEQUENCE = [
         sceneColors: ['#0d0d1e', '#0f0a1a'],
         delay: 2500,
         sentiment: 'tender',
+        keywords: 'resonance,vibration,soft,glow'
     },
     {
         text: "This isn't just a chat app. Watch what happens when emotion touches the screen.",
@@ -41,6 +43,7 @@ const SEQUENCE = [
         sceneColors: ['#1a0a18', '#200d1a'],
         delay: 2000,
         sentiment: 'love',
+        keywords: 'rose,sunset,warmth,soft,abstract',
         demoLabel: '❤️ Emotion Detection',
     },
     {
@@ -49,6 +52,7 @@ const SEQUENCE = [
         sceneColors: ['#1e0a1a', '#260d20'],
         delay: 2500,
         sentiment: 'love',
+        keywords: 'heart,nebula,cosmic,love,warm',
         demoLabel: '🎨 Generative Scene',
     },
     {
@@ -57,6 +61,7 @@ const SEQUENCE = [
         sceneColors: ['#1a0808', '#200d0d'],
         delay: 2500,
         sentiment: 'angry',
+        keywords: 'storm,lightning,thunder,dark,waves',
         demoLabel: '⚡ Emotional Atmosphere',
     },
     {
@@ -65,6 +70,7 @@ const SEQUENCE = [
         sceneColors: ['#0d0d18', '#0a0f1a'],
         delay: 2800,
         sentiment: 'tender',
+        keywords: 'crystal,prism,reflection,light,memory',
         demoLabel: '📸 Memory Cards',
     },
     {

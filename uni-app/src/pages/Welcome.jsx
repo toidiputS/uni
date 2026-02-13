@@ -64,6 +64,8 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
     const startOnboarding = () => {
         if (!isPlaying) onToggleAudio();
+        // Set initial track-specific keywords if starting from scratch
+        onMoodChange({ keywords: 'fountain,coins,ripples,wish,water' });
         setStep('onboarding');
         setMessages([]);
         setCurrentIdx(0);
@@ -81,7 +83,8 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
             onMoodChange({
                 mood: current.sentiment || 'neutral',
                 sceneColors: current.sceneColors,
-                intensity: current.sentiment === 'love' ? 0.8 : 0.4
+                intensity: current.sentiment === 'love' ? 0.8 : 0.4,
+                keywords: current.keywords
             });
         }
 

@@ -1,4 +1,5 @@
 // •UNI• CGEI Particle System
+import { ATMOSPHERE_IMAGES } from './atmosphere-assets';
 // The emotional atmosphere expressed through motion
 // Each particle type represents a feeling made visible
 
@@ -198,31 +199,19 @@ function drawHeart(ctx, x, y, size, color, opacity) {
 export const WEATHER_PRESETS = {
     angry: {
         sky: ['#1a0505', '#200808'],
-        skyImages: [
-            'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd?auto=format&fit=crop&q=80&w=1200', // Dark Storm
-            'https://images.unsplash.com/photo-1500674425916-2c6b2ce150ff?auto=format&fit=crop&q=80&w=1200', // Crashing Waves
-            'https://images.unsplash.com/photo-1475113548554-5a36f1f523d6?auto=format&fit=crop&q=80&w=1200', // Dark Tundra
-            'https://images.unsplash.com/photo-1532974297617-c0f05fe48bff?auto=format&fit=crop&q=80&w=1200', // Midnight Clouds
-            'https://images.unsplash.com/photo-1504333638930-c8787321eee0?auto=format&fit=crop&q=80&w=1200', // Dark Forest
-            'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=1200'  // stormy sea
-        ],
+        skyImages: ATMOSPHERE_IMAGES.angry,
+        keywords: 'storm,dark,thunder,lightning,void,chaos,abstract',
         particles: {
-            rain: { count: 400, spawnRate: 15 }, // Heavier Downpour
-            cloud: { count: 12, spawnRate: 0.08 }, // More Present
+            rain: { count: 400, spawnRate: 15 },
+            cloud: { count: 12, spawnRate: 0.08 },
         },
         lightning: true,
-        lightningInterval: [1500, 4000], // More frequent "Thundering"
+        lightningInterval: [1500, 4000],
     },
     sad: {
         sky: ['#05081a', '#0a1020'],
-        skyImages: [
-            'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=1200', // Deep Blue Water
-            'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&q=80&w=1200', // Foggy Lake
-            'https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?auto=format&fit=crop&q=80&w=1200', // Distant Foggy Hills
-            'https://images.unsplash.com/photo-1464802686167-b939a6910659?auto=format&fit=crop&q=80&w=1200', // Dark galaxy
-            'https://images.unsplash.com/photo-1437435889745-7f9cb6506161?auto=format&fit=crop&q=80&w=1200', // Rain on glass effect
-            'https://images.unsplash.com/photo-1515281239448-202bc9548453?auto=format&fit=crop&q=80&w=1200'  // Moody Blue
-        ],
+        skyImages: ATMOSPHERE_IMAGES.sad,
+        keywords: 'rain,mist,fog,blue,melancholy,gradient,soft',
         particles: {
             drop: { count: 40, spawnRate: 1.2 },
             cloud: { count: 4, spawnRate: 0.02 },
@@ -231,14 +220,8 @@ export const WEATHER_PRESETS = {
     },
     love: {
         sky: ['#1a0a12', '#200d16'],
-        skyImages: [
-            'https://images.unsplash.com/photo-1615715037327-6f8cc36495b4?auto=format&fit=crop&q=80&w=1200', // Abstract Fluid Warmth
-            'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=1200', // Calm Pink Horizon
-            'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=1200', // Soft Gradient Light
-            'https://images.unsplash.com/photo-1535498730771-e735b998cd64?auto=format&fit=crop&q=80&w=1200', // Rose Gold Water
-            'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=1200', // Petal Texture
-            'https://images.unsplash.com/photo-1490750967868-58cb9bdda6fa?auto=format&fit=crop&q=80&w=1200'  // Warm Sunset
-        ],
+        skyImages: ATMOSPHERE_IMAGES.love,
+        keywords: 'abstract,pink,warmth,sunset,hearts,soft,blur',
         particles: {
             heart: { count: 20, spawnRate: 0.6 },
             firefly: { count: 20, spawnRate: 0.2 },
@@ -247,14 +230,8 @@ export const WEATHER_PRESETS = {
     },
     happy: {
         sky: ['#1a1508', '#201a0a'],
-        skyImages: [
-            'https://images.unsplash.com/photo-1528353518104-dbd48bee7bc4?auto=format&fit=crop&q=80&w=1200', // Golden Dust
-            'https://images.unsplash.com/photo-1496450681664-3df85efbd29f?auto=format&fit=crop&q=80&w=1200', // Sunlit Field
-            'https://images.unsplash.com/photo-1516339901600-2e1a62dc0c45?auto=format&fit=crop&q=80&w=1200', // Golden Hour Bloom
-            'https://images.unsplash.com/photo-1505322022379-7c3353ee6291?auto=format&fit=crop&q=80&w=1200', // Night Lights
-            'https://images.unsplash.com/photo-1514218953589-2d7d37efd2dc?auto=format&fit=crop&q=80&w=1200', // Warm Bulb
-            'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&q=80&w=1200'  // Sunrise
-        ],
+        skyImages: ATMOSPHERE_IMAGES.happy,
+        keywords: 'golden,glow,spark,warmth,light,bokeh',
         particles: {
             firefly: { count: 30, spawnRate: 0.3 },
             spark: { count: 8, spawnRate: 0.2 },
@@ -263,14 +240,8 @@ export const WEATHER_PRESETS = {
     },
     excited: {
         sky: ['#081518', '#0d1a1e'],
-        skyImages: [
-            'https://images.unsplash.com/photo-1475113548554-5a36f1f523d6?auto=format&fit=crop&q=80&w=1200', // Northern Lights Tint
-            'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&q=80&w=1200', // Fractal Colors
-            'https://images.unsplash.com/photo-1544911845-1f34a3eb46b1?auto=format&fit=crop&q=80&w=1200', // Energy Peaks
-            'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?auto=format&fit=crop&q=80&w=1200', // Mountain Starscape
-            'https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?auto=format&fit=crop&q=80&w=1200', // Deep Space
-            'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&q=80&w=1200'  // Milky Way
-        ],
+        skyImages: ATMOSPHERE_IMAGES.excited,
+        keywords: 'aurora,stars,nebula,space,energy,dynamic,speed',
         particles: {
             spark: { count: 25, spawnRate: 1.2 },
             bounce: { count: 15, spawnRate: 0.5 },
@@ -279,14 +250,8 @@ export const WEATHER_PRESETS = {
     },
     playful: {
         sky: ['#0a1a0d', '#0d200f'],
-        skyImages: [
-            'https://images.unsplash.com/photo-1542332213-31f87348057f?auto=format&fit=crop&q=80&w=1200', // Soft Garden Mist
-            'https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&q=80&w=1200', // Dynamic Flow
-            'https://images.unsplash.com/photo-1519608487953-e999c86e7455?auto=format&fit=crop&q=80&w=1200', // Colorful Night
-            'https://images.unsplash.com/photo-1550100136-e074fa05d8dc?auto=format&fit=crop&q=80&w=1200', // Neon Confetti
-            'https://images.unsplash.com/photo-1495001258031-d1b407bc1776?auto=format&fit=crop&q=80&w=1200', // Tropical Ferns
-            'https://images.unsplash.com/photo-1525310072745-f49212b5ac6d?auto=format&fit=crop&q=80&w=1200'  // Flowers
-        ],
+        skyImages: ATMOSPHERE_IMAGES.playful,
+        keywords: 'neon,bright,kinetic,colorful,mist,bokeh,spark',
         particles: {
             bounce: { count: 20, spawnRate: 0.6 },
             firefly: { count: 12, spawnRate: 0.2 },
@@ -295,14 +260,8 @@ export const WEATHER_PRESETS = {
     },
     tender: {
         sky: ['#120a1a', '#160d20'],
-        skyImages: [
-            'https://images.unsplash.com/photo-1502481851512-e9e2529bbbf9?auto=format&fit=crop&q=80&w=1200', // Soft Sunset Void
-            'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&q=80&w=1200', // Distant Nebula
-            'https://images.unsplash.com/photo-1532974297617-c0f05fe48bff?auto=format&fit=crop&q=80&w=1200', // Purple Twilight
-            'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=1200', // Ocean Sunset
-            'https://images.unsplash.com/photo-1532274402911-5a36f1f523d6?auto=format&fit=crop&q=80&w=1200', // Soft Sand
-            'https://images.unsplash.com/photo-1529641484336-ef35148bab06?auto=format&fit=crop&q=80&w=1200'  // Muted Clouds
-        ],
+        skyImages: ATMOSPHERE_IMAGES.tender,
+        keywords: 'twilight,nebula,soft,minimal,calm,ethereal',
         particles: {
             firefly: { count: 25, spawnRate: 0.2 },
             bird: { count: 4, spawnRate: 0.02 },
@@ -311,11 +270,8 @@ export const WEATHER_PRESETS = {
     },
     neutral: {
         sky: ['#050508', '#0a0a12'],
-        skyImages: [
-            'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3?auto=format&fit=crop&q=80&w=1200', // Simple Starry Night
-            'https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0?auto=format&fit=crop&q=80&w=1200', // Dark Horizon
-            'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?auto=format&fit=crop&q=80&w=1200'  // Deep Cosmic Veil
-        ],
+        skyImages: ATMOSPHERE_IMAGES.neutral,
+        keywords: 'stars,horizon,cosmic,galaxy,minimal,dark,space',
         particles: {
             firefly: { count: 12, spawnRate: 0.1 },
             bird: { count: 2, spawnRate: 0.01 },
@@ -323,11 +279,8 @@ export const WEATHER_PRESETS = {
     },
     valentine: {
         sky: ['#1a050d', '#200810'],
-        skyImages: [
-            'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&q=80&w=1200', // Romantic Rose Petals/Texture
-            'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&q=80&w=1200', // Red Tinted Water
-            'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&q=80&w=1200'  // Misty Pink Lake
-        ],
+        skyImages: ATMOSPHERE_IMAGES.love,
+        keywords: 'rose,petals,red,pink,romance,love,candles',
         particles: {
             rose: { count: 30, spawnRate: 0.5 },
             heart: { count: 20, spawnRate: 0.2 },
