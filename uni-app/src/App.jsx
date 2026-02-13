@@ -39,7 +39,7 @@ export default function App() {
     // Global Bell Persistence State
     const [bellConfig, setBellConfig] = useState({
         state: 'idle',
-        size: 56, // Doubled size influence
+        size: 30, // Optimized delicate size
         sentiment: 'neutral',
         yOffset: 0 // For manual view adjustments
     });
@@ -57,13 +57,13 @@ export default function App() {
         };
         window.addEventListener('mousemove', handleMouseMove);
 
-        // Procedural Wandering
+        // Procedural Wandering (The "Observant Friend")
         const wanderInterval = setInterval(() => {
             targetWander.current = {
-                x: (Math.random() - 0.5) * 40,
-                y: (Math.random() - 0.5) * 40
+                x: (Math.random() - 0.5) * 160, // Wider gaze
+                y: (Math.random() - 0.5) * 80   // Gentle vertical drift
             };
-        }, 4000);
+        }, 5000); // Slower, more casual shifts
 
         let raf;
         const frame = () => {
@@ -235,18 +235,18 @@ export default function App() {
             {/* Global Persistent Bell */}
             <div className="global-bell-container" style={{
                 position: 'fixed',
-                top: bellConfig.top || '35%',
+                top: bellConfig.top || '25%',
                 left: bellConfig.left || '50%',
                 transform: `translate(-50%, -50%) translate(${mousePos.x + wanderPos.x}px, ${mousePos.y + wanderPos.y}px)`,
                 zIndex: 50,
                 pointerEvents: 'none',
-                transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                transition: 'top 1.5s cubic-bezier(0.16, 1, 0.3, 1), left 1.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s var(--ease)',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center'
             }}>
                 <BellDot state={bellConfig.state} size={bellConfig.size} sentiment={bellConfig.sentiment || mood} />
-                <span style={{ opacity: 0.4, marginTop: 12, fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase' }}>Bell</span>
+                <span style={{ opacity: 0.4, marginTop: 6, fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase' }}>Bell</span>
             </div>
 
             {/* Views */}

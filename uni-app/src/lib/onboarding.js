@@ -68,14 +68,6 @@ const SEQUENCE = [
         demoLabel: '📸 Memory Cards',
     },
     {
-        text: "Coming soon…",
-        bellState: 'idle',
-        sceneColors: ['#0d0d18', '#0a0f1a'],
-        delay: 2000,
-        sentiment: 'neutral',
-        isFutureFeatures: true,
-    },
-    {
         text: null,
         bellState: 'idle',
         sceneColors: ['#0d0d18', '#0a0f1a'],

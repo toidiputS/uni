@@ -49,9 +49,9 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
     useEffect(() => {
         setBellConfig({
             state: 'idle',
-            size: 64,
+            size: 30,
             sentiment: 'neutral',
-            top: step === 'resonance' ? '35%' : '15%',
+            top: step === 'resonance' ? '25%' : '18%', // Higher to clear hero text
             left: '50%'
         });
     }, [step, setBellConfig]);
@@ -150,7 +150,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
             <div className={`welcome-content ${visible ? 'visible' : ''}`} style={{ textAlign: 'center' }}>
 
-                <div style={{ height: step === 'onboarding' ? '15vh' : '22vh' }} />
+                <div style={{ height: step === 'onboarding' ? '28vh' : '22vh', transition: 'height 1.5s var(--ease)' }} />
 
                 {/* ACT 1: RESONANCE (Initial State) */}
                 {step === 'resonance' && (
@@ -181,11 +181,11 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                 {/* ACT 2: SPEAKING (Sovereign Stack) */}
                 {step === 'onboarding' && (
-                    <div className="flex flex-col items-center w-full fade-in" style={{ flex: 1, paddingTop: '5vh' }}>
-                        <div className="flex flex-col items-center w-full" style={{ gap: 48 }}>
+                    <div className="flex flex-col items-center w-full fade-in" style={{ flex: 1, paddingTop: '2vh' }}>
+                        <div className="flex flex-col items-center w-full" style={{ gap: 40 }}>
                             {messages.map((msg, i) => (
                                 <div key={msg.id || i} className="onboarding-msg flex flex-col items-center w-full" style={{
-                                    opacity: i === messages.length - 1 ? 1 : 0.25,
+                                    opacity: i === messages.length - 1 ? 1 : 0.15,
                                     transition: 'all 0.8s',
                                     marginBottom: 0
                                 }}>
@@ -217,8 +217,8 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             ))}
                         </div>
 
-                        {/* Interaction Zone — Viewport-Locked */}
-                        <div style={{ position: 'fixed', bottom: '18vh', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
+                        {/* Interaction Zone — Viewport-Locked (Lowered per proposal) */}
+                        <div style={{ position: 'fixed', bottom: '10vh', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
                             <ReflectiveButton variant="primary" onClick={handleNext}>
                                 {currentIdx < SEQUENCE.length - 1 ? 'Next' : 'Continue'}
                             </ReflectiveButton>
@@ -246,7 +246,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             <div className="feature-pill">◈ Permanent Soul-Archive</div>
                         </div>
 
-                        <div style={{ position: 'fixed', bottom: '18vh', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
+                        <div style={{ position: 'fixed', bottom: '10vh', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
                             <ReflectiveButton variant="primary" onClick={onGetStarted}>
                                 Begin
                             </ReflectiveButton>
@@ -254,14 +254,19 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                     </div>
                 )}
 
-                {/* 4. •UNI• (Base Identity) */}
+                {/* 4. •UNI• (Base Identity) — Controlled Movement */}
                 <div className="wordmark-reflect" style={{
                     position: 'fixed',
-                    bottom: '22vh',
+                    bottom: (step === 'onboarding' || step === 'urgency') ? 'auto' : '22vh',
+                    top: (step === 'onboarding' || step === 'urgency') ? '6vh' : 'auto',
+                    fontSize: (step === 'onboarding' || step === 'urgency') ? 'clamp(32px, 8vw, 64px)' : 'clamp(60px, 15vw, 120px)',
                     left: 0,
                     right: 0,
                     margin: 0,
-                    zIndex: 0
+                    zIndex: 0,
+                    transition: 'all 1.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                    opacity: (step === 'onboarding' || step === 'urgency') ? 0.6 : 1,
+                    filter: (step === 'onboarding' || step === 'urgency') ? 'drop-shadow(0 0 10px rgba(255,255,255,0.05))' : 'drop-shadow(0 0 15px rgba(255,255,255,0.1))'
                 }}>
                     •UNI•
                 </div>
