@@ -5,20 +5,20 @@
 // ─── Particle Factory ───
 
 export function createRaindrop(canvasW, canvasH, intensity = 0.7) {
-    const speed = 6 + Math.random() * 8 * intensity;
-    const wind = -0.5 + Math.random() * 0.2;
+    const speed = 10 + Math.random() * 12 * intensity; // Faster, more weight
+    const wind = -0.8 + Math.random() * 0.4;
     return {
         type: 'rain',
-        x: Math.random() * (canvasW + 100) - 50,
+        x: Math.random() * (canvasW + 200) - 100,
         y: -50,
         vx: wind,
         vy: speed,
         life: 1,
         maxLife: 1,
-        size: 0.5 + Math.random() * 1.0, // Smaller, finer
-        length: 8 + Math.random() * 12 * intensity, // Shorter
-        opacity: 0.1 + Math.random() * 0.2, // More transparent
-        color: '200, 220, 240', // Silver/Transparent
+        size: 1.2 + Math.random() * 2.0 * intensity, // Thicker drops
+        length: 25 + Math.random() * 35 * intensity, // Much longer streaks
+        opacity: 0.2 + Math.random() * 0.3 * intensity, // More present
+        color: '200, 230, 255', // Shimmering silver-blue
     };
 }
 
@@ -95,17 +95,17 @@ export function createDrop(canvasW) {
 export function createCloud(canvasW, canvasH) {
     return {
         type: 'cloud',
-        x: -400 + Math.random() * (canvasW + 400),
-        y: -50 + Math.random() * canvasH * 0.3,
-        vx: 0.05 + Math.random() * 0.1, // Heavy, slow movement
+        x: -600 + Math.random() * (canvasW + 600),
+        y: -100 + Math.random() * canvasH * 0.4,
+        vx: 0.08 + Math.random() * 0.15, // Slightly faster drift
         vy: 0,
         life: 1,
         maxLife: 1,
-        size: 300 + Math.random() * 400, // Massive clouds
+        size: 500 + Math.random() * 600, // Even more massive
         opacity: 0,
-        targetOpacity: 0.08 + Math.random() * 0.12, // More visible
-        color: '80, 80, 95', // Ominous Charcoal
-        fadeSpeed: 0.0015,
+        targetOpacity: 0.25 + Math.random() * 0.2, // Significant presence (~20% screen feel)
+        color: '100, 100, 120', // Stronger grey-blue
+        fadeSpeed: 0.002,
     };
 }
 
@@ -207,8 +207,8 @@ export const WEATHER_PRESETS = {
             'https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&q=80&w=1200'  // stormy sea
         ],
         particles: {
-            rain: { count: 180, spawnRate: 6 },
-            cloud: { count: 8, spawnRate: 0.05 },
+            rain: { count: 400, spawnRate: 15 }, // Heavier Downpour
+            cloud: { count: 12, spawnRate: 0.08 }, // More Present
         },
         lightning: true,
         lightningInterval: [1500, 4000], // More frequent "Thundering"

@@ -182,8 +182,8 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bu
             // Draw Sky Texture Image (Low Opacity for Sentiment Vibe)
             if (bgImage.current) {
                 ctx.save();
-                ctx.globalAlpha = 0.12 * (transitionProgress.current > 0.5 ? 1 : transitionProgress.current * 2);
-                ctx.filter = 'brightness(0.3) contrast(1.2) saturate(0.8)';
+                ctx.globalAlpha = 0.22 * (transitionProgress.current > 0.5 ? 1 : transitionProgress.current * 2);
+                ctx.filter = 'brightness(0.35) contrast(1.1) saturate(0.9)';
                 // Fill & Cover
                 const scale = Math.max(w / bgImage.current.width, h / bgImage.current.height);
                 const x = (w - bgImage.current.width * scale) / 2;
@@ -236,10 +236,10 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bu
                 }
             });
 
-            // Film Grain / Noise Layer
+            // Film Grain / Noise Layer — More "Loud" Presence
             ctx.save();
             ctx.globalCompositeOperation = 'overlay';
-            ctx.globalAlpha = 0.03;
+            ctx.globalAlpha = 0.06;
             for (let i = 0; i < 10; i++) {
                 ctx.fillStyle = Math.random() > 0.5 ? '#fff' : '#000';
                 ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1);

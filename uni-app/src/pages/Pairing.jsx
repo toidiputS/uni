@@ -25,7 +25,7 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
             state: resonance ? 'generating' : (loading ? 'thinking' : 'idle'),
             size: 64,
             sentiment: resonance ? 'love' : 'neutral',
-            top: '25%',
+            top: '20%',
             left: '50%'
         });
     }, [resonance, loading, setBellConfig]);

@@ -57,19 +57,19 @@ export default function App() {
         };
         window.addEventListener('mousemove', handleMouseMove);
 
-        // Procedural Wandering
+        // Procedural Wandering — Observing the Sanctuary
         const wanderInterval = setInterval(() => {
             targetWander.current = {
-                x: (Math.random() - 0.5) * 40,
-                y: (Math.random() - 0.5) * 40
+                x: (Math.random() - 0.5) * 240, // Wider left/right sweep
+                y: (Math.random() - 0.5) * 80   // More vertical drift
             };
-        }, 4000);
+        }, 5000); // Slower, more comforting pace
 
         let raf;
         const frame = () => {
             setWanderPos(prev => ({
-                x: prev.x + (targetWander.current.x - prev.x) * 0.02,
-                y: prev.y + (targetWander.current.y - prev.y) * 0.02
+                x: prev.x + (targetWander.current.x - prev.x) * 0.015,
+                y: prev.y + (targetWander.current.y - prev.y) * 0.015
             }));
             raf = requestAnimationFrame(frame);
         };
@@ -235,7 +235,7 @@ export default function App() {
             {/* Global Persistent Bell */}
             <div className="global-bell-container" style={{
                 position: 'fixed',
-                top: bellConfig.top || '35%',
+                top: bellConfig.top || '20%',
                 left: bellConfig.left || '50%',
                 transform: `translate(-50%, -50%) translate(${mousePos.x + wanderPos.x}px, ${mousePos.y + wanderPos.y}px)`,
                 zIndex: 50,

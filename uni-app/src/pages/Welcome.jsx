@@ -51,7 +51,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
             state: 'idle',
             size: 64,
             sentiment: 'neutral',
-            top: step === 'resonance' ? '35%' : '15%',
+            top: step === 'resonance' ? '20%' : '15%',
             left: '50%'
         });
     }, [step, setBellConfig]);
