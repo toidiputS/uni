@@ -229,8 +229,11 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
 
             particles.current.forEach(p => {
                 updateParticle(p, w, h, dt);
-                if (fadingOut && p._mood && p._mood !== targetMood.current) {
-                    p.opacity *= 0.98;
+
+                // Aggressive Cleanup: If a particle's mood is no longer the target mood, kill it fast
+                if (p._mood && p._mood !== targetMood.current) {
+                    p.opacity *= 0.8; // Snappy transition out
+                    if (p.opacity < 0.01) p.life = 0;
                 }
             });
 

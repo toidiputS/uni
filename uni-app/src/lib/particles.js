@@ -96,9 +96,9 @@ export function createDrop(canvasW) {
 export function createCloud(canvasW, canvasH) {
     return {
         type: 'cloud',
-        x: -600 + Math.random() * (canvasW + 600),
-        y: -100 + Math.random() * canvasH * 0.4,
-        vx: 0.08 + Math.random() * 0.15, // Slightly faster drift
+        x: -600 + Math.random() * (canvasW + 1200),
+        y: -150 + Math.random() * canvasH * 0.2, // Pinned to "North Side" (Top 20%)
+        vx: 0.1 + Math.random() * 0.2, // Slightly faster drift
         vy: 0,
         life: 1,
         maxLife: 1,
@@ -202,8 +202,8 @@ export const WEATHER_PRESETS = {
         skyImages: ATMOSPHERE_IMAGES.angry,
         keywords: 'storm,dark,thunder,lightning,void,chaos,abstract',
         particles: {
-            rain: { count: 400, spawnRate: 15 },
-            cloud: { count: 12, spawnRate: 0.08 },
+            rain: { count: 600, spawnRate: 20 }, // Heavier, more intense "Onboarding Demo" Storm
+            cloud: { count: 18, spawnRate: 0.12 }, // Thick "North Side" Clouds
         },
         lightning: true,
         lightningInterval: [1500, 4000],
@@ -272,10 +272,7 @@ export const WEATHER_PRESETS = {
         sky: ['#050508', '#0a0a12'],
         skyImages: ATMOSPHERE_IMAGES.neutral,
         keywords: 'stars,horizon,cosmic,galaxy,minimal,dark,space',
-        particles: {
-            firefly: { count: 12, spawnRate: 0.1 },
-            bird: { count: 2, spawnRate: 0.01 },
-        },
+        particles: {}, // Truly clean sanctuary start
     },
     valentine: {
         sky: ['#1a050d', '#200810'],

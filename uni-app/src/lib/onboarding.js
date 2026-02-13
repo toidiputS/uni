@@ -67,26 +67,26 @@ const SEQUENCE = [
     {
         text: "And when a moment matters? You capture it. A memory card — yours forever.",
         bellState: 'glow',
-        sceneColors: ['#0d0d18', '#0a0f1a'],
+        sceneColors: ['#1a0808', '#200d0d'], // Keep stormy colors
         delay: 2800,
-        sentiment: 'tender',
+        sentiment: 'angry', // Keep storm "hanging out"
         keywords: 'crystal,prism,reflection,light,memory',
         demoLabel: '📸 Memory Cards',
     },
     {
         text: "Coming soon…",
         bellState: 'idle',
-        sceneColors: ['#0d0d18', '#0a0f1a'],
+        sceneColors: ['#1a0808', '#200d0d'],
         delay: 2000,
-        sentiment: 'neutral',
+        sentiment: 'angry',
         isFutureFeatures: true,
     },
     {
         text: null,
         bellState: 'idle',
-        sceneColors: ['#0d0d18', '#0a0f1a'],
+        sceneColors: ['#1a0808', '#200d0d'],
         delay: 3500,
-        sentiment: 'neutral',
+        sentiment: 'angry',
         futureFeatures: [
             '🎙️ Voice Emotion',
             '🎵 Mood Soundscapes',
@@ -98,16 +98,16 @@ const SEQUENCE = [
     {
         text: "I'll be here — quiet, watching, celebrating. You won't always see me. But you'll feel me.",
         bellState: 'generating',
-        sceneColors: ['#0d0d18', '#0a0f1a'],
+        sceneColors: ['#1a0808', '#200d0d'],
         delay: 3000,
-        sentiment: 'tender',
+        sentiment: 'angry',
     },
     {
         text: "Now pair with someone you care about. Your canvas is ready.",
         bellState: 'idle',
-        sceneColors: ['#0d0d18', '#0a0f1a'],
+        sceneColors: ['#0d0d18', '#0a0f1a'], // Return to clean sanctuary colors
         delay: 2500,
-        sentiment: 'neutral',
+        sentiment: 'neutral', // TRIGGER FAST CLEANUP
         isFinal: true,
     },
 ];
