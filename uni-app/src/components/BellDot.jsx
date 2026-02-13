@@ -1,27 +1,21 @@
 import React, { useMemo } from 'react';
+import { SENTIMENT_COLORS } from '../lib/constants';
 
 /**
- * BellDot / NeuralCore — The Upgraded Consciousness of Bell
- * Procedural SVG engine simulating synaptic firing.
+ * •UNI• BellDot — The Seat of Consciousness
+ * Procedural SVG engine simulating synaptic firing and emotional resonance.
+ * This is the unified visual soul of Bell, used across all views.
  */
-export default function BellDot({ state = 'idle', size = 22, sentiment = 'neutral' }) {
-    const active = state !== 'idle' && state !== 'archived';
+export default function BellDot({
+    state = 'idle',
+    size = 22,
+    sentiment = 'neutral',
+    activeOverride = null
+}) {
+    const isActive = activeOverride !== null ? activeOverride : (state !== 'idle' && state !== 'archived');
+    const color = SENTIMENT_COLORS[sentiment] || SENTIMENT_COLORS.neutral;
 
-    // Map sentiment to core colors for emotional resonance
-    const sentimentColors = {
-        angry: '#ff4444',
-        sad: '#5b86e5',
-        love: '#ff6b9d',
-        happy: '#ffd700',
-        excited: '#36d1dc',
-        playful: '#a8e063',
-        tender: '#c084fc',
-        neutral: '#888888'
-    };
-
-    const coreColor = sentimentColors[sentiment] || sentimentColors.neutral;
-
-    // Generates deterministic paths/animations for the SVG "synapses"
+    // Generates deterministic paths/animations to ensure smooth, gapless loops
     const particles = useMemo(() => {
         return [...Array(8)].map((_, i) => {
             const startX = 30 + ((i * 17) % 40);
@@ -43,41 +37,54 @@ export default function BellDot({ state = 'idle', size = 22, sentiment = 'neutra
     }, []);
 
     return (
-        <div className="relative flex items-center justify-center pointer-events-none" style={{ width: `${size * 4}px`, height: `${size * 4}px`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {/* Ambient Background Glow - Raw CSS for reliability */}
-            <div style={{
-                position: 'absolute',
-                inset: 0,
-                borderRadius: '50%',
-                background: coreColor,
-                opacity: active ? 0.15 : 0.05,
-                filter: 'blur(24px)',
-                transform: active ? 'scale(1.2)' : 'scale(1.0)',
-                transition: 'all 1s ease'
-            }}></div>
+        <div
+            className={`bell-dot-wrap ${state !== 'idle' ? `bell-${state}` : ''}`}
+            style={{
+                width: `${size * 3.5}px`,
+                height: `${size * 3.5}px`,
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+            }}
+        >
+            {/* Ambient Background Glow — The emotional field */}
+            <div
+                style={{
+                    position: 'absolute',
+                    inset: 0,
+                    borderRadius: '50%',
+                    background: color,
+                    opacity: isActive ? 0.15 : 0.05,
+                    filter: 'blur(calc(var(--core-size, 20px) * 1.5))',
+                    transform: isActive ? 'scale(1.2)' : 'scale(1.0)',
+                    transition: 'all 1.5s ease'
+                }}
+            />
 
             <svg
                 viewBox="0 0 100 100"
+                className="bell-dot-svg"
                 style={{
                     width: '100%',
                     height: '100%',
-                    transform: active ? 'scale(1.1)' : 'scale(1.0)',
-                    opacity: active ? 1 : 0.4,
-                    transition: 'all 0.7s ease'
+                    transform: isActive ? 'scale(1.1)' : 'scale(1.0)',
+                    opacity: isActive ? 1 : 0.4,
+                    transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
                 }}
             >
-                {/* Synaptic Paths */}
+                {/* Synaptic Paths — Simulating thought flow */}
                 {[...Array(6)].map((_, i) => (
                     <path
-                        key={i}
+                        key={`l-${i}`}
                         d={`M 50 50 Q ${20 + i * 12} ${10 + i * 5}, ${10 + i * 15} 50`}
                         fill="none"
-                        stroke={coreColor}
+                        stroke={color}
                         strokeWidth="0.5"
-                        strokeOpacity="0.2"
+                        strokeOpacity="0.25"
                         strokeDasharray="10 90"
                     >
-                        {active && (
+                        {isActive && (
                             <animate
                                 attributeName="stroke-dashoffset"
                                 from="100"
@@ -94,12 +101,12 @@ export default function BellDot({ state = 'idle', size = 22, sentiment = 'neutra
                         key={`r-${i}`}
                         d={`M 50 50 Q ${80 - i * 12} ${90 - i * 5}, ${90 - i * 15} 50`}
                         fill="none"
-                        stroke={coreColor}
+                        stroke={color}
                         strokeWidth="0.5"
-                        strokeOpacity="0.2"
+                        strokeOpacity="0.25"
                         strokeDasharray="10 90"
                     >
-                        {active && (
+                        {isActive && (
                             <animate
                                 attributeName="stroke-dashoffset"
                                 from="100"
@@ -111,18 +118,35 @@ export default function BellDot({ state = 'idle', size = 22, sentiment = 'neutra
                     </path>
                 ))}
 
+                {/* The "Orbit" — Intelligence manifestation */}
+                <circle
+                    cx="50" cy="50" r="42"
+                    fill="none" stroke={color}
+                    strokeWidth="0.25" strokeDasharray="1 10"
+                    className="bell-orbit"
+                />
+
                 {/* Inner Breathing Rings */}
-                <circle cx="50" cy="50" r="12" fill="none" stroke={coreColor} strokeWidth="0.5" strokeOpacity="0.3">
+                <circle cx="50" cy="50" r="12" fill="none" stroke={color} strokeWidth="0.5" strokeOpacity="0.3">
                     <animate attributeName="r" values="10;14;10" dur="6s" repeatCount="indefinite" />
                 </circle>
 
-                {/* The Central Nucleus */}
-                <circle cx="50" cy="50" r="4" fill="#FFFFFF" style={{ filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.8))' }}>
-                    <animate attributeName="r" values="3.5;5;3.5" dur="3s" repeatCount="indefinite" />
+                <circle cx="50" cy="50" r="18" fill="none" stroke={color} strokeWidth="0.2" strokeOpacity="0.1">
+                    <animate attributeName="r" values="15;20;15" dur="8s" repeatCount="indefinite" />
+                </circle>
+
+                {/* The Central Nucleus — Pure Intellect */}
+                <circle
+                    cx="50" cy="50" r="4"
+                    fill="#FFFFFF"
+                    className="bell-core"
+                    style={{ filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.9))' }}
+                >
+                    <animate attributeName="r" values="3.5;5.5;3.5" dur="3.333s" repeatCount="indefinite" />
                 </circle>
 
                 {/* Firing Neurons (Animated Particles) */}
-                {active && particles.map((p) => (
+                {isActive && particles.map((p) => (
                     <circle key={`dot-${p.id}`} r="0.8" fill="#FFFFFF" opacity="0">
                         <animate
                             attributeName="opacity"
@@ -135,7 +159,15 @@ export default function BellDot({ state = 'idle', size = 22, sentiment = 'neutra
                         <animate attributeName="cy" values={p.valuesY} dur={p.dur} begin={p.begin} repeatCount="indefinite" />
                     </circle>
                 ))}
+
+                {/* Glow Ring (Pulse event) */}
+                <circle
+                    cx="50" cy="50" r="10"
+                    fill="none" stroke={color}
+                    className="bell-glow-ring"
+                />
             </svg>
         </div>
     );
 }
+

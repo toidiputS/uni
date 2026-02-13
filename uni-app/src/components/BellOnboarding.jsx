@@ -3,10 +3,9 @@
 // Shows Bell's dot state changes, scene color shifts, and feature demos.
 
 import React, { useState, useEffect, useRef } from 'react';
-import BellDot from './BellDot';
 import SEQUENCE, { markOnboardingComplete } from '../lib/onboarding';
 
-export default function BellOnboarding({ onComplete, onSceneChange }) {
+export default function BellOnboarding({ onComplete, onSceneChange, setBellConfig }) {
     const [stepIndex, setStepIndex] = useState(0);
     const [messages, setMessages] = useState([]);
     const [bellState, setBellState] = useState('idle');
@@ -24,6 +23,7 @@ export default function BellOnboarding({ onComplete, onSceneChange }) {
 
         const step = SEQUENCE[stepIndex];
         setBellState(step.bellState);
+        setBellConfig(prev => ({ ...prev, state: step.bellState }));
 
         if (step.sceneColors && onSceneChange) {
             onSceneChange(step.sceneColors);
@@ -56,6 +56,16 @@ export default function BellOnboarding({ onComplete, onSceneChange }) {
         }
     }, []);
 
+    useEffect(() => {
+        setBellConfig({
+            state: bellState,
+            size: 64,
+            sentiment: 'neutral',
+            top: '15%',
+            left: '50%'
+        });
+    }, [bellState, setBellConfig]);
+
     // Effect for handling auto-progression if needed, but we'll stick to manual
     /*
     useEffect(() => {
@@ -73,10 +83,6 @@ export default function BellOnboarding({ onComplete, onSceneChange }) {
 
     return (
         <div className="onboarding-page">
-            {/* Bell's dot — top center, gravitational */}
-            <div className="onboarding-dot">
-                <BellDot state={bellState} size={24} />
-            </div>
 
             {/* Message stream */}
             <div className="onboarding-messages" ref={containerRef}>

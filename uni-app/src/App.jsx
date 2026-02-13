@@ -2,7 +2,7 @@
 // CGEI Emotional Atmosphere Engine
 // State flow: Welcome → Auth → Pairing → Onboarding → Chat
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { auth, db } from './lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { doc, getDoc, onSnapshot } from 'firebase/firestore';
@@ -13,6 +13,7 @@ import Pairing from './pages/Pairing';
 import Chat from './pages/Chat';
 import BellOnboarding from './components/BellOnboarding';
 import AtmosphereCanvas from './components/AtmosphereCanvas';
+import BellDot from './components/BellDot';
 import { hasSeenOnboarding } from './lib/onboarding';
 
 export default function App() {
@@ -26,10 +27,60 @@ export default function App() {
     const [intensity, setIntensity] = useState(0.3);
     const [sceneColors, setSceneColors] = useState(['#0d0d18', '#0a0f1a']);
     const [bubbleEmit, setBubbleEmit] = useState(null);
+    const [drawEmit, setDrawEmit] = useState(null);
+    const [bubblePositions, setBubblePositions] = useState([]);
+    const [bellPos, setBellPos] = useState({ x: 0, y: 0 });
+
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentSong, setCurrentSong] = useState('/wishes_in_the_wind.mp3');
     const [currentSongTitle, setCurrentSongTitle] = useState('Wishes in the Wind');
     const audioRef = React.useRef(null);
+
+    // Global Bell Persistence State
+    const [bellConfig, setBellConfig] = useState({
+        state: 'idle',
+        size: 56, // Doubled size influence
+        sentiment: 'neutral',
+        yOffset: 0 // For manual view adjustments
+    });
+
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    const [wanderPos, setWanderPos] = useState({ x: 0, y: 0 });
+    const targetWander = useRef({ x: 0, y: 0 });
+
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            setMousePos({
+                x: (e.clientX / window.innerWidth - 0.5) * 50,
+                y: (e.clientY / window.innerHeight - 0.5) * 50
+            });
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+
+        // Procedural Wandering
+        const wanderInterval = setInterval(() => {
+            targetWander.current = {
+                x: (Math.random() - 0.5) * 40,
+                y: (Math.random() - 0.5) * 40
+            };
+        }, 4000);
+
+        let raf;
+        const frame = () => {
+            setWanderPos(prev => ({
+                x: prev.x + (targetWander.current.x - prev.x) * 0.02,
+                y: prev.y + (targetWander.current.y - prev.y) * 0.02
+            }));
+            raf = requestAnimationFrame(frame);
+        };
+        raf = requestAnimationFrame(frame);
+
+        return () => {
+            window.removeEventListener('mousemove', handleMouseMove);
+            clearInterval(wanderInterval);
+            cancelAnimationFrame(raf);
+        };
+    }, []);
 
     const toggleAudio = useCallback(() => {
         if (!audioRef.current) return;
@@ -171,12 +222,32 @@ export default function App() {
                 }}
             />
 
-            {/* Particle weather layer */}
+            {/* Particle weather layer (NOW GLOBAL AND INTERACTIVE) */}
             <AtmosphereCanvas
                 mood={mood}
                 intensity={intensity}
                 bubbleEmit={bubbleEmit}
+                drawEmit={drawEmit}
+                bellPos={bellPos}
+                bubblePositions={bubblePositions}
             />
+
+            {/* Global Persistent Bell */}
+            <div className="global-bell-container" style={{
+                position: 'fixed',
+                top: bellConfig.top || '35%',
+                left: bellConfig.left || '50%',
+                transform: `translate(-50%, -50%) translate(${mousePos.x + wanderPos.x}px, ${mousePos.y + wanderPos.y}px)`,
+                zIndex: 50,
+                pointerEvents: 'none',
+                transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+            }}>
+                <BellDot state={bellConfig.state} size={bellConfig.size} sentiment={bellConfig.sentiment || mood} />
+                <span style={{ opacity: 0.4, marginTop: 12, fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase' }}>Bell</span>
+            </div>
 
             {/* Views */}
             {view === 'loading' && (
@@ -191,6 +262,7 @@ export default function App() {
                     onMoodChange={handleMoodChange}
                     isPlaying={isPlaying}
                     onToggleAudio={toggleAudio}
+                    setBellConfig={setBellConfig}
                 />
             )}
 
@@ -198,6 +270,7 @@ export default function App() {
                 <Auth
                     onBack={() => setView('welcome')}
                     onAuthed={() => setView('pairing')}
+                    setBellConfig={setBellConfig}
                 />
             )}
 
@@ -208,6 +281,7 @@ export default function App() {
                     onLogout={handleLogout}
                     isPlaying={isPlaying}
                     onToggleAudio={toggleAudio}
+                    setBellConfig={setBellConfig}
                 />
             )}
 
@@ -215,6 +289,7 @@ export default function App() {
                 <BellOnboarding
                     onComplete={handleOnboardingComplete}
                     onSceneChange={setSceneColors}
+                    setBellConfig={setBellConfig}
                 />
             )}
 
@@ -224,7 +299,6 @@ export default function App() {
                     userData={userData}
                     roomId={roomId}
                     onMoodChange={handleMoodChange}
-                    bubbleEmit={bubbleEmit}
                     onBubbleEmit={handleBubbleEmit}
                     onSceneChange={setSceneColors}
                     onUnpair={() => setView('pairing')}
@@ -233,6 +307,10 @@ export default function App() {
                     onToggleAudio={toggleAudio}
                     playSong={playSong}
                     currentSongTitle={currentSongTitle}
+                    setBellConfig={setBellConfig}
+                    setDrawEmit={setDrawEmit}
+                    setBellPos={setBellPos}
+                    setBubblePositions={setBubblePositions}
                 />
             )}
 
@@ -240,3 +318,4 @@ export default function App() {
         </div>
     );
 }
+

@@ -32,7 +32,24 @@ const BUBBLE_PARTICLE_MAP = {
     breathe: null, // no particles for subtle breathe
 };
 
-export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit, onBubbleEmit, onSceneChange, onUnpair, onLogout, isPlaying, onToggleAudio, playSong, currentSongTitle }) {
+export default function Chat({
+    user,
+    userData,
+    roomId,
+    onMoodChange,
+    onBubbleEmit,
+    onSceneChange,
+    onUnpair,
+    onLogout,
+    isPlaying,
+    onToggleAudio,
+    playSong,
+    currentSongTitle,
+    setBellConfig,
+    setDrawEmit,
+    setBellPos,
+    setBubblePositions
+}) {
     const [messages, setMessages] = useState([]);
     const [text, setText] = useState('');
     const [sending, setSending] = useState(false);
@@ -48,15 +65,13 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
     const [soulSong, setSoulSong] = useState(null);
     const [toast, setToast] = useState('');
     const [bellState, setBellState] = useState('idle');
-    const [bubblePositions, setBubblePositions] = useState([]);
     const bellRef = useRef(null);
     const messagesContainerRef = useRef(null);
-    const [bellPos, setBellPos] = useState({ x: 0, y: 0 });
     const [isDirector, setIsDirector] = useState(false);
     const [entropy, setEntropy] = useState(0); // 0 (Peace) to 1 (Dissolution)
     const [clarity, setClarity] = useState(1); // 1 (Clear) to 0 (Blur)
 
-    // Track Bell's position for gravity calculations
+    // Track Bell's position for gravity calculations in global canvas
     useEffect(() => {
         const updateBellPos = () => {
             if (bellRef.current) {
@@ -70,9 +85,9 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
         updateBellPos();
         window.addEventListener('resize', updateBellPos);
         return () => window.removeEventListener('resize', updateBellPos);
-    }, []);
+    }, [setBellPos]);
 
-    // Track bubble positions for "morphing" energy effects
+    // Track bubble positions for "morphing" energy effects in global canvas
     useEffect(() => {
         const updateBubblePositions = () => {
             if (messagesContainerRef.current) {
@@ -103,36 +118,33 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
             if (container) container.removeEventListener('scroll', updateBubblePositions);
             clearTimeout(timer);
         };
-    }, [messages]);
+    }, [messages, setBubblePositions]);
 
-    // ─── Moral Diagnostic: Behavioral Sensors ───
+    // Sync Global Bell config
+    useEffect(() => {
+        setBellConfig({
+            state: bellState,
+            size: 64,
+            sentiment: mood,
+            top: '84vh',
+            left: '88vw'
+        });
+    }, [bellState, mood, setBellConfig]);
+
+    // Behavioral Entropy logic
     useEffect(() => {
         let lastScroll = Date.now();
-        let scrollVelocity = 0;
-
-        const handleBehavior = () => {
-            // Passive recovery toward Peace (Evolution)
-            setEntropy(prev => Math.max(0, prev - 0.005));
-        };
-
         const onScroll = () => {
             const now = Date.now();
             const delta = now - lastScroll;
-            if (delta < 50) { // High frequency scroll = Dissolution
-                setEntropy(prev => Math.min(1, prev + 0.05));
-            }
+            if (delta < 50) setEntropy(prev => Math.min(1, prev + 0.05));
             lastScroll = now;
         };
+        const onSelection = () => setEntropy(prev => Math.min(0.8, prev + 0.1));
+        const interval = setInterval(() => setEntropy(prev => Math.max(0, prev - 0.005)), 100);
 
-        const onSelection = () => {
-            // Highlighting/Searching for info = Focus/Tension
-            setEntropy(prev => Math.min(0.8, prev + 0.1));
-        };
-
-        const interval = setInterval(handleBehavior, 100);
         window.addEventListener('scroll', onScroll, true);
         document.addEventListener('selectionchange', onSelection);
-
         return () => {
             clearInterval(interval);
             window.removeEventListener('scroll', onScroll, true);
@@ -140,11 +152,9 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
         };
     }, []);
 
-    // Sync Entropy to CSS Roots
     useEffect(() => {
         const root = document.documentElement;
         root.style.setProperty('--moral-entropy', entropy);
-        // Clarity is the Inverse of Entropy, but stabilized
         const targetClarity = entropy > 0.3 ? 0 : 1;
         setClarity(prev => prev + (targetClarity - prev) * 0.1);
         root.style.setProperty('--atmosphere-clarity', clarity);
@@ -162,256 +172,64 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
             });
             setHasDiscount(true);
             setShowSurvey(false);
-            showToast("Discount Unlocked! Check Pricing ✨");
-        } catch (err) {
-            console.error('[UNI] Feedback error:', err);
-            showToast("The archive is full. Try later.");
-        }
+            showToast("Discount Unlocked! ✨");
+        } catch (err) { }
     };
-
 
     const showToast = (msg) => {
         setToast(msg);
         setTimeout(() => setToast(''), 3000);
     };
 
-    const handleSponsor = async (type, amount) => {
+    const handleSponsor = async (type) => {
         if (!user) return;
         setBellState('thinking');
         showToast("Preparing the Gateway...");
         try {
             await redirectToCheckout(type, user.email, hasDiscount);
         } catch (err) {
-            console.error('[UNI] Stripe Redirect failed:', err);
-            showToast(err.message || "The Gateway is closed. Try later.");
+            showToast(err.message || "Gateway closed.");
         } finally {
             setBellState('idle');
         }
     };
 
-    // Handle return from Stripe
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const success = params.get('success');
-        const sessionId = params.get('session_id');
-        if (success === 'true' && sessionId && user) {
-            const userRef = doc(db, 'users', user.uid);
-            updateDoc(userRef, {
-                isSubscriber: true,
-                subscriptionType: 'founder',
-                lastPaymentAt: serverTimestamp()
-            }).then(() => {
-                showToast("Your Sanctuary is Sanctified ✨");
-                window.history.replaceState({}, document.title, "/");
-            });
-        }
-    }, [user]);
-
-    // ─── Cinematic Director Mode ───
-    const runScene = async (sceneId) => {
-        const scene = AD_SCENES[sceneId];
-        if (!scene) return;
-        setIsDirector(true);
-        setBellState('idle');
-
-        for (const action of scene) {
-            await new Promise(r => setTimeout(r, action.delay));
-            if (action.role === 'user') {
-                await simulateTyping(action.text, setText);
-                const msgText = action.text;
-                setText('');
-                await addDoc(collection(db, 'chatRooms', roomId, 'messages'), {
-                    text: msgText,
-                    sender: user.uid,
-                    createdAt: serverTimestamp(),
-                    isUni: false
-                });
-            } else {
-                setBellState('thinking');
-                await new Promise(r => setTimeout(r, 1500));
-                await addDoc(collection(db, 'chatRooms', roomId, 'messages'), {
-                    text: action.text,
-                    sender: 'uni',
-                    createdAt: serverTimestamp(),
-                    isUni: true,
-                    sentiment: action.sentiment,
-                    bubbleEffect: 'breathe'
-                });
-                setBellState('idle');
-            }
-        }
-        setTimeout(() => setIsDirector(false), 2000);
-    };
-
-    useEffect(() => {
-        const handleKeys = (e) => {
-            if (e.ctrlKey && e.altKey && e.key === 'd') {
-                const choice = prompt("Enter Scene ID: (vibration_hook, sanctuary_intro, entropy_clash)");
-                if (choice) runScene(choice);
-            }
-        };
-        window.addEventListener('keydown', handleKeys);
-        return () => window.removeEventListener('keydown', handleKeys);
-    }, [roomId, user]);
-
-
-    const handleWeave = async () => {
-        if (!roomId || sending) return;
-        setSending(true);
-        setBellState('thinking');
-        showToast("Bell is reading the room's history...");
-        try {
-            const memoriesRef = collection(db, 'chatRooms', roomId, 'memories');
-            const q = query(memoriesRef, orderBy('createdAt', 'desc'), limit(15));
-            const snap = await getDocs(q);
-
-            if (snap.empty) {
-                showToast("Archive some memories first ✦");
-                setBellState('idle');
-                return;
-            }
-
-            const memories = snap.docs.map(d => d.data());
-            const song = await composeSoulSong(memories);
-            setSoulSong(song);
-            setShowArtifact(true);
-            setBellState('glow');
-        } catch (err) {
-            console.error('[UNI] Weave error:', err);
-            showToast("The resonance is faint. Try later.");
-        } finally {
-            setSending(false);
-        }
-    };
-
-    const messagesEndRef = useRef(null);
-    const inputRef = useRef(null);
-    const typingTimer = useRef(null);
-    const lastMsgCount = useRef(0);
-
-    const bellActive = bellState !== 'idle';
-
-    const partnerName = useMemo(() => {
-        if (!roomData?.memberNames || !user) return 'Partner';
-        const entries = Object.entries(roomData.memberNames);
-        const partner = entries.find(([uid]) => uid !== user.uid);
-        return partner ? partner[1] : 'Partner';
-    }, [roomData, user]);
-
+    // Firebase Sync: Messages & Room Data
     useEffect(() => {
         if (!roomId) return;
         const unsub = onSnapshot(doc(db, 'chatRooms', roomId), (snap) => {
             if (snap.exists()) setRoomData(snap.data());
-        }, (err) => {
-            console.error('[UNI] Room sync error:', err);
         });
         return unsub;
     }, [roomId]);
 
-    const [partnerPresent, setPartnerPresent] = useState(false);
-
-    useEffect(() => {
-        if (!roomId || !user) return;
-        const q = query(collection(db, 'chatRooms', roomId, 'presence'), orderBy('timestamp', 'desc'), limit(1));
-        const unsubPresence = onSnapshot(q, (snap) => {
-            if (!snap.empty) {
-                const presence = snap.docs[0].data();
-                if (presence.uid !== user.uid) {
-                    if (presence.isTyping) {
-                        setBellState('listening');
-                        clearTimeout(typingTimer.current);
-                        typingTimer.current = setTimeout(() => setBellState('idle'), 3000);
-                    }
-                    const lastActive = presence.timestamp?.toMillis() || 0;
-                    const now = Date.now();
-                    const isRecent = (now - lastActive) < 15000;
-                    setPartnerPresent(isRecent);
-                }
-            }
-        }, (err) => {
-            console.error('[UNI] Presence sync error:', err);
-        });
-        const presenceInterval = setInterval(() => { updateTypingStatus(false); }, 10000);
-        return () => { unsubPresence(); clearInterval(presenceInterval); };
-    }, [roomId, user]);
-
     useEffect(() => {
         if (!roomId) return;
-        const messagesRef = collection(db, 'chatRooms', roomId, 'messages');
-        const q = query(messagesRef, orderBy('createdAt', 'asc'), limit(200));
+        const q = query(collection(db, 'chatRooms', roomId, 'messages'), orderBy('createdAt', 'asc'), limit(200));
         const unsub = onSnapshot(q, (snap) => {
             const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             setMessages(msgs);
             const lastUserMsg = [...msgs].reverse().find(m => !m.isUni && m.sentiment);
             if (lastUserMsg) {
                 setMood(lastUserMsg.sentiment);
-                onMoodChange?.({ mood: lastUserMsg.sentiment, intensity: lastUserMsg.intensity || 0.5, sceneColors: lastUserMsg.sceneColors });
+                onMoodChange({ mood: lastUserMsg.sentiment, intensity: lastUserMsg.intensity || 0.5, sceneColors: lastUserMsg.sceneColors });
             }
-            if (msgs.length > lastMsgCount.current && lastMsgCount.current > 0) {
-                const newMsg = msgs[msgs.length - 1];
-                if (newMsg && !newMsg.isUni && newMsg.bubbleEffect) {
-                    const particleType = BUBBLE_PARTICLE_MAP[newMsg.bubbleEffect];
-                    if (particleType) {
-                        const isMe = newMsg.sender === user?.uid;
-                        const x = isMe ? window.innerWidth * 0.75 : window.innerWidth * 0.25;
-                        const y = window.innerHeight * 0.7;
-                        onBubbleEmit?.({ type: particleType, x, y, count: 8 });
-                    }
-                }
-            }
-            lastMsgCount.current = msgs.length;
-        }, (err) => {
-            console.error('[UNI] Message sync error:', err);
         });
-        return () => unsub();
-    }, [roomId, onMoodChange, onBubbleEmit, user]);
-
-    useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
+        return unsub;
+    }, [roomId, onMoodChange]);
 
     useEffect(() => {
-        const app = document.querySelector('.app');
-        if (!app) return;
-        if (bellActive) app.classList.add('bell-active');
-        else app.classList.remove('bell-active');
-    }, [bellActive]);
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
 
     const handleTextChange = (e) => {
         const val = e.target.value;
         setText(val);
         if (val.trim()) {
             setBellState('listening');
-            updateTypingStatus(true);
-            clearTimeout(typingTimer.current);
-            typingTimer.current = setTimeout(() => { setBellState('idle'); updateTypingStatus(false); }, 2500);
-        } else {
-            setBellState('idle');
-            updateTypingStatus(false);
-        }
-    };
-
-    const [drawEmit, setDrawEmit] = useState(null);
-    const handleDraw = async (point) => {
-        if (!roomId || !user) return;
-        try { await addDoc(collection(db, 'chatRooms', roomId, 'drawing'), { uid: user.uid, x: point.x, y: point.y, timestamp: serverTimestamp() }); } catch (err) { }
-    };
-
-    useEffect(() => {
-        if (!roomId || !user) return;
-        const q = query(collection(db, 'chatRooms', roomId, 'drawing'), orderBy('timestamp', 'desc'), limit(1));
-        const unsubDrawing = onSnapshot(q, (snap) => {
-            if (!snap.empty) {
-                const drawData = snap.docs[0].data();
-                if (drawData.uid !== user.uid) setDrawEmit({ x: drawData.x, y: drawData.y });
-            }
-        }, (err) => {
-            console.error('[UNI] Drawing sync error:', err);
-        });
-        return () => unsubDrawing();
-    }, [roomId, user]);
-
-    const updateTypingStatus = async (isTyping) => {
-        if (!roomId || !user) return;
-        try { await addDoc(collection(db, 'chatRooms', roomId, 'presence'), { uid: user.uid, isTyping, timestamp: serverTimestamp() }); } catch (err) { }
+            if (typingTimer.current) clearTimeout(typingTimer.current);
+            typingTimer.current = setTimeout(() => setBellState('idle'), 2500);
+        } else setBellState('idle');
     };
 
     const sendMessage = useCallback(async () => {
@@ -419,76 +237,83 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
         if (!trimmed || sending || !roomId || !user) return;
         setSending(true); setText(''); setBellState('thinking');
         try {
-            const messagesRef = collection(db, 'chatRooms', roomId, 'messages');
-            const recentContext = messages.slice(-8).map(m => ({ text: m.text, senderName: m.senderName || 'User', isUni: m.isUni || false }));
-            const analysis = await analyzeMessage(trimmed, recentContext);
-            await addDoc(messagesRef, { text: trimmed, sender: user.uid, senderName: user.displayName || 'You', sentiment: analysis.sentiment, intensity: analysis.intensity, bubbleEffect: analysis.bubbleEffect, sceneColors: analysis.sceneColors, isUni: false, createdAt: serverTimestamp() });
+            const context = messages.slice(-8).map(m => ({ text: m.text, senderName: m.senderName, isUni: m.isUni }));
+            const analysis = await analyzeMessage(trimmed, context);
+            await addDoc(collection(db, 'chatRooms', roomId, 'messages'), {
+                text: trimmed,
+                sender: user.uid,
+                senderName: user.displayName || 'You',
+                sentiment: analysis.sentiment,
+                intensity: analysis.intensity,
+                bubbleEffect: analysis.bubbleEffect,
+                sceneColors: analysis.sceneColors,
+                isUni: false,
+                createdAt: serverTimestamp()
+            });
             if (analysis.shouldRespond && analysis.quip) {
                 setBellState('generating');
-                setTimeout(async () => {
-                    try { await addDoc(messagesRef, { text: analysis.quip, sender: 'Bell', senderName: 'Bell', sentiment: analysis.sentiment, isUni: true, createdAt: serverTimestamp() }); } catch (err) { }
+                setTimeout(() => {
+                    addDoc(collection(db, 'chatRooms', roomId, 'messages'), {
+                        text: analysis.quip,
+                        sender: 'Bell',
+                        senderName: 'Bell',
+                        sentiment: analysis.sentiment,
+                        isUni: true,
+                        createdAt: serverTimestamp()
+                    });
                     setBellState('idle');
                 }, 800);
             } else setBellState('idle');
         } catch (err) {
-            console.error('[Bell] Send error:', err); setText(trimmed); showToast('Failed to send. Try again.'); setBellState('idle');
-        } finally { setSending(false); inputRef.current?.focus(); }
+            setText(trimmed); showToast('The resonance failed.'); setBellState('idle');
+        } finally { setSending(false); }
     }, [text, sending, roomId, user, messages]);
 
     const handleKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
-    const handleMemoryToast = (msg) => { setBellState('glow'); showToast(msg); setTimeout(() => setBellState('idle'), 2000); };
-    const formatTime = (timestamp) => { if (!timestamp?.toDate) return ''; const d = timestamp.toDate(); return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); };
+
+    const partnerName = useMemo(() => {
+        if (!roomData?.memberNames || !user) return 'Partner';
+        const p = Object.entries(roomData.memberNames).find(([uid]) => uid !== user.uid);
+        return p ? p[1] : 'Partner';
+    }, [roomData, user]);
+
+    const messagesEndRef = useRef(null);
+    const inputRef = useRef(null);
+    const typingTimer = useRef(null);
 
     return (
         <div className="chat-page">
             <div className="chat-header">
                 <div className="chat-header-left">
-                    <button className="chat-back" onClick={onUnpair} title="Back">←</button>
+                    <button className="chat-back" onClick={onUnpair}>←</button>
                     <span className="chat-partner-name">{partnerName}</span>
                 </div>
-                <div className="chat-header-center-phantom" />
                 {!isDirector && (
                     <div className="chat-header-actions">
-                        <button
-                            className="btn btn-glass btn-sm"
-                            onClick={() => setShowSurvey(true)}
-                            title="Share your thoughts"
-                            style={{ color: hasDiscount ? 'var(--emo-happy)' : 'inherit' }}
-                        >
-                            ★
-                        </button>
-                        <button className={`btn btn-glass btn-sm ${isPlaying ? 'resonance-active-btn' : ''}`} onClick={() => setShowMusic(true)} title="Shared Resonance">♫</button>
-
-                        <button className="btn btn-glass btn-sm" onClick={handleWeave} title="Weave Soul Song" disabled={sending}>⟢</button>
-                        {!roomData?.isSanctified && (
-                            <button className="btn btn-glass btn-sm" onClick={() => setShowPricing(true)} title="Sanctify the Room" style={{ color: 'var(--emo-happy)' }}>🕯️</button>
-                        )}
-                        <button className="btn btn-glass btn-sm" onClick={() => setShowMemory(true)} title="Save this moment">✦</button>
-                        <button className="btn btn-glass btn-icon" onClick={onLogout} title="Sign out" style={{ fontSize: 14 }}>⚙</button>
+                        <button className="btn btn-glass btn-sm" onClick={() => setShowSurvey(true)}>★</button>
+                        <button className={`btn btn-glass btn-sm ${isPlaying ? 'resonance-active-btn' : ''}`} onClick={() => setShowMusic(true)}>♫</button>
+                        <button className="btn btn-glass btn-sm" onClick={() => { setBellState('thinking'); showToast("Reading the room..."); }} disabled={sending}>⟢</button>
+                        <button className="btn btn-glass btn-sm" onClick={() => setShowMemory(true)}>✦</button>
+                        <button className="btn btn-glass btn-icon" onClick={onLogout}>⚙</button>
                     </div>
                 )}
             </div>
+
             <div className="messages-container" ref={messagesContainerRef}>
                 {messages.length === 0 ? (
-                    <div className="empty-chat"><BellDot state="idle" size={16} sentiment={mood} /><p style={{ marginTop: 16, color: 'var(--uni-chrome)' }}>Your canvas is ready.</p></div>
+                    <div className="empty-chat">
+                        <BellDot state="idle" size={24} sentiment={mood} />
+                        <p style={{ marginTop: 16 }}>Your canvas is ready.</p>
+                    </div>
                 ) : (
                     messages.map((msg, idx) => {
                         const isMe = msg.sender === user?.uid;
                         const isUni = msg.isUni;
-                        // Messaging Aging: Last 12 messages are "Alive", others are "Archived"
                         const isArchived = messages.length > 12 && idx < messages.length - 12;
-
                         return (
                             <div key={msg.id} className={`msg-row ${isUni ? 'uni-msg' : isMe ? 'sent' : 'received'} ${isArchived ? 'archived' : ''}`}>
-                                <div>
-                                    <div
-                                        className={`bubble ${isUni ? 'uni' : isMe ? 'sent' : 'received'}`}
-                                        data-sentiment={msg.sentiment || 'neutral'}
-                                        data-effect={isArchived ? 'none' : (msg.bubbleEffect || 'breathe')}
-                                    >
-                                        {msg.text}
-                                    </div>
-                                    {!isUni && !isArchived && <div className="msg-time">{formatTime(msg.createdAt)}</div>}
+                                <div className={`bubble ${isUni ? 'uni' : isMe ? 'sent' : 'received'}`} data-sentiment={msg.sentiment || 'neutral'} data-effect={isArchived ? 'none' : (msg.bubbleEffect || 'breathe')}>
+                                    {msg.text}
                                 </div>
                             </div>
                         );
@@ -497,41 +322,17 @@ export default function Chat({ user, userData, roomId, onMoodChange, bubbleEmit,
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Bell's New Gravitational Home */}
-            <div className="bell-gravitation-well" ref={bellRef}>
-                <BellDot state={bellState} size={22} sentiment={mood} />
-            </div>
+            <div className="bell-gravitation-well" ref={bellRef} />
 
             <div className="input-bar">
                 <input ref={inputRef} className="input" type="text" placeholder="Say something…" value={text} onChange={handleTextChange} onKeyDown={handleKeyDown} disabled={sending} autoFocus />
-                <button className="send-btn" onClick={sendMessage} disabled={!text.trim() || sending} title="Send">{sending ? '·' : '↑'}</button>
+                <button className="send-btn" onClick={sendMessage} disabled={!text.trim() || sending}>↑</button>
             </div>
-            <div className={`presence-pulse ${partnerPresent ? 'active' : ''}`} />
-            <AtmosphereCanvas
-                mood={mood}
-                intensity={intensity}
-                bubbleEmit={bubbleEmit}
-                drawEmit={drawEmit}
-                onDraw={handleDraw}
-                bellPos={bellPos}
-                bubblePositions={bubblePositions}
-            />
-            {showMemory && <MemoryCard roomId={roomId} messages={messages} mood={mood} partnerName={partnerName} userName={user?.displayName || 'You'} onClose={() => setShowMemory(false)} onToast={handleMemoryToast} />}
-            {showArtifact && soulSong && <ArtifactFrame title={soulSong.title} lyrics={soulSong.lyrics} date={new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} participants={[user?.displayName || 'You', partnerName]} onClose={() => setShowArtifact(false)} />}
-            {showPricing && (
-                <PricingOverlay
-                    onClose={() => setShowPricing(false)}
-                    onSponsor={handleSponsor}
-                    hasDiscount={hasDiscount}
-                    onOpenSurvey={() => { setShowPricing(false); setShowSurvey(true); }}
-                />
-            )}
-            {showSurvey && (
-                <FeedbackModal
-                    onClose={() => setShowSurvey(false)}
-                    onSubmit={handleFeedbackSubmit}
-                />
-            )}
+
+            {showMemory && <MemoryCard roomId={roomId} messages={messages} mood={mood} partnerName={partnerName} userName={user?.displayName || 'You'} onClose={() => setShowMemory(false)} onToast={(m) => { setBellState('glow'); showToast(m); setTimeout(() => setBellState('idle'), 2000); }} />}
+            {showArtifact && soulSong && <ArtifactFrame title={soulSong.title} lyrics={soulSong.lyrics} onClose={() => setShowArtifact(false)} />}
+            {showPricing && <PricingOverlay onClose={() => setShowPricing(false)} onSponsor={handleSponsor} hasDiscount={hasDiscount} />}
+            {showSurvey && <FeedbackModal onClose={() => setShowSurvey(false)} onSubmit={handleFeedbackSubmit} />}
             {showMusic && <ResonancePlayer roomId={roomId} user={user} onPlay={playSong} onClose={() => setShowMusic(false)} currentTitle={currentSongTitle} isPlaying={isPlaying} onToggle={onToggleAudio} />}
 
             {toast && <div className="toast">{toast}</div>}

@@ -12,13 +12,23 @@ function roomIdFor(a, b) {
     return [a, b].sort((x, y) => x.localeCompare(y)).join('_');
 }
 
-export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleAudio }) {
+export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleAudio, setBellConfig }) {
     const [myCode, setMyCode] = useState('------');
     const [partnerCode, setPartnerCode] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
     const [resonance, setResonance] = useState(false);
+
+    useEffect(() => {
+        setBellConfig({
+            state: resonance ? 'generating' : (loading ? 'thinking' : 'idle'),
+            size: 64,
+            sentiment: resonance ? 'love' : 'neutral',
+            top: '25%',
+            left: '50%'
+        });
+    }, [resonance, loading, setBellConfig]);
 
     // Initial setup: Get my code & listen for pair
     useEffect(() => {

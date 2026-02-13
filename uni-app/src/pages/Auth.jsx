@@ -12,8 +12,18 @@ import {
 import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db, googleProvider } from '../lib/firebase';
 
-export default function Auth({ onBack, onAuthed }) {
+export default function Auth({ onBack, onAuthed, setBellConfig }) {
     const [mode, setMode] = useState('login'); // login | signup
+
+    React.useEffect(() => {
+        setBellConfig({
+            state: 'idle',
+            size: 64,
+            sentiment: 'neutral',
+            top: '20%',
+            left: '50%'
+        });
+    }, [setBellConfig]);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [displayName, setDisplayName] = useState('');

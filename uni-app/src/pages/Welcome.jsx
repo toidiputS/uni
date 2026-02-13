@@ -1,6 +1,5 @@
 // •UNI• Global Landing — Sovereign Reflection Edition
 import React, { useState, useEffect, useRef } from 'react';
-import BellDot from '../components/BellDot';
 import { ReflectiveButton } from '../components/ReflectiveButton';
 import SEQUENCE, { markOnboardingComplete } from '../lib/onboarding';
 
@@ -10,11 +9,10 @@ const PREVIEW_MOODS = [
     { mood: 'excited', sceneColors: ['#081518', '#0d1a1e'], intensity: 0.7 },
 ];
 
-export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggleAudio }) {
+export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggleAudio, setBellConfig }) {
     const [visible, setVisible] = useState(false);
     const [step, setStep] = useState('resonance'); // 'resonance', 'onboarding', 'urgency'
     const [messages, setMessages] = useState([]);
-    const [bellStatus, setBellStatus] = useState('idle');
     const moodRef = useRef(0);
     const [timeLeft, setTimeLeft] = useState({ d: 0, h: 0, m: 0, s: 0 });
 
@@ -47,6 +45,17 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
         return () => clearInterval(moodTimer);
     }, [step, onMoodChange]);
 
+    // Sync Global Bell
+    useEffect(() => {
+        setBellConfig({
+            state: 'idle',
+            size: 64,
+            sentiment: 'neutral',
+            top: step === 'resonance' ? '35%' : '15%',
+            left: '50%'
+        });
+    }, [step, setBellConfig]);
+
     useEffect(() => {
         setTimeout(() => setVisible(true), 100);
     }, []);
@@ -65,7 +74,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
         const current = SEQUENCE[idx];
         if (!current) return;
 
-        setBellStatus(current.bellState);
+        setBellConfig(prev => ({ ...prev, state: current.bellState }));
 
         // Atmosphere Shift
         if (current.sceneColors) {
@@ -119,18 +128,6 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
         if (!isPlaying) onToggleAudio();
     };
 
-    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-
-    useEffect(() => {
-        const handleMouseMove = (e) => {
-            setMousePos({
-                x: (e.clientX / window.innerWidth - 0.5) * 20,
-                y: (e.clientY / window.innerHeight - 0.5) * 20
-            });
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, []);
 
     return (
         <div className="welcome">
@@ -153,21 +150,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
             <div className={`welcome-content ${visible ? 'visible' : ''}`} style={{ textAlign: 'center' }}>
 
-                {/* 1. Bell (Pure Center) */}
-                {/* 1. Bell (Pure Center) */}
-                <div className={`welcome-bell ${['onboarding', 'urgency'].includes(step) ? 'bell-raised' : ''}`} style={{
-                    transition: 'transform 0.3s ease-out, margin 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    width: '100%',
-                    marginBottom: step === 'onboarding' ? 0 : 32,
-                    animation: 'float 5s ease-in-out infinite',
-                    transform: `translate(${mousePos.x}px, ${mousePos.y}px) rotate(${mousePos.x * 0.5}deg)`
-                }}>
-                    <BellDot state={bellStatus} size={32} />
-                    <span className="bell-label" style={{ opacity: 0.6, marginTop: 8, fontSize: 10, letterSpacing: '0.1em' }}>Bell</span>
-                </div>
+                <div style={{ height: step === 'onboarding' ? '15vh' : '22vh' }} />
 
                 {/* ACT 1: RESONANCE (Initial State) */}
                 {step === 'resonance' && (
