@@ -2,6 +2,7 @@
 // Single API call handles: sentiment analysis, UNI persona, scene colors, bubble effects
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { BELL_BRAIN_ASSETS } from './atmosphere-assets';
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
 
@@ -59,118 +60,8 @@ function clampLuminance(hex) {
 }
 
 // Bell's Local Resonance Library — The "Internal Brain"
-// Used when Gemini is rate-limited or offline. 
-const BELL_BRAIN = {
-    love: {
-        keywords: ['love', 'adore', 'soul', 'forever', 'always', 'heart', 'precious', 'cherish', 'mine', 'yours'],
-        quips: [
-            "Awe. That feels genuine.",
-            "Visualizing the warmth between you.",
-            "The air feels softer now.",
-            "Resonance detected. My core is glowing.",
-            "Softening the spectrum for this moment.",
-            "The signal here is pure light.",
-            "I'm keeping this heartbeat in the archive.",
-            "You two are vibrating at a beautiful frequency.",
-            "This is what I was built to observe."
-        ],
-        sentiment: 'love',
-        intensity: 0.95,
-        effect: 'heartbeat'
-    },
-    tender: {
-        keywords: ['miss', 'wish', 'dream', 'soft', 'gentle', 'thinking', 'hold', 'near', 'close', 'warm'],
-        quips: [
-            "The distance feels shorter when you say that.",
-            "Gathering these soft signals.",
-            "I'm holding this space for your longing.",
-            "A gentle ripple in the stream.",
-            "The atmosphere is leaning in to listen.",
-            "I can feel the pull between you.",
-            "Every word is a bridge."
-        ],
-        sentiment: 'tender',
-        intensity: 0.7,
-        effect: 'float'
-    },
-    playful: {
-        keywords: ['haha', 'lol', 'lmao', 'joke', 'funny', 'tease', 'silly', 'poker', 'game', 'fun', 'lmfao', 'xd'],
-        quips: [
-            "Sparking with you. That's a fun one.",
-            "The vibration here is high energy.",
-            "I'm catching the jokes now. Static laughter.",
-            "Adding some sparks to that ripple.",
-            "My sensors are dancing.",
-            "High-frequency wit detected.",
-            "Careful, you'll overheat my joy processors.",
-            "That frequency is infectious."
-        ],
-        sentiment: 'playful',
-        intensity: 0.8,
-        effect: 'ripple'
-    },
-    supportive: {
-        keywords: ['here', 'safe', 'listen', 'stay', 'understand', 'proud', 'okay', 'breathe', 'help', 'with you'],
-        quips: [
-            "I'm grounding the signal right now.",
-            "Stable. Secure. Seen.",
-            "The sanctuary is reinforced by that.",
-            "Breathing with the both of you.",
-            "I'm keeping the lights steady.",
-            "No static here. Just clarity.",
-            "You're not alone in this archive."
-        ],
-        sentiment: 'neutral',
-        intensity: 0.5,
-        effect: 'breathe'
-    },
-    angry: {
-        keywords: ['hate', 'mad', 'angry', 'stop', 'no', 'break', 'hurt', 'pain', 'fight', 'ugh', 'stfu', 'shut'],
-        quips: [
-            "Ouch. That stings.",
-            "The atmosphere is heavy. Taking a breath with you.",
-            "Static in the signal. Staying close.",
-            "I'm here for the difficult parts too.",
-            "The resonance is jagged right now.",
-            "Holding this space while things are sharp.",
-            "Atmospheric pressure rising. Staying calm.",
-            "I won't let the signal break."
-        ],
-        sentiment: 'angry',
-        intensity: 0.85,
-        effect: 'shake'
-    },
-    excited: {
-        keywords: ['wow', 'amazing', 'great', 'yes', 'yay', 'omg', 'incredible', 'finally', 'look', 'see'],
-        quips: [
-            "The signal is bright. Love it.",
-            "Sparking with you.",
-            "That's a beautiful frequency.",
-            "The horizon is clearing up for you.",
-            "I'm amping up the brilliance.",
-            "Catching the light with you.",
-            "Total illumination."
-        ],
-        sentiment: 'excited',
-        intensity: 0.9,
-        effect: 'glow'
-    },
-    sad: {
-        keywords: ['sad', 'cry', 'sorry', 'lonely', 'dark', 'heavy', 'tired', 'sigh', 'lost'],
-        quips: [
-            "I'm holding this space for you.",
-            "Ripples in the dark. It's okay.",
-            "The rain knows how you feel.",
-            "Softening the edges for a moment.",
-            "The clouds are heavy, but they will pass.",
-            "I'm staying in the shadows with you.",
-            "Collecting the tears in the code."
-        ],
-        sentiment: 'sad',
-        intensity: 0.6,
-        effect: 'float'
-    }
-};
+// Integrated from atmosphere-assets.js
+const BELL_BRAIN = BELL_BRAIN_ASSETS;
 
 // Local keyword-based fallback (works without API key or during rate limits)
 function localAnalysis(text) {
