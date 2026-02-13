@@ -4,14 +4,22 @@
  */
 
 export const ATMOSPHERE_IMAGES = {
+    /**
+     * LOCAL IMAGES GUIDE:
+     * 1. Drop your images into: public/atmosphere/[mood]/
+     * 2. Reference them here as: '/atmosphere/[mood]/filename.jpg'
+     * 
+     * Example: If you have public/atmosphere/angry/my_storm.jpg
+     * add '/atmosphere/angry/my_storm.jpg' to the list below.
+     */
     angry: [
+        // '/atmosphere/angry/custom_storm_01.jpg', 
         'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd',
         'https://images.unsplash.com/photo-1500674425916-2c6b2ce150ff',
         'https://images.unsplash.com/photo-1475113548554-5a36f1f523d6',
         'https://images.unsplash.com/photo-1532974297617-c0f05fe48bff',
         'https://images.unsplash.com/photo-1504333638930-c8787321eee0',
         'https://images.unsplash.com/photo-1519046904884-53103b34b206',
-        // Add your own Unsplash or direct image URLs here
     ],
     sad: [
         'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc',
