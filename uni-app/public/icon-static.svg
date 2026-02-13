@@ -6,16 +6,11 @@
   <!-- Subtle Glow -->
   <circle cx="256" cy="256" r="200" fill="white" fill-opacity="0.05"/>
 
-  <!-- Chat Bubble Shape -->
-  <path d="M156 160C156 137.909 173.909 120 196 120H316C338.091 120 356 137.909 356 160V290C356 312.091 338.091 330 316 330H210L156 380V160Z" 
-        stroke="white" 
-        stroke-width="12" 
-        stroke-opacity="0.9"
-        fill="none" />
+  <!-- Orbital Rings -->
+  <circle cx="256" cy="256" r="110" stroke="white" stroke-width="1.5" stroke-opacity="0.1" fill="none" />
+  <circle cx="256" cy="256" r="85" stroke="white" stroke-width="2" stroke-opacity="0.15" fill="none" />
+  <circle cx="256" cy="256" r="65" stroke="white" stroke-width="2.5" stroke-opacity="0.2" fill="none"/>
 
   <!-- Luminous Core -->
-  <circle cx="256" cy="225" r="34" fill="white"/>
-  
-  <!-- Orbital around core -->
-  <circle cx="256" cy="225" r="70" stroke="white" stroke-width="2" stroke-opacity="0.2" fill="none"/>
+  <circle cx="256" cy="256" r="40" fill="white"/>
 </svg>
