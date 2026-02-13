@@ -51,7 +51,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
             state: 'idle',
             size: 30,
             sentiment: 'neutral',
-            top: step === 'resonance' ? '25%' : '18%', // Higher to clear hero text
+            top: step === 'resonance' ? '18%' : '12%', // Much higher to clear hero text
             left: '50%'
         });
     }, [step, setBellConfig]);

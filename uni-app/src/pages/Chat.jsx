@@ -131,6 +131,11 @@ export default function Chat({
         });
     }, [bellState, mood, setBellConfig]);
 
+    const isMyTurn = useMemo(() => {
+        if (!roomData?.turn) return true; // Free chat if unset
+        return roomData.turn === user?.uid;
+    }, [roomData, user]);
+
     // Behavioral Entropy logic
     useEffect(() => {
         let lastScroll = Date.now();
@@ -234,7 +239,7 @@ export default function Chat({
 
     const sendMessage = useCallback(async () => {
         const trimmed = text.trim();
-        if (!trimmed || sending || !roomId || !user) return;
+        if (!trimmed || sending || !roomId || !user || !isMyTurn) return;
         setSending(true); setText(''); setBellState('thinking');
         try {
             const context = messages.slice(-8).map(m => ({ text: m.text, senderName: m.senderName, isUni: m.isUni }));
@@ -250,6 +255,25 @@ export default function Chat({
                 isUni: false,
                 createdAt: serverTimestamp()
             });
+
+            // EMOJI INTEGRATION: Trigger particles for detected emojis
+            const emojiRegex = /(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g;
+            const emojis = trimmed.match(emojiRegex);
+            if (emojis && emojis.length > 0) {
+                // Focus on the first 3 emojis to avoid overcrowding
+                emojis.slice(0, 3).forEach((emoji, i) => {
+                    setTimeout(() => {
+                        onBubbleEmit({
+                            type: 'emoji',
+                            emoji: emoji,
+                            x: window.innerWidth / 2 + (Math.random() - 0.5) * 200,
+                            y: window.innerHeight - 100,
+                            count: 5
+                        });
+                    }, i * 200);
+                });
+            }
+
             if (analysis.shouldRespond && analysis.quip) {
                 setBellState('generating');
                 setTimeout(() => {
@@ -262,12 +286,42 @@ export default function Chat({
                         createdAt: serverTimestamp()
                     });
                     setBellState('idle');
+
+                    // If Bell responds with emojis, trigger those too
+                    const bellEmojis = analysis.quip.match(emojiRegex);
+                    if (bellEmojis) {
+                        bellEmojis.slice(0, 3).forEach((emoji, i) => {
+                            setTimeout(() => {
+                                onBubbleEmit({
+                                    type: 'emoji',
+                                    emoji: emoji,
+                                    x: window.innerWidth / 2,
+                                    y: 100, // From Bell's area
+                                    count: 5
+                                });
+                            }, i * 200);
+                        });
+                    }
                 }, 800);
-            } else setBellState('idle');
+            } else {
+                setBellState('idle');
+            }
+
+            // TURN TAKING: Switch turn to partner
+            const partnerUid = roomData?.members?.find(m => m !== user.uid);
+            if (partnerUid) {
+                await updateDoc(doc(db, 'chatRooms', roomId), { turn: partnerUid });
+            }
+
         } catch (err) {
-            setText(trimmed); showToast('The resonance failed.'); setBellState('idle');
-        } finally { setSending(false); }
-    }, [text, sending, roomId, user, messages]);
+            console.error('[UNI] Send Error:', err);
+            setText(trimmed);
+            showToast('The resonance failed.');
+            setBellState('idle');
+        } finally {
+            setSending(false);
+        }
+    }, [text, sending, roomId, user, messages, isMyTurn, roomData, onBubbleEmit]);
 
     const handleKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
 
@@ -324,9 +378,21 @@ export default function Chat({
 
             <div className="bell-gravitation-well" ref={bellRef} />
 
-            <div className="input-bar">
-                <input ref={inputRef} className="input" type="text" placeholder="Say something…" value={text} onChange={handleTextChange} onKeyDown={handleKeyDown} disabled={sending} autoFocus />
-                <button className="send-btn" onClick={sendMessage} disabled={!text.trim() || sending}>↑</button>
+            <div className={`input-bar ${!isMyTurn ? 'disabled-turn' : ''}`}>
+                <input
+                    ref={inputRef}
+                    className="input"
+                    type="text"
+                    placeholder={isMyTurn ? "Say something…" : `Waiting for ${partnerName}…`}
+                    value={text}
+                    onChange={handleTextChange}
+                    onKeyDown={handleKeyDown}
+                    disabled={sending || !isMyTurn}
+                    autoFocus
+                />
+                <button className="send-btn" onClick={sendMessage} disabled={!text.trim() || sending || !isMyTurn}>
+                    {isMyTurn ? '↑' : '⌛'}
+                </button>
             </div>
 
             {showMemory && <MemoryCard roomId={roomId} messages={messages} mood={mood} partnerName={partnerName} userName={user?.displayName || 'You'} onClose={() => setShowMemory(false)} onToast={(m) => { setBellState('glow'); showToast(m); setTimeout(() => setBellState('idle'), 2000); }} />}

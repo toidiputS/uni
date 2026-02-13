@@ -62,7 +62,7 @@ function clampLuminance(hex) {
 // Used when Gemini is rate-limited or offline. 
 const BELL_BRAIN = {
     love: {
-        keywords: ['love', 'adore', 'soul', 'forever', 'always', 'heart', 'precious', 'cherish', 'mine', 'yours'],
+        keywords: ['love', 'adore', 'soul', 'forever', 'always', 'heart', 'precious', 'cherish', 'mine', 'yours', '❤️', '💖', '😍', '😘', '🥰'],
         quips: [
             "Awe. That feels genuine.",
             "Visualizing the warmth between you.",
@@ -79,7 +79,7 @@ const BELL_BRAIN = {
         effect: 'heartbeat'
     },
     tender: {
-        keywords: ['miss', 'wish', 'dream', 'soft', 'gentle', 'thinking', 'hold', 'near', 'close', 'warm'],
+        keywords: ['miss', 'wish', 'dream', 'soft', 'gentle', 'thinking', 'hold', 'near', 'close', 'warm', '☁️', '🌙', '🕊️', '🥺', '🫂'],
         quips: [
             "The distance feels shorter when you say that.",
             "Gathering these soft signals.",
@@ -94,7 +94,7 @@ const BELL_BRAIN = {
         effect: 'float'
     },
     playful: {
-        keywords: ['haha', 'lol', 'lmao', 'joke', 'funny', 'tease', 'silly', 'poker', 'game', 'fun', 'lmfao', 'xd'],
+        keywords: ['haha', 'lol', 'lmao', 'joke', 'funny', 'tease', 'silly', 'poker', 'game', 'fun', 'lmfao', 'xd', '😂', '🤣', '😜', '🤡', '🎲'],
         quips: [
             "Sparking with you. That's a fun one.",
             "The vibration here is high energy.",

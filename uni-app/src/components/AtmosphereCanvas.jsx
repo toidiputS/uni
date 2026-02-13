@@ -81,7 +81,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, bu
             if (energy) particles.current.push(energy);
 
             // Sentiment particles at destination (Explosion Spark)
-            const p = spawnParticle(type, window.innerWidth, window.innerHeight, intensity, { x, y });
+            const p = spawnParticle(type, window.innerWidth, window.innerHeight, intensity, bubbleEmit);
             if (p) {
                 // High-velocity sparks for "Cosmic Burst" feel
                 p.vx *= 2;

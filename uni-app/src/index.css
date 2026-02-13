@@ -2169,6 +2169,36 @@ body,
   }
 }
 
+.input-bar.disabled-turn {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+  cursor: not-allowed;
+}
+
+.input-bar.disabled-turn .input {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--uni-text-dim);
+}
+
+.input-bar.disabled-turn .send-btn {
+  background: rgba(255, 255, 255, 0.1);
+  animation: pulse-dim 3s infinite ease-in-out;
+}
+
+@keyframes pulse-dim {
+  0% {
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+
+  100% {
+    opacity: 0.3;
+  }
+}
+
 /* Psychic Presence Pulse (The 'I see you' light) */
 .presence-pulse {
   position: fixed;

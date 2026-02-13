@@ -235,7 +235,7 @@ export default function App() {
             {/* Global Persistent Bell */}
             <div className="global-bell-container" style={{
                 position: 'fixed',
-                top: bellConfig.top || '25%',
+                top: bellConfig.top || '18%',
                 left: bellConfig.left || '50%',
                 transform: `translate(-50%, -50%) translate(${mousePos.x + wanderPos.x}px, ${mousePos.y + wanderPos.y}px)`,
                 zIndex: 50,
@@ -246,7 +246,7 @@ export default function App() {
                 alignItems: 'center'
             }}>
                 <BellDot state={bellConfig.state} size={bellConfig.size} sentiment={bellConfig.sentiment || mood} />
-                <span style={{ opacity: 0.4, marginTop: 6, fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase' }}>Bell</span>
+                <span style={{ opacity: 0.4, marginTop: 2, fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase' }}>Bell</span>
             </div>
 
             {/* Views */}

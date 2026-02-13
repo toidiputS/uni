@@ -136,7 +136,8 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
             // 4. Set the room & update users
             await setDoc(doc(db, 'chatRooms', roomId), {
                 ...roomData,
-                [`ready_${user.uid}`]: true
+                [`ready_${user.uid}`]: true,
+                turn: user.uid // The initiator gets the first turn
             }, { merge: true });
 
             await updateDoc(myRef, {

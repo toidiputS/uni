@@ -143,6 +143,24 @@ export function createBounce(canvasW, canvasH) {
     };
 }
 
+export function createEmoji(x, y, emoji, canvasW) {
+    const drift = (Math.random() - 0.5) * 4;
+    return {
+        type: 'emoji',
+        x: x || Math.random() * canvasW,
+        y: y || 800,
+        vx: drift,
+        vy: -(1 + Math.random() * 2.5),
+        life: 1,
+        maxLife: 1,
+        size: 16 + Math.random() * 24,
+        opacity: 0.6 + Math.random() * 0.4,
+        emoji: emoji || '✨',
+        phase: Math.random() * Math.PI * 2,
+        phaseSpeed: 0.02 + Math.random() * 0.04,
+    };
+}
+
 export function createEnergy(originX, originY, targetX, targetY, color) {
     return {
         type: 'energy',
@@ -450,6 +468,7 @@ export function spawnParticle(type, canvasW, canvasH, intensity, origin) {
         case 'bounce': return createBounce(canvasW, canvasH);
         case 'energy': return createEnergy(origin?.x, origin?.y, origin?.tx, origin?.ty, origin?.color);
         case 'morph': return createMorphingBubble(origin?.x, origin?.y, origin?.w, origin?.h, origin?.color);
+        case 'emoji': return createEmoji(origin?.x, origin?.y, origin?.emoji, canvasW);
         default: return null;
     }
 }
@@ -510,6 +529,12 @@ export function updateParticle(p, w, h, dt) {
             p.x += Math.sin(p.y / 60) * 2 * dt;
             p.rotation += p.vr * dt;
             p.opacity = Math.min(0.6, p.life * 2);
+            break;
+        case 'emoji':
+            p.y += p.vy * dt;
+            p.phase += p.phaseSpeed * dt;
+            p.x += Math.sin(p.phase) * 3 * dt;
+            p.opacity = p.life;
             break;
         case 'trail':
             p.opacity -= p.decay * dt;
@@ -633,6 +658,11 @@ export function renderParticle(ctx, p) {
         ctx.arc(p.x + driftX, p.y + driftY, radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
+    } else if (p.type === 'emoji') {
+        ctx.font = `${p.size}px serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(p.emoji, p.x, p.y);
     } else {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
