@@ -36,17 +36,21 @@
     // Asset Sentinel — catches silent script load failures
     window.addEventListener('error', function (e) {
       if (e.target && e.target.tagName === 'SCRIPT') {
-        const root = document.getElementById('root');
-        if (root) {
-          root.innerHTML = `
-            <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #050508; color: #fff; font-family: sans-serif; text-align: center; padding: 20px;">
-              <div>
-                <div style="font-size: 24px; letter-spacing: 0.2em; margin-bottom: 20px; color: #ff2d55;">ASSET ERROR</div>
-                <div style="font-size: 12px; opacity: 0.6; line-height: 1.6;">The Sanctuary could not reach the cloud servers.<br/>Please ensure you have a stable connection and refresh.</div>
-                <button onclick="window.location.reload()" style="margin-top: 30px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 99px; cursor: pointer;">Reconnect</button>
+        // Only trigger for critical assets. Ignore blockers like analytics/speed-insights.
+        const src = e.target.src || '';
+        if (src.includes('/assets/index') || src.includes('main.jsx')) {
+          const root = document.getElementById('root');
+          if (root) {
+            root.innerHTML = `
+              <div style="height: 100vh; display: flex; align-items: center; justify-content: center; background: #050508; color: #fff; font-family: sans-serif; text-align: center; padding: 20px;">
+                <div>
+                  <div style="font-size: 24px; letter-spacing: 0.2em; margin-bottom: 20px; color: #ff2d55;">ASSET ERROR</div>
+                  <div style="font-size: 12px; opacity: 0.6; line-height: 1.6;">The Sanctuary could not reach its core logic.<br/>Please ensure you have a stable connection and refresh.</div>
+                  <button onclick="window.location.reload()" style="margin-top: 30px; background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 99px; cursor: pointer;">Reconnect</button>
+                </div>
               </div>
-            </div>
-          `;
+            `;
+          }
         }
       }
     }, true);
