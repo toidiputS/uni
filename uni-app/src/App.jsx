@@ -246,7 +246,7 @@ export default function App() {
                 alignItems: 'center'
             }}>
                 <BellDot state={bellConfig.state} size={bellConfig.size} sentiment={bellConfig.sentiment || mood} />
-                <span style={{ opacity: 0.4, marginTop: 12, fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase' }}>Bell</span>
+                <span className="ethereal-text" style={{ marginTop: -2 }}>Bell</span>
             </div>
 
             {/* Views */}
