@@ -62,7 +62,7 @@ Product documentation, design assets, and the original "Canon" vision.
 ## 📱 Live Deployment
 
 •UNI• is live on Vercel:
-[https://uni-itstrader.vercel.app](https://uni-itstrader.vercel.app)
+https://uni.itsai.chat
 
 ---
 
