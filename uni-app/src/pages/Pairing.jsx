@@ -82,6 +82,44 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
         setTimeout(() => setCopied(false), 2000);
     };
 
+    const handleSharePWA = async () => {
+        const shareData = {
+            title: '•UNI•',
+            text: 'Experience messaging as living art. Join me in the Sanctuary.',
+            url: 'https://uni.itsai.chat'
+        };
+
+        if (navigator.share && navigator.canShare(shareData)) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.log('Share failed', err);
+            }
+        } else {
+            navigator.clipboard?.writeText(shareData.url);
+            alert('Link copied to clipboard');
+        }
+    };
+
+    const handleInvitePartner = async () => {
+        const shareData = {
+            title: '•UNI• Invite',
+            text: `Connect with me on •UNI•. My resonance code is: ${myCode}`,
+            url: 'https://uni.itsai.chat'
+        };
+
+        if (navigator.share && navigator.canShare(shareData)) {
+            try {
+                await navigator.share(shareData);
+            } catch (err) {
+                console.log('Invite failed', err);
+            }
+        } else {
+            navigator.clipboard?.writeText(`${shareData.text} — ${shareData.url}`);
+            alert('Invite copied to clipboard');
+        }
+    };
+
     const handlePair = async (e) => {
         e.preventDefault();
         if (!partnerCode.trim() || partnerCode.length < 6) {
@@ -222,11 +260,28 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
                         className="btn btn-primary"
                         type="submit"
                         disabled={loading}
-                        style={{ width: '100%' }}
+                        style={{ width: '100%', marginBottom: 12 }}
                     >
                         {loading ? <span className="spinner" /> : 'Connect Interface'}
                     </button>
                 </form>
+
+                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                    <button
+                        className="btn btn-glass btn-sm"
+                        onClick={handleSharePWA}
+                        style={{ flex: 1, fontSize: 10, letterSpacing: '0.1em' }}
+                    >
+                        Share PWA
+                    </button>
+                    <button
+                        className="btn btn-glass btn-sm"
+                        onClick={handleInvitePartner}
+                        style={{ flex: 1, fontSize: 10, letterSpacing: '0.1em' }}
+                    >
+                        Invite Partner
+                    </button>
+                </div>
             </div>
 
             <button
