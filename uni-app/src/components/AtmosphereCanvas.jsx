@@ -28,58 +28,73 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     const prevBgVideo = useRef(null);
     const isDrawing = useRef(false);
 
-    // Load Local Assets (optional override)
-    useEffect(() => {
-        const preset = WEATHER_PRESETS[mood];
-        const pool = preset?.skyImages || [];
+    const transitionSpeed = useRef(0.003);
 
-        // CROSS-FADE DOCTRINE: Capture current as "previous"
+    const pickNewAsset = useCallback((targetMoodName) => {
+        const preset = WEATHER_PRESETS[targetMoodName];
+        const pool = preset?.skyImages || [];
+        if (pool.length === 0) return;
+
+        // CROSS-FADE DOCTRINE: Capture current the active target as the new baseline for fading out
         prevBgImage.current = targetBgImage.current || bgImage.current;
         prevBgVideo.current = targetBgVideo.current || bgVideo.current;
 
-        // Pick one local asset from the pool
-        if (pool.length > 0) {
-            const idx = Math.floor(Math.random() * pool.length);
-            const selectedSrc = pool[idx];
+        // Randomized fade speed: 0.001 (very slow) to 0.008 (brisk)
+        transitionSpeed.current = 0.001 + Math.random() * 0.006;
 
-            if (selectedSrc.toLowerCase().endsWith('.mp4')) {
-                const video = document.createElement('video');
-                video.src = selectedSrc;
-                video.autoplay = true;
-                video.loop = true;
-                video.muted = true;
-                video.playsInline = true;
-                video.crossOrigin = "anonymous";
-                video.oncanplay = () => {
-                    // CGEI Randomization: Never start a loop at 0:00
-                    if (video.duration) {
-                        video.currentTime = Math.random() * video.duration;
-                    }
-                    targetBgVideo.current = video;
-                    targetBgImage.current = null;
-                };
-            } else {
-                const img = new Image();
-                img.src = selectedSrc;
-                img.crossOrigin = "anonymous";
-                img.onload = () => {
-                    targetBgImage.current = img;
-                    targetBgVideo.current = null;
-                };
-                img.onerror = () => {
-                    targetBgImage.current = null;
-                };
-            }
+        const idx = Math.floor(Math.random() * pool.length);
+        const selectedSrc = pool[idx];
+
+        if (selectedSrc.toLowerCase().endsWith('.mp4')) {
+            const video = document.createElement('video');
+            video.src = selectedSrc;
+            video.autoplay = true;
+            video.loop = true;
+            video.muted = true;
+            video.playsInline = true;
+            video.crossOrigin = "anonymous";
+            video.oncanplay = () => {
+                if (video.duration) {
+                    video.currentTime = Math.random() * video.duration;
+                }
+                targetBgVideo.current = video;
+                targetBgImage.current = null;
+                transitionProgress.current = 0;
+            };
         } else {
-            targetBgImage.current = null;
-            targetBgVideo.current = null;
+            const img = new Image();
+            img.src = selectedSrc;
+            img.crossOrigin = "anonymous";
+            img.onload = () => {
+                targetBgImage.current = img;
+                targetBgVideo.current = null;
+                transitionProgress.current = 0;
+            };
         }
+    }, []);
 
+    // Handle mood changes
+    useEffect(() => {
+        pickNewAsset(mood);
         if (mood !== currentMood.current) {
             targetMood.current = mood;
-            transitionProgress.current = 0;
         }
-    }, [mood]);
+    }, [mood, pickNewAsset]);
+
+    // Constant Atmospheric Bleed: Cycle images even if mood stays same
+    useEffect(() => {
+        const cycle = () => {
+            const delay = 15000 + Math.random() * 25000; // 15-40 seconds
+            return setTimeout(() => {
+                if (transitionProgress.current >= 1) {
+                    pickNewAsset(targetMood.current);
+                }
+                timer = cycle();
+            }, delay);
+        };
+        let timer = cycle();
+        return () => clearTimeout(timer);
+    }, [pickNewAsset]);
 
     // Handle bubble and draw emissions from parent
     useEffect(() => {
@@ -197,9 +212,9 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
 
             ctx.clearRect(0, 0, w, h);
 
-            // Transition logic (Slower for Emotional Bleed)
+            // Transition logic (Slower for Emotional Bleed + Randomized Flux)
             if (transitionProgress.current < 1) {
-                transitionProgress.current = Math.min(1, transitionProgress.current + 0.003 * dt);
+                transitionProgress.current = Math.min(1, transitionProgress.current + transitionSpeed.current * dt);
                 if (transitionProgress.current >= 1) {
                     currentMood.current = targetMood.current;
                     bgImage.current = targetBgImage.current;
@@ -210,8 +225,11 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                     scheduleLightning();
                 }
             } else {
+                // Stabilize pointers once transition is locked
                 bgImage.current = targetBgImage.current;
                 bgVideo.current = targetBgVideo.current;
+                prevBgImage.current = null;
+                prevBgVideo.current = null;
             }
 
             // ─── Generative Art Layer ───
@@ -295,14 +313,15 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                 ctx.restore();
             };
 
-            const mainMedia = bgVideo.current || bgImage.current;
+            const currentMedia = targetBgVideo.current || targetBgImage.current;
             const resMedia = prevBgVideo.current || prevBgImage.current;
 
+            // CROSS-FADE DOCTRINE: The "resMedia" (legacy) fades OUT while "currentMedia" (new target) fades IN.
             if (resMedia && transitionProgress.current < 1) {
                 renderMedia(resMedia, (1 - transitionProgress.current), true);
             }
-            if (mainMedia) {
-                renderMedia(mainMedia, transitionProgress.current);
+            if (currentMedia) {
+                renderMedia(currentMedia, transitionProgress.current);
             }
 
             const fadingOut = transitionProgress.current < 1;
