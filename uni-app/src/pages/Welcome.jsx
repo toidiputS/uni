@@ -51,7 +51,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
             state: 'idle',
             size: 64,
             sentiment: 'neutral',
-            top: step === 'resonance' ? '20%' : '15%',
+            top: step === 'resonance' ? '15%' : '15%',
             left: '50%'
         });
     }, [step, setBellConfig]);
@@ -152,18 +152,18 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
             <div className={`welcome-content ${visible ? 'visible' : ''}`} style={{ textAlign: 'center' }}>
 
-                <div style={{ height: step === 'onboarding' ? '15vh' : '22vh' }} />
+                <div style={{ height: step === 'onboarding' ? '15vh' : '18vh' }} />
 
                 {/* ACT 1: RESONANCE (Initial State) */}
                 {step === 'resonance' && (
-                    <div className="flex flex-col items-center justify-center gap-12 fade-in w-full text-center" style={{ flex: 1, px: 20 }}>
+                    <div className="flex flex-col items-center justify-center gap-6 fade-in w-full text-center" style={{ flex: 1, px: 20, position: 'relative', zIndex: 1 }}>
                         <h1 style={{
-                            fontSize: 'clamp(24px, 5vw, 42px)',
+                            fontSize: 'clamp(20px, 4.5vw, 34px)',
                             fontWeight: 700,
                             letterSpacing: '-0.02em',
                             maxWidth: 800,
-                            lineHeight: 1.1,
-                            marginBottom: 24,
+                            lineHeight: 1.15,
+                            marginBottom: 16,
                             background: 'linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0.7) 100%)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent'
@@ -171,13 +171,13 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             The World’s First Conversational Generative Emotion Interface
                         </h1>
 
-                        <div style={{ maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 40 }}>
-                            <p style={{ fontSize: 18, color: 'var(--uni-text)', lineHeight: 1.6, fontWeight: 400 }}>
+                        <div style={{ maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
+                            <p style={{ fontSize: 16, color: 'var(--uni-text)', lineHeight: 1.5, fontWeight: 400 }}>
                                 •UNI• is a messaging experience that turns your chat into living, breathing emotional art.
                                 Instead of static gray bubbles, the interface reacts to the emotional Resonance between you and your partner.
                             </p>
 
-                            <p style={{ fontSize: 14, color: 'var(--uni-text-dim)', lineHeight: 1.6, opacity: 0.8 }}>
+                            <p style={{ fontSize: 13, color: 'var(--uni-text-dim)', lineHeight: 1.5, opacity: 0.8 }}>
                                 Built for connection, powered by emotion, UNI listens to the tone beneath your words and transforms the entire conversation space in real time.
                             </p>
                         </div>
@@ -276,7 +276,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                 {/* 4. •UNI• (Base Identity) */}
                 <div className="wordmark-reflect" style={{
                     position: 'fixed',
-                    bottom: '22vh',
+                    bottom: '8vh',
                     left: 0,
                     right: 0,
                     margin: 0,
