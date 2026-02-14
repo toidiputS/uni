@@ -125,7 +125,6 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
     };
 
     const skipToIntro = () => {
-        if (sequenceRef.current) clearTimeout(sequenceRef.current);
         setStep('urgency');
         markOnboardingComplete();
         if (!isPlaying) onToggleAudio();
@@ -169,10 +168,6 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                             <ReflectiveButton size="sm" onClick={skipToIntro}>
                                 Skip
-                            </ReflectiveButton>
-
-                            <ReflectiveButton size="sm" onClick={() => window.open('https://uni.putit.on', '_blank')}>
-                                Read
                             </ReflectiveButton>
                         </div>
 

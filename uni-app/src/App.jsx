@@ -17,7 +17,8 @@ import BellDot from './components/BellDot';
 import { hasSeenOnboarding } from './lib/onboarding';
 
 export default function App() {
-    const [view, setView] = useState('loading');
+    // FORCE Manifesto as the true entry point for this recovery session
+    const [view, setView] = useState('manifesto');
     const [user, setUser] = useState(null);
     const [userData, setOrderedUserData] = useState(null);
     const [roomId, setRoomId] = useState(null);
@@ -123,10 +124,10 @@ export default function App() {
     useEffect(() => {
         if (!auth) {
             console.warn('[•UNI•] Auth not available. Skipping sync.');
-            const timer = setTimeout(() => {
-                setView(hasSeenOnboarding() ? 'welcome' : 'manifesto');
-            }, 500);
-            return () => clearTimeout(timer);
+            // If auth is not available, we still want to show manifesto first.
+            // The original logic here was to check hasSeenOnboarding, but we're forcing manifesto.
+            setView('manifesto');
+            return; // No need for a timer if we're setting it immediately
         }
 
         const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -139,11 +140,8 @@ export default function App() {
                         setOrderedUserData(data);
                         if (data.pairedWith && data.lastRoomId) {
                             setRoomId(data.lastRoomId);
-                            if (!hasSeenOnboarding()) {
-                                setView('manifesto');
-                            } else {
-                                setView('chat');
-                            }
+                            // Always go to manifesto first, then chat if onboarding is done
+                            setView('manifesto');
                         } else {
                             setView('pairing');
                         }

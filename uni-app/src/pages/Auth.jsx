@@ -34,8 +34,7 @@ export default function Auth({ onBack, onAuthed, setBellConfig }) {
 
     const handleGoogleLogin = async () => {
         if (!auth || !googleProvider) {
-            setError('Gateway to Google is closed. Check connection.');
-            return;
+            console.warn('[UNI] Google Auth services missing.');
         }
         if (primed !== 'google') {
             setPrimed('google');
@@ -74,8 +73,7 @@ export default function Auth({ onBack, onAuthed, setBellConfig }) {
 
     const handleGuestLogin = async () => {
         if (!auth) {
-            setError('Sanctuary offline. Guest mode unavailable.');
-            return;
+            console.warn('[UNI] Auth service missing for guest.');
         }
         if (primed !== 'guest') {
             setPrimed('guest');
@@ -112,10 +110,6 @@ export default function Auth({ onBack, onAuthed, setBellConfig }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
-        if (!auth) {
-            setError('The sanctuary gates are currently locked.');
-            return;
-        }
         setLoading(true);
         setPrimed(null);
 
