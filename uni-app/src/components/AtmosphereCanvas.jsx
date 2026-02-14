@@ -21,6 +21,8 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     const lastTime = useRef(0);
     const bgImage = useRef(null);
     const targetBgImage = useRef(null);
+    const bgVideo = useRef(null);
+    const targetBgVideo = useRef(null);
     const isDrawing = useRef(false);
 
     // Load Local Assets (optional override)
@@ -33,18 +35,33 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             const idx = Math.floor(Math.random() * pool.length);
             const selectedSrc = pool[idx];
 
-            const img = new Image();
-            img.src = selectedSrc;
-            img.crossOrigin = "anonymous";
-            img.onload = () => {
-                targetBgImage.current = img;
-            };
-            img.onerror = () => {
-                // If local file doesn't exist yet, we stay purely generative
-                targetBgImage.current = null;
-            };
+            if (selectedSrc.toLowerCase().endsWith('.mp4')) {
+                const video = document.createElement('video');
+                video.src = selectedSrc;
+                video.autoplay = true;
+                video.loop = true;
+                video.muted = true;
+                video.playsInline = true;
+                video.crossOrigin = "anonymous";
+                video.oncanplay = () => {
+                    targetBgVideo.current = video;
+                    targetBgImage.current = null;
+                };
+            } else {
+                const img = new Image();
+                img.src = selectedSrc;
+                img.crossOrigin = "anonymous";
+                img.onload = () => {
+                    targetBgImage.current = img;
+                    targetBgVideo.current = null;
+                };
+                img.onerror = () => {
+                    targetBgImage.current = null;
+                };
+            }
         } else {
             targetBgImage.current = null;
+            targetBgVideo.current = null;
         }
 
         if (mood !== currentMood.current) {
@@ -175,11 +192,13 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                 if (transitionProgress.current >= 1) {
                     currentMood.current = targetMood.current;
                     bgImage.current = targetBgImage.current;
+                    bgVideo.current = targetBgVideo.current;
                     clearTimeout(lightningTimer.current);
                     scheduleLightning();
                 }
             } else {
                 bgImage.current = targetBgImage.current;
+                bgVideo.current = targetBgVideo.current;
             }
 
             // ─── Generative Art Layer ───
@@ -234,15 +253,20 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             }
             ctx.restore();
 
-            // ─── Image Layer ───
-            if (bgImage.current) {
+            // ─── Image/Video Layer ───
+            const mediaSource = bgVideo.current || bgImage.current;
+            if (mediaSource) {
                 ctx.save();
-                ctx.globalAlpha = 0.35 * (transitionProgress.current > 0.5 ? 1 : transitionProgress.current * 2);
-                ctx.filter = 'brightness(0.4) contrast(1.2) saturate(1.1) blur(40px)';
-                const scale = Math.max(w / bgImage.current.width, h / bgImage.current.height);
-                const x = (w - bgImage.current.width * scale) / 2;
-                const y = (h - bgImage.current.height * scale) / 2;
-                ctx.drawImage(bgImage.current, x, y, bgImage.current.width * scale, bgImage.current.height * scale);
+                ctx.globalAlpha = (bgVideo.current ? 0.6 : 0.35) * (transitionProgress.current > 0.5 ? 1 : transitionProgress.current * 2);
+                ctx.filter = 'brightness(0.4) contrast(1.2) distribute(1.1) blur(20px)';
+
+                const mWidth = bgVideo.current ? mediaSource.videoWidth : mediaSource.width;
+                const mHeight = bgVideo.current ? mediaSource.videoHeight : mediaSource.height;
+
+                const scale = Math.max(w / mWidth, h / mHeight);
+                const x = (w - mWidth * scale) / 2;
+                const y = (h - mHeight * scale) / 2;
+                ctx.drawImage(mediaSource, x, y, mWidth * scale, mHeight * scale);
                 ctx.restore();
             }
 
@@ -308,10 +332,24 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                 if (lightningFlash.current < 0.01) lightningFlash.current = 0;
             }
 
-            // Morphing Bubbles Layer (Gentle Ambient)
+            // Morphing Bubbles Layer (Gentle Ambient + Spitting Logic)
             if (bubblePositions && bubblePositions.length > 0) {
                 bubblePositions.forEach(b => {
-                    // 10x slower spawn rate for continuous atmosphere
+                    // Continuous "Spit" effect
+                    const spitChance = b.sentiment === 'love' || b.sentiment === 'happy' ? 0.08 : 0.02;
+                    if (Math.random() < spitChance * intensity * dt) {
+                        const type = b.sentiment === 'love' ? 'heart' : (b.sentiment === 'angry' ? 'melt' : 'spark');
+                        const p = spawnParticle(type, w, h, intensity, {
+                            x: b.x + Math.random() * b.width,
+                            y: b.y + b.height / 2
+                        });
+                        if (p) {
+                            p.vx *= 0.5;
+                            p.vy = type === 'melt' ? 1 : -1;
+                            particles.current.push(p);
+                        }
+                    }
+
                     if (Math.random() < 0.005 * intensity) {
                         const m = spawnParticle('morph', w, h, intensity, {
                             x: b.x, y: b.y, w: b.width, h: b.height,

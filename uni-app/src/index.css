@@ -1145,6 +1145,8 @@ body,
   max-width: 100%;
   word-wrap: break-word;
   background: rgba(255, 255, 255, 0.015);
+  animation: bubble-pop 0.5s var(--ease-bounce), bubble-float 8s ease-in-out infinite;
+  transform-origin: center bottom;
   /* Almost invisible background */
   backdrop-filter: blur(calc(var(--atmosphere-clarity) * 4px));
   -webkit-backdrop-filter: blur(calc(var(--atmosphere-clarity) * 4px));
@@ -1162,11 +1164,49 @@ body,
 
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
+  }
+
+  33% {
+    transform: translateY(-3px) rotate(1deg);
+  }
+
+  66% {
+    transform: translateY(1px) rotate(-1deg);
+  }
+}
+
+@keyframes bubble-melt {
+  0% {
+    border-radius: 12px 18px 12px 18px;
+    transform: scale(1);
   }
 
   50% {
-    transform: translateY(-4px);
+    border-radius: 8px 12px 20px 24px;
+    transform: scale(1.02, 0.98);
+  }
+
+  100% {
+    border-radius: 12px 18px 12px 18px;
+    transform: scale(1);
+  }
+}
+
+@keyframes bubble-pop {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
   }
 }
 
@@ -1184,6 +1224,7 @@ body,
 
 .bubble[data-sentiment="angry"] {
   --aura-color: var(--emo-angry);
+  animation: bubble-melt 4s ease-in-out infinite, shake 0.6s ease-in-out;
 }
 
 .bubble[data-sentiment="excited"] {
@@ -1382,7 +1423,8 @@ body,
   overflow: hidden;
 }
 
-.bubble.image-bubble img {
+.bubble.image-bubble img,
+.bubble.image-bubble .bubble-video {
   width: 100%;
   border-radius: calc(var(--radius-md) - 4px);
   display: block;
@@ -1390,7 +1432,8 @@ body,
   transition: opacity 0.3s var(--ease);
 }
 
-.bubble.image-bubble img:hover {
+.bubble.image-bubble img:hover,
+.bubble.image-bubble .bubble-video:hover {
   opacity: 0.9;
 }
 

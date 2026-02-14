@@ -24,20 +24,63 @@ export function createRaindrop(canvasW, canvasH, intensity = 0.7) {
 }
 
 export function createHeart(x, y, canvasW) {
-    const drift = (Math.random() - 0.5) * 3; // Wider drift
+    const drift = (Math.random() - 0.5) * 4;
+    const size = 6 + Math.random() * 20;
+    // CGEI Evolution: Random heart styles (filled, outline, wide, tall)
+    const style = Math.random() > 0.5 ? 'filled' : 'outline';
+    const shapeBias = 0.8 + Math.random() * 0.4; // Varied proportions
+
     return {
         type: 'heart',
         x: x || Math.random() * canvasW,
         y: y || canvasW,
         vx: drift,
-        vy: -(0.8 + Math.random() * 2), // Slightly slower rise
+        vy: -(0.5 + Math.random() * 1.5),
         life: 1,
         maxLife: 1,
-        size: 10 + Math.random() * 15, // Bigger hearts
-        opacity: 0.3 + Math.random() * 0.4,
-        color: '255, 120, 160',
+        size,
+        style,
+        shapeBias,
+        opacity: 0.2 + Math.random() * 0.5,
+        color: Math.random() > 0.8 ? '255, 100, 200' : '255, 150, 180', // Vibrant variety
         phase: Math.random() * Math.PI * 2,
-        phaseSpeed: 0.01 + Math.random() * 0.03,
+        phaseSpeed: 0.02 + Math.random() * 0.04,
+        rotation: (Math.random() - 0.5) * 0.2,
+        vr: (Math.random() - 0.5) * 0.01
+    };
+}
+
+export function createMelt(x, y, color) {
+    return {
+        type: 'melt',
+        x,
+        y,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: 1 + Math.random() * 2,
+        life: 1,
+        maxLife: 1,
+        size: 2 + Math.random() * 4,
+        opacity: 0.6,
+        color: color || '255, 255, 255',
+        gravity: 0.05
+    };
+}
+
+export function createPop(x, y, color) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 4 + Math.random() * 6;
+    return {
+        type: 'pop',
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 1,
+        maxLife: 1,
+        size: 1 + Math.random() * 3,
+        opacity: 1,
+        color: color || '255, 255, 255',
+        decay: 0.05 + Math.random() * 0.05
     };
 }
 
@@ -179,16 +222,29 @@ export function createMorphingBubble(x, y, w, h, color, isBurst = false) {
 
 // ─── Shape Helpers ───
 
-function drawHeart(ctx, x, y, size, color, opacity) {
+function drawHeart(ctx, x, y, size, color, opacity, style = 'filled', shapeBias = 1, rotation = 0) {
     const s = size * 0.5;
-    ctx.fillStyle = `rgba(${color}, ${opacity})`;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rotation);
+    ctx.scale(shapeBias, 1 / shapeBias);
+
     ctx.beginPath();
-    ctx.moveTo(x, y + s * 0.4);
-    ctx.bezierCurveTo(x, y - s * 0.2, x - s, y - s * 0.6, x - s, y + s * 0.1);
-    ctx.bezierCurveTo(x - s, y + s * 0.6, x, y + s * 0.9, x, y + s * 1.1);
-    ctx.bezierCurveTo(x, y + s * 0.9, x + s, y + s * 0.6, x + s, y + s * 0.1);
-    ctx.bezierCurveTo(x + s, y - s * 0.6, x, y - s * 0.2, x, y + s * 0.4);
-    ctx.fill();
+    ctx.moveTo(0, s * 0.4);
+    ctx.bezierCurveTo(0, -s * 0.2, -s, -s * 0.6, -s, s * 0.1);
+    ctx.bezierCurveTo(-s, s * 0.6, 0, s * 0.9, 0, s * 1.1);
+    ctx.bezierCurveTo(0, s * 0.9, s, s * 0.6, s, s * 0.1);
+    ctx.bezierCurveTo(s, -s * 0.6, 0, -s * 0.2, 0, s * 0.4);
+
+    if (style === 'filled') {
+        ctx.fillStyle = `rgba(${color}, ${opacity})`;
+        ctx.fill();
+    } else {
+        ctx.strokeStyle = `rgba(${color}, ${opacity})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+    }
+    ctx.restore();
 }
 
 
@@ -400,6 +456,8 @@ export function spawnParticle(type, canvasW, canvasH, intensity, origin) {
         case 'bounce': return createBounce(canvasW, canvasH);
         case 'energy': return createEnergy(origin?.x, origin?.y, origin?.tx, origin?.ty, origin?.color);
         case 'morph': return createMorphingBubble(origin?.x, origin?.y, origin?.w, origin?.h, origin?.color);
+        case 'melt': return createMelt(origin?.x, origin?.y, origin?.color);
+        case 'pop': return createPop(origin?.x, origin?.y, origin?.color);
         default: return null;
     }
 }
@@ -498,6 +556,19 @@ export function updateParticle(p, w, h, dt) {
             p.phase += 0.05 * dt;
             p.life -= p.speed * dt;
             break;
+        case 'melt':
+            p.vy += p.gravity * dt;
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.opacity = p.life;
+            break;
+        case 'pop':
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.life -= p.decay * dt;
+            p.opacity = p.life;
+            p.size *= 0.95;
+            break;
     }
 }
 
@@ -583,6 +654,10 @@ export function renderParticle(ctx, p) {
         ctx.arc(p.x + driftX, p.y + driftY, radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
+    } else if (p.type === 'melt' || p.type === 'pop') {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
     } else {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);

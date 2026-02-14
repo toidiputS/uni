@@ -243,14 +243,19 @@ export default function Chat({
     const handleImageSelect = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        if (!file.type.startsWith('image/')) {
-            showToast("Only images are supported ✨");
+        if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+            showToast("Only images and videos are supported ✨");
             return;
         }
         setSelectedFile(file);
-        const reader = new FileReader();
-        reader.onloadend = () => setImagePreview(reader.result);
-        reader.readAsDataURL(file);
+
+        if (file.type.startsWith('video/')) {
+            setImagePreview(URL.createObjectURL(file));
+        } else {
+            const reader = new FileReader();
+            reader.onloadend = () => setImagePreview(reader.result);
+            reader.readAsDataURL(file);
+        }
     };
 
     const sendMessage = useCallback(async () => {
@@ -367,7 +372,11 @@ export default function Chat({
                             <div key={msg.id} className={`msg-row ${isUni ? 'uni-msg' : isMe ? 'sent' : 'received'} ${isArchived ? 'archived' : ''}`}>
                                 <div className={`bubble ${isUni ? 'uni' : isMe ? 'sent' : 'received'} ${msg.imageUrl ? 'image-bubble' : ''}`} data-sentiment={msg.sentiment || 'neutral'} data-effect={isArchived ? 'none' : (msg.bubbleEffect || 'breathe')}>
                                     {msg.imageUrl && (
-                                        <img src={msg.imageUrl} alt="Shared" onClick={() => window.open(msg.imageUrl, '_blank')} />
+                                        msg.imageUrl.toLowerCase().includes('.mp4') ? (
+                                            <video src={msg.imageUrl} className="bubble-video" autoPlay muted loop playsInline onClick={() => window.open(msg.imageUrl, '_blank')} />
+                                        ) : (
+                                            <img src={msg.imageUrl} alt="Shared" onClick={() => window.open(msg.imageUrl, '_blank')} />
+                                        )
                                     )}
                                     {msg.text && <div>{msg.text}</div>}
                                 </div>
@@ -383,7 +392,11 @@ export default function Chat({
             <div className="input-bar">
                 {imagePreview && (
                     <div className="image-preview-wrap">
-                        <img src={imagePreview} className="image-preview" alt="Preview" />
+                        {selectedFile?.type?.startsWith('video/') ? (
+                            <video src={imagePreview} className="image-preview" muted loop autoPlay />
+                        ) : (
+                            <img src={imagePreview} className="image-preview" alt="Preview" />
+                        )}
                         <button className="clear-preview" onClick={() => { setSelectedFile(null); setImagePreview(null); }}>×</button>
                     </div>
                 )}
@@ -396,7 +409,7 @@ export default function Chat({
                     type="file"
                     ref={fileInputRef}
                     onChange={handleImageSelect}
-                    accept="image/*"
+                    accept="image/*,video/*"
                     hidden
                     capture="environment" // Allows camera option on mobile
                 />
