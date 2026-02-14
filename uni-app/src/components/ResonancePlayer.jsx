@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { db, storage } from '../lib/firebase';
+import { db } from '../lib/firebase';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
+import { supabase } from '../lib/supabase';
 
 export default function ResonancePlayer({ roomId, user, onPlay, onClose, currentTitle, isPlaying, onToggle }) {
     const [songs, setSongs] = useState([]);
@@ -24,11 +24,15 @@ export default function ResonancePlayer({ roomId, user, onPlay, onClose, current
         return unsub;
     }, [roomId]);
 
-    const handleFileUpload = (e) => {
+    const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Loosened type check for mobile/uncommon audio formats
+        if (!supabase) {
+            alert("Supabase storage is not configured. Please check your keys.");
+            return;
+        }
+
         const isAudio = file.type.startsWith('audio/') || file.name.endsWith('.mp3') || file.name.endsWith('.m4a') || file.name.endsWith('.wav');
         if (!isAudio) {
             alert("Please share a valid audio file (MP3, M4A, WAV).");
@@ -36,34 +40,41 @@ export default function ResonancePlayer({ roomId, user, onPlay, onClose, current
         }
 
         setUploading(true);
-        setProgress(0);
+        setProgress(10); // Start progress
 
-        const storageRef = ref(storage, `rooms/${roomId}/resonance/${Date.now()}_${file.name}`);
-        const uploadTask = uploadBytesResumable(storageRef, file);
+        try {
+            const filePath = `rooms/${roomId}/${Date.now()}_${file.name}`;
 
-        uploadTask.on('state_changed',
-            (snapshot) => {
-                const p = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                setProgress(p);
-            },
-            (err) => {
-                console.error('[Resonance] Upload task failed:', err);
-                setUploading(false);
-                alert(`Upload failed: ${err.message}. Check your internet or storage rules.`);
-            },
-            async () => {
-                const url = await getDownloadURL(uploadTask.snapshot.ref);
-                await addDoc(collection(db, 'chatRooms', roomId, 'resonance'), {
-                    title: file.name.replace(/\.[^/.]+$/, ""),
-                    url,
-                    sharedBy: user.uid,
-                    sharedByName: user.displayName || 'Partner',
-                    createdAt: serverTimestamp()
+            const { data, error: uploadError } = await supabase.storage
+                .from('resonance')
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: false
                 });
-                setUploading(false);
-                setProgress(0);
-            }
-        );
+
+            if (uploadError) throw uploadError;
+
+            setProgress(90);
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('resonance')
+                .getPublicUrl(filePath);
+
+            await addDoc(collection(db, 'chatRooms', roomId, 'resonance'), {
+                title: file.name.replace(/\.[^/.]+$/, ""),
+                url: publicUrl,
+                sharedBy: user.uid,
+                sharedByName: user.displayName || 'Partner',
+                createdAt: serverTimestamp()
+            });
+
+        } catch (err) {
+            console.error('[Resonance] Upload failed:', err);
+            alert(`Upload failed: ${err.message}`);
+        } finally {
+            setUploading(false);
+            setProgress(0);
+        }
     };
 
     return (
