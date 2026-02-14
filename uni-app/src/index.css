@@ -234,6 +234,14 @@ body,
   }
 }
 
+.fade-in {
+  animation: fadeIn 0.8s var(--ease) forwards;
+}
+
+.fade-slide-up {
+  animation: fadeSlideUp 0.8s var(--ease) forwards;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -241,6 +249,21 @@ body,
 
   to {
     opacity: 1;
+  }
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-left-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -305,8 +328,19 @@ body,
 }
 
 @keyframes ethereal-float {
-  0%, 100% { opacity: 0.3; transform: translateY(0); letter-spacing: 0.25em; }
-  50% { opacity: 0.5; transform: translateY(-1px); letter-spacing: 0.3em; }
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+    letter-spacing: 0.25em;
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: translateY(-1px);
+    letter-spacing: 0.3em;
+  }
 }
 
 .ethereal-text {
@@ -1585,7 +1619,8 @@ body,
   flex-shrink: 0;
   width: 100%;
   position: relative;
-  z-index: 100; /* Ensure it's above everything */
+  z-index: 100;
+  /* Ensure it's above everything */
   background: linear-gradient(to top, var(--uni-void) 40%, transparent);
 }
 

@@ -12,7 +12,6 @@ import Auth from './pages/Auth';
 import Pairing from './pages/Pairing';
 import Chat from './pages/Chat';
 import Manifesto from './pages/Manifesto';
-import BellOnboarding from './components/BellOnboarding';
 import AtmosphereCanvas from './components/AtmosphereCanvas';
 import BellDot from './components/BellDot';
 import { hasSeenOnboarding } from './lib/onboarding';
@@ -122,6 +121,14 @@ export default function App() {
 
     // Listen to Firebase auth state
     useEffect(() => {
+        if (!auth) {
+            console.warn('[•UNI•] Auth not available. Skipping sync.');
+            const timer = setTimeout(() => {
+                setView(hasSeenOnboarding() ? 'welcome' : 'manifesto');
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+
         const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
             if (firebaseUser) {
                 setUser(firebaseUser);
@@ -148,20 +155,37 @@ export default function App() {
                     setView('error');
                 }
             } else {
-
                 setUser(null);
                 setOrderedUserData(null);
                 setRoomId(null);
-                setView('welcome');
+                if (!hasSeenOnboarding()) {
+                    setView('manifesto');
+                } else {
+                    setView('welcome');
+                }
             }
         });
-        return unsub;
+
+        // Failsafe: if we're still loading after 1.5s, force a view
+        const failsafe = setTimeout(() => {
+            setView(prev => {
+                if (prev === 'loading') {
+                    return hasSeenOnboarding() ? 'welcome' : 'manifesto';
+                }
+                return prev;
+            });
+        }, 1500);
+
+        return () => {
+            unsub();
+            clearTimeout(failsafe);
+        };
     }, []);
 
 
     // Listen to user doc changes
     useEffect(() => {
-        if (!user) return;
+        if (!user || !db) return;
         const unsub = onSnapshot(doc(db, 'users', user.uid), (snap) => {
             if (snap.exists()) {
                 const data = snap.data();
@@ -193,6 +217,9 @@ export default function App() {
 
     const handlePaired = useCallback((newRoomId) => {
         setRoomId(newRoomId);
+        // If they just paired, they might have skipped the landing Manifesto
+        // But the system should have landed them on Manifesto first.
+        // If for some reason they are here and haven't onboarded, Manifesto is next.
         if (!hasSeenOnboarding()) {
             setView('manifesto');
         } else {
@@ -201,8 +228,12 @@ export default function App() {
     }, []);
 
     const handleOnboardingComplete = useCallback(() => {
-        setView('chat');
-    }, []);
+        if (user && roomId) {
+            setView('chat');
+        } else {
+            setView('welcome');
+        }
+    }, [user, roomId]);
 
     if (view === 'error') {
         return (
@@ -292,15 +323,7 @@ export default function App() {
 
             {view === 'manifesto' && (
                 <Manifesto
-                    onBegin={() => setView('onboarding')}
-                    setBellConfig={setBellConfig}
-                />
-            )}
-
-            {view === 'onboarding' && (
-                <BellOnboarding
-                    onComplete={handleOnboardingComplete}
-                    onSceneChange={setSceneColors}
+                    onBegin={handleOnboardingComplete}
                     setBellConfig={setBellConfig}
                 />
             )}

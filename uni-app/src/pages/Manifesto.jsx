@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ReflectiveButton } from '../components/ReflectiveButton';
+import { markOnboardingComplete } from '../lib/onboarding';
 
 export default function Manifesto({ onBegin, setBellConfig }) {
     const [step, setStep] = useState(0);
@@ -40,6 +41,7 @@ export default function Manifesto({ onBegin, setBellConfig }) {
         if (step < items.length - 1) {
             setStep(step + 1);
         } else {
+            markOnboardingComplete();
             onBegin();
         }
     };
