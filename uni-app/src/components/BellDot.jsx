@@ -55,12 +55,26 @@ export default function BellDot({
                     inset: 0,
                     borderRadius: '50%',
                     background: color,
-                    opacity: isActive ? 0.15 : 0.05,
-                    filter: 'blur(calc(var(--core-size, 20px) * 1.5))',
-                    transform: isActive ? 'scale(1.2)' : 'scale(1.0)',
+                    opacity: isActive ? 0.2 : 0.05,
+                    filter: 'blur(calc(var(--core-size, 20px) * 1.8))',
+                    transform: isActive ? 'scale(1.3)' : 'scale(1.0)',
                     transition: 'all 1.5s ease'
                 }}
             />
+            {/* Synaptic Fringe — Subtle chromatic spread */}
+            {isActive && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        inset: -10,
+                        borderRadius: '50%',
+                        border: `1px solid ${color}`,
+                        opacity: 0.1,
+                        filter: 'blur(4px)',
+                        animation: 'bell-breathe 3.333s ease-in-out infinite'
+                    }}
+                />
+            )}
 
             <svg
                 viewBox="0 0 100 100"

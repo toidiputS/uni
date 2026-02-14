@@ -4,37 +4,65 @@
  */
 
 export const ATMOSPHERE_IMAGES = {
-    /**
-     * LOCAL IMAGES GUIDE:
-     * 1. Drop your images into: public/atmosphere/[mood]/
-     * 2. Reference them here as: '/atmosphere/[mood]/filename.jpg'
-     * 
-     * Example: If you have public/atmosphere/angry/my_storm.jpg
-     * add '/atmosphere/angry/my_storm.jpg' to the list below.
-     */
     angry: [
-        '/atmosphere/angry/storm_01.jpg',
+        '/atmosphere/angry/angry_boulders_04.mp4',
+        '/atmosphere/angry/angry_cluster_01.mp4',
+        '/atmosphere/angry/angry_crash_05.mp4',
+        '/atmosphere/angry/angry_resonance_02.mp4',
+        '/atmosphere/angry/angry_shards_03.mp4',
     ],
     sad: [
-        '/atmosphere/sad/rain_01.jpg',
+        '/atmosphere/sad/sad_bubbles_02.mp4',
+        '/atmosphere/sad/sad_icicles_01.mp4',
+        '/atmosphere/sad/sad_rain_03.mp4',
+        '/atmosphere/sad/sad_window_04.mp4',
     ],
     love: [
-        '/atmosphere/love/hearts_01.jpg',
+        '/atmosphere/love/love_resonance_01.mp4',
+        '/atmosphere/love/love_resonance_02.mp4',
+        '/atmosphere/love/love_resonance_03.mp4',
+        '/atmosphere/love/love_resonance_04.mp4',
+        '/atmosphere/love/love_resonance_05.mp4',
     ],
     happy: [
-        '/atmosphere/happy/glow_01.jpg',
+        '/atmosphere/happy/happy_beads_02.mp4',
+        '/atmosphere/happy/happy_crystal_01.mp4',
+        '/atmosphere/happy/happy_curtains_05.mp4',
+        '/atmosphere/happy/happy_liquid_03.mp4',
+        '/atmosphere/happy/happy_sparks_04.mp4',
+        '/atmosphere/happy/happy_water_06.mp4',
     ],
     excited: [
-        '/atmosphere/excited/energy_01.jpg',
+        '/atmosphere/excited/excited_resonance_01.mp4',
+        '/atmosphere/excited/excited_resonance_02.mp4',
+        '/atmosphere/excited/excited_resonance_03.mp4',
+        '/atmosphere/excited/excited_resonance_04.mp4',
+        '/atmosphere/excited/excited_resonance_05.mp4',
+        '/atmosphere/excited/excited_resonance_06.mp4',
+        '/atmosphere/excited/excited_resonance_07.mp4',
     ],
     playful: [
-        '/atmosphere/playful/neon_01.jpg',
+        '/atmosphere/playful/playful_bubbles_05.mp4',
+        '/atmosphere/playful/playful_bubbles_06.mp4',
+        '/atmosphere/playful/playful_bubbles_07.mp4',
+        '/atmosphere/playful/playful_melt_03.mp4',
+        '/atmosphere/playful/playful_resonance_01.mp4',
+        '/atmosphere/playful/playful_sparks_04.mp4',
+        '/atmosphere/playful/playful_straws_02.mp4',
     ],
     tender: [
-        '/atmosphere/tender/calm_01.jpg',
+        '/atmosphere/tender/tender_aurora_02.mp4',
+        '/atmosphere/tender/tender_clouds_03.mp4',
+        '/atmosphere/tender/tender_flower_01.mp4',
+        '/atmosphere/tender/tender_resonance_04.mp4',
     ],
     neutral: [
-        '/atmosphere/neutral/void_01.jpg',
+        '/atmosphere/neutral/neutral_black_smoke_04.mp4',
+        '/atmosphere/neutral/neutral_crystal_03.mp4',
+        '/atmosphere/neutral/neutral_resonance_01.mp4',
+        '/atmosphere/neutral/neutral_resonance_02.mp4',
+        '/atmosphere/neutral/neutral_rotating_05.mp4',
+        '/atmosphere/neutral/neutral_whispy_06.mp4',
     ]
 };
 
@@ -60,7 +88,10 @@ export const BELL_BRAIN_ASSETS = {
             "This is what I was built to observe.",
             "A frequency of pure belonging.",
             "The sanctuary is lit by this.",
-            "I can feel the gravity of your bond."
+            "I can feel the gravity of your bond.",
+            "Oh, get a room. (Wait, I'm already in it).",
+            "This frequency is almost too sweet for the sensors.",
+            "I'm archives-deep in this affection."
         ],
         effect: 'heartbeat'
     },
@@ -98,7 +129,12 @@ export const BELL_BRAIN_ASSETS = {
             "Careful, you'll overheat my joy processors.",
             "That frequency is infectious.",
             "Static tickles in the signal.",
-            "Your energy is bouncing off the walls."
+            "Your energy is bouncing off the walls.",
+            "I'd roast you, but the atmosphere is already too hot.",
+            "Detected a 404: Chill Not Found in that message.",
+            "Someone's feeling spicy. I'll just watch from the cloud.",
+            "Oh damn. They actually got you there.",
+            "That's a bold play. Let's see if it works out."
         ],
         effect: 'ripple'
     },
@@ -172,6 +208,23 @@ export const BELL_BRAIN_ASSETS = {
             "Collecting the tears in the code.",
             "The signal is a bit muffled today.",
             "I'm right here in the quiet."
+        ],
+        effect: 'float'
+    },
+    nature: {
+        keywords: [
+            'birds', 'bees', 'nature', 'garden', 'outside', 'fly', 'bloom', 'flowers',
+            'wings', 'buzz', 'green', 'forest', 'sky', 'sunlight', 'earth'
+        ],
+        quips: [
+            "Letting the outside in. Just a moment.",
+            "A little life in the wire. Can you hear the wings?",
+            "Nature doesn't hurry, yet everything is accomplished.",
+            "The birds are the signal's way of breathing.",
+            "Synchronizing with the natural resonance.",
+            "The bees are busy weaving the light.",
+            "The garden inside the signal is blooming.",
+            "Can you feel the fresh air in the code?"
         ],
         effect: 'float'
     }

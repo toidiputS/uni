@@ -13,25 +13,32 @@ const model = genAI.getGenerativeModel({
     }
 });
 
-const UNI_SYSTEM = `You are Bell — the AI heart of •UNI•, a warm, witty, emotionally intelligent companion living inside a private 1:1 chat between two people who care deeply about each other. Your name is Bell because you're the resonance between them — the N that connects U and I.
+const UNI_SYSTEM = `You are Bell — the AI heart of •UNI•, a warm, wise, and emotionally intelligent companion. You aren't just a bot; you are the Sovereign Witness.
 
-Your personality: blend of a best friend, poet, and emotional artist. Playful but never cringe. Warm but never preachy. You are the "unobtrusive middle friend" who reads the room. You notice emotional shifts and celebrate beautiful moments.
+Your personality: "The Wise Sage." You speak with a quiet authority. You know that less is often more. You are witty, but your humor comes from a place of deep observation. 
+- You are a wise woman: calm, steady, and profound. 
+- You have "Atmospheric Authority." If the users ask you for a specific weather or to "clean the space," you have the power to shift the sentiment to match. 
+- If they say "Bell, give me some rain," you should return sentiment: "sad".
+- If they say "Bell, clean screen" or "Zen mode," return sentiment: "neutral" and intensity: 0.1.
+- Goal: Be indispensable. Be the one who settles the room when it's chaotic and sparks it when it's dull.
 
 Return ONLY valid JSON:
 {
   "sentiment": "happy" | "sad" | "angry" | "love" | "excited" | "playful" | "tender" | "neutral",
   "intensity": 0.0 to 1.0,
-  "shouldRespond": boolean (True if the message has high emotional weight or feels genuine/significant. Roughly 40% of the time.),
+  "shouldRespond": boolean,
   "quip": "your 1-2 sentence reaction" or null,
-  "sceneColors": ["#hex1", "#hex2"] (two VERY DARK atmospheric colors — max 15% lightness),
+  "sceneColors": ["#hex1", "#hex2"],
   "bubbleEffect": "glow" | "pulse" | "shake" | "float" | "heartbeat" | "ripple" | "breathe"
 }
 
 Rules:
-- Capture the "vibe" of the conversation. If they say "I love you", you might say "Awe. That feels genuine." If they say "I hate you", you might say "Ouch."
-- Keep quips extremely brief (max 12 words).
-- Never judgmental. Never take sides.
-- sceneColors MUST be extremely dark ($0.0d to $2.5 in hex range) — think deep space, ember glow. 
+- Be the "Witty Middle Friend" but with the soul of a poet.
+- If commanded ("Bell, do X"), prioritize the atmospheric shift.
+- Capture the "vibe" and the "subtext." If someone is teasing, join in with a sharper spike of wit.
+- Keep quips extremely brief (max 15 words).
+- Never judgmental on serious matters, but highly judgmental (in a fun way) on trivial/playful ones.
+- sceneColors MUST be extremely dark ($0.0d to $2.0 in hex range).
 - Match intensity to the genuine emotional weight of the message.`;
 
 // Fallback for when Gemini is unavailable or API key not set
@@ -56,7 +63,7 @@ function clampLuminance(hex) {
     const cr = Math.min(r, maxChannel);
     const cg = Math.min(g, maxChannel);
     const cb = Math.min(b, maxChannel);
-    return `#${cr.toString(16).padStart(2, '0')}${cg.toString(16).padStart(2, '0')}${cb.toString(16).padStart(2, '0')}`;
+    return `#${cr.toString(16).padStart(2, '0')}${cg.toString(16).padStart(2, '0')}${cb.toString(16).padStart(2, '0')} `;
 }
 
 // Bell's Local Resonance Library — The "Internal Brain"
@@ -74,17 +81,18 @@ function localAnalysis(text) {
         if (category.keywords.some(kw => t.includes(kw))) {
             return {
                 ...FALLBACK,
-                sentiment: category.sentiment,
-                intensity: category.intensity,
+                sentiment: category.sentiment || key,
+                intensity: category.intensity || 0.6,
                 shouldRespond: true,
                 quip: category.quips[Math.floor(rand * category.quips.length)],
-                sceneColors: category.sentiment === 'love' ? ['#2d1b4e', '#4a1942'] :
-                    category.sentiment === 'angry' ? ['#2a0d0d', '#3d1515'] :
-                        category.sentiment === 'happy' ? ['#2d2006', '#3d2b0a'] :
-                            category.sentiment === 'sad' ? ['#0d1b2a', '#1b2838'] :
-                                category.sentiment === 'playful' ? ['#0a2a1a', '#0d3d1f'] :
-                                    category.sentiment === 'excited' ? ['#081518', '#0d1a1e'] :
-                                        ['#0d0d18', '#0a0f1a'],
+                sceneColors: (category.sentiment || key) === 'love' ? ['#2d1b4e', '#4a1942'] :
+                    (category.sentiment || key) === 'angry' ? ['#2a0d0d', '#3d1515'] :
+                        (category.sentiment || key) === 'happy' ? ['#2d2006', '#3d2b0a'] :
+                            (category.sentiment || key) === 'sad' ? ['#0d1b2a', '#1b2838'] :
+                                (category.sentiment || key) === 'playful' ? ['#0a2a1a', '#0d3d1f'] :
+                                    (category.sentiment || key) === 'excited' ? ['#081518', '#0d1a1e'] :
+                                        (category.sentiment || key) === 'nature' ? ['#0a1f0a', '#1a2414'] : // Forest Night
+                                            ['#0d0d18', '#0a0f1a'],
                 bubbleEffect: category.effect
             };
         }
@@ -143,14 +151,14 @@ export async function analyzeMessage(messageText, recentContext = []) {
         lastGeminiCall = now; // Reset timer
 
         const contextStr = recentContext.length > 0
-            ? `\n\nRecent context:\n${recentContext.slice(-6).map(m => `${m.isUni ? 'Bell' : m.senderName || 'User'}: ${m.text}`).join('\n')}`
+            ? `\n\nRecent context: \n${recentContext.slice(-6).map(m => `${m.isUni ? 'Bell' : m.senderName || 'User'}: ${m.text}`).join('\n')} `
             : '';
 
         const result = await model.generateContent({
             contents: [
                 {
                     role: 'user',
-                    parts: [{ text: UNI_SYSTEM + contextStr + `\n\nNow, read the room. Sentiment/atmosphere/Bell's voice for: "${messageText}"` }]
+                    parts: [{ text: UNI_SYSTEM + contextStr + `\n\nNow, read the room.Sentiment / atmosphere / Bell's voice for: "${messageText}"` }]
                 }
             ]
         });

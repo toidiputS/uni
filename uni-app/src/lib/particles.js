@@ -165,9 +165,29 @@ export function createBird(canvasW, canvasH) {
         maxLife: 1,
         size: 5 + Math.random() * 10,
         opacity: 0.3 + Math.random() * 0.4,
-        color: '180, 180, 200',
+        color: Math.random() > 0.8 ? '200, 200, 255' : (Math.random() > 0.5 ? '180, 180, 200' : '150, 150, 170'),
         wingPhase: Math.random() * Math.PI * 2, // Desynced wings
         wingSpeed: 0.05 + Math.random() * 0.04,
+    };
+}
+
+export function createBee(canvasW, canvasH) {
+    const x = Math.random() * canvasW;
+    const y = Math.random() * canvasH * 0.7;
+    return {
+        type: 'bee',
+        x, y,
+        baseX: x, baseY: y,
+        vx: (Math.random() - 0.5) * 2,
+        vy: (Math.random() - 0.5) * 2,
+        life: 1,
+        maxLife: 1,
+        size: 2 + Math.random() * 2,
+        opacity: 0.6 + Math.random() * 0.3,
+        color: '255, 200, 50', // Golden bee yellow
+        phase: Math.random() * Math.PI * 2,
+        phaseSpeed: 0.1 + Math.random() * 0.2,
+        orbitRadius: 20 + Math.random() * 30
     };
 }
 
@@ -402,6 +422,27 @@ export function drawVolumetricCloud(ctx, p) {
     }
 }
 
+export function drawBee(ctx, p) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    // Golden body
+    ctx.fillStyle = `rgba(255, 200, 50, ${p.opacity})`;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, p.size, p.size * 0.7, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Delicate wings
+    ctx.strokeStyle = `rgba(255, 255, 255, ${p.opacity * 0.5})`;
+    ctx.lineWidth = 1;
+    const wingStretch = Math.sin(p.phase * 15) * 5;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(-5, -10 - wingStretch, -10, -5);
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(5, -10 - wingStretch, 10, -5);
+    ctx.stroke();
+    ctx.restore();
+}
+
 function createRipple(x, y) {
     return {
         type: 'ripple',
@@ -458,6 +499,7 @@ export function spawnParticle(type, canvasW, canvasH, intensity, origin) {
         case 'morph': return createMorphingBubble(origin?.x, origin?.y, origin?.w, origin?.h, origin?.color);
         case 'melt': return createMelt(origin?.x, origin?.y, origin?.color);
         case 'pop': return createPop(origin?.x, origin?.y, origin?.color);
+        case 'bee': return createBee(canvasW, canvasH);
         default: return null;
     }
 }
@@ -471,7 +513,7 @@ export function updateParticle(p, w, h, dt) {
     }
 
     // Environmental particles persist until off-screen
-    const isEnvironmental = p.type === 'rain' || p.type === 'cloud' || p.type === 'bird';
+    const isEnvironmental = p.type === 'rain' || p.type === 'cloud' || p.type === 'bird' || p.type === 'bee';
     if (!isEnvironmental) {
         p.life -= 0.005 * dt;
     }
@@ -512,6 +554,13 @@ export function updateParticle(p, w, h, dt) {
             p.y += Math.sin(p.x / 100) * 0.5 * dt;
             p.wingPhase += 0.15 * dt;
             p.opacity = Math.min(0.5, p.life);
+            break;
+        case 'bee':
+            p.phase += p.phaseSpeed * dt;
+            // High-frequency darting/orbiting
+            p.x = p.baseX + Math.cos(p.phase) * p.orbitRadius + Math.sin(p.phase * 2) * 10;
+            p.y = p.baseY + Math.sin(p.phase) * (p.orbitRadius * 0.5) + Math.cos(p.phase * 3) * 5;
+            p.opacity = p.life * (0.8 + Math.sin(p.phase * 5) * 0.2); // Buzzing flicker
             break;
         case 'rose':
             p.y += p.vy * dt;
@@ -654,6 +703,8 @@ export function renderParticle(ctx, p) {
         ctx.arc(p.x + driftX, p.y + driftY, radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.restore();
+    } else if (p.type === 'bee') {
+        drawBee(ctx, p);
     } else if (p.type === 'melt' || p.type === 'pop') {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);

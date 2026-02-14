@@ -156,33 +156,49 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                 {/* ACT 1: RESONANCE (Initial State) */}
                 {step === 'resonance' && (
-                    <div className="flex flex-col items-center justify-center gap-6 fade-in w-full text-center" style={{ flex: 1, px: 20, position: 'relative', zIndex: 1 }}>
-                        <h1 style={{
-                            fontSize: 'clamp(20px, 4.5vw, 34px)',
-                            fontWeight: 700,
-                            letterSpacing: '-0.02em',
-                            maxWidth: 800,
-                            lineHeight: 1.15,
-                            marginBottom: 16,
-                            background: 'linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0.7) 100%)',
+                    <div className="flex flex-col items-center justify-center fade-in w-full text-center" style={{ flex: 1, padding: '0 24px', position: 'relative', zIndex: 1, minHeight: '60vh' }}>
+
+                        <div className="ethereal-text" style={{ fontSize: 10, letterSpacing: '0.5em', marginBottom: 24, opacity: 0.5 }}>
+                            CGEI — SYNAPTIC LINK 01
+                        </div>
+
+                        <h1 className="wordmark" style={{
+                            fontSize: 'clamp(44px, 12vw, 92px)',
+                            marginBottom: 40,
+                            lineHeight: 1,
+                            background: 'linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0.6) 100%)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent'
                         }}>
-                            The World’s First Conversational Generative Emotion Interface
+                            •UNI•
                         </h1>
 
-                        <div style={{ maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20 }}>
-                            <p style={{ fontSize: 16, color: 'var(--uni-text)', lineHeight: 1.5, fontWeight: 400 }}>
-                                •UNI• is a messaging experience that turns your chat into living, breathing emotional art.
-                                Instead of static gray bubbles, the interface reacts to the emotional Resonance between you and your partner.
+                        <div style={{ maxWidth: 540, display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 48 }}>
+                            <p style={{
+                                fontSize: 'clamp(18px, 4vw, 22px)',
+                                color: 'var(--uni-text)',
+                                lineHeight: 1.4,
+                                fontWeight: 300,
+                                letterSpacing: '-0.01em'
+                            }}>
+                                The World’s First <em>Conversational Generative Emotion Interface</em>.
                             </p>
 
-                            <p style={{ fontSize: 13, color: 'var(--uni-text-dim)', lineHeight: 1.5, opacity: 0.8 }}>
-                                Built for connection, powered by emotion, UNI listens to the tone beneath your words and transforms the entire conversation space in real time.
+                            <p style={{
+                                fontSize: 14,
+                                color: 'var(--uni-text-dim)',
+                                lineHeight: 1.7,
+                                fontWeight: 400,
+                                maxWidth: 460,
+                                margin: '0 auto',
+                                opacity: 0.8
+                            }}>
+                                •UNI• turns your chat into living, breathing emotional art.
+                                It listens to the tone beneath your words and transforms the space through emotional <strong>Resonance</strong>.
                             </p>
                         </div>
 
-                        <div className="flex items-center justify-center gap-6 w-full">
+                        <div className="flex flex-col items-center justify-center gap-10 w-full">
                             <ReflectiveButton variant="primary" onClick={startOnboarding}>
                                 Start Resonance
                             </ReflectiveButton>
@@ -192,7 +208,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             </ReflectiveButton>
                         </div>
 
-                        <p style={{ fontSize: 11, opacity: 0.4, marginTop: 24, letterSpacing: '0.05em' }}>
+                        <p className="ethereal-text" style={{ fontSize: 9, marginTop: 12, opacity: 0.3 }}>
                             Best experienced with sound.
                         </p>
                     </div>
@@ -276,11 +292,13 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                 {/* 4. •UNI• (Base Identity) */}
                 <div className="wordmark-reflect" style={{
                     position: 'fixed',
-                    bottom: '8vh',
+                    bottom: '22vh',
                     left: 0,
                     right: 0,
                     margin: 0,
-                    zIndex: 0
+                    zIndex: 0,
+                    opacity: step === 'resonance' ? 0 : 1, // Hide when hero wordmark is present
+                    transition: 'opacity 1s ease'
                 }}>
                     •UNI•
                 </div>

@@ -5,6 +5,7 @@ import {
     updateParticle,
     renderParticle,
     drawBird,
+    drawBee,
     drawVolumetricCloud,
 } from '../lib/particles';
 
@@ -23,12 +24,18 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     const targetBgImage = useRef(null);
     const bgVideo = useRef(null);
     const targetBgVideo = useRef(null);
+    const prevBgImage = useRef(null);
+    const prevBgVideo = useRef(null);
     const isDrawing = useRef(false);
 
     // Load Local Assets (optional override)
     useEffect(() => {
         const preset = WEATHER_PRESETS[mood];
         const pool = preset?.skyImages || [];
+
+        // CROSS-FADE DOCTRINE: Capture current as "previous"
+        prevBgImage.current = targetBgImage.current || bgImage.current;
+        prevBgVideo.current = targetBgVideo.current || bgVideo.current;
 
         // Pick one local asset from the pool
         if (pool.length > 0) {
@@ -44,6 +51,10 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                 video.playsInline = true;
                 video.crossOrigin = "anonymous";
                 video.oncanplay = () => {
+                    // CGEI Randomization: Never start a loop at 0:00
+                    if (video.duration) {
+                        video.currentTime = Math.random() * video.duration;
+                    }
                     targetBgVideo.current = video;
                     targetBgImage.current = null;
                 };
@@ -186,13 +197,15 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
 
             ctx.clearRect(0, 0, w, h);
 
-            // Transition logic
+            // Transition logic (Slower for Emotional Bleed)
             if (transitionProgress.current < 1) {
-                transitionProgress.current = Math.min(1, transitionProgress.current + 0.008 * dt);
+                transitionProgress.current = Math.min(1, transitionProgress.current + 0.003 * dt);
                 if (transitionProgress.current >= 1) {
                     currentMood.current = targetMood.current;
                     bgImage.current = targetBgImage.current;
                     bgVideo.current = targetBgVideo.current;
+                    prevBgImage.current = null;
+                    prevBgVideo.current = null;
                     clearTimeout(lightningTimer.current);
                     scheduleLightning();
                 }
@@ -253,21 +266,43 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             }
             ctx.restore();
 
-            // ─── Image/Video Layer ───
-            const mediaSource = bgVideo.current || bgImage.current;
-            if (mediaSource) {
+            // ─── Image/Video Texture Layer (Generative Obfuscation + Cross-fade) ───
+            const renderMedia = (source, alpha, isPrev = false) => {
+                if (!source) return;
                 ctx.save();
-                ctx.globalAlpha = (bgVideo.current ? 0.6 : 0.35) * (transitionProgress.current > 0.5 ? 1 : transitionProgress.current * 2);
-                ctx.filter = 'brightness(0.4) contrast(1.2) distribute(1.1) blur(20px)';
 
-                const mWidth = bgVideo.current ? mediaSource.videoWidth : mediaSource.width;
-                const mHeight = bgVideo.current ? mediaSource.videoHeight : mediaSource.height;
+                const drift = Math.sin(time * 0.2 + (isPrev ? 1.5 : 0)) * 50;
+                const scaleRes = 1.1 + Math.cos(time * 0.3 + (isPrev ? 1.5 : 0)) * 0.05;
+                const dynamicBlur = 15 + Math.sin(time * 0.5) * 10;
 
-                const scale = Math.max(w / mWidth, h / mHeight);
-                const x = (w - mWidth * scale) / 2;
-                const y = (h - mHeight * scale) / 2;
-                ctx.drawImage(mediaSource, x, y, mWidth * scale, mHeight * scale);
+                ctx.globalAlpha = alpha * (source.tagName === 'VIDEO' ? 0.5 : 0.3);
+                ctx.filter = `brightness(0.35) contrast(1.4) saturate(1.2) blur(${dynamicBlur}px)`;
+                ctx.globalCompositeOperation = 'screen';
+
+                const mWidth = source.videoWidth || source.width;
+                const mHeight = source.videoHeight || source.height;
+
+                const scale = Math.max(w / mWidth, h / mHeight) * scaleRes;
+                const x = (w - mWidth * scale) / 2 + drift;
+                const y = (h - mHeight * scale) / 2 + (drift * 0.5);
+
+                // Primary layer
+                ctx.drawImage(source, x, y, mWidth * scale, mHeight * scale);
+                // "Ghost" Layer
+                ctx.globalAlpha *= 0.4;
+                ctx.drawImage(source, x - drift * 2, y - drift, mWidth * scale, mHeight * scale);
+
                 ctx.restore();
+            };
+
+            const mainMedia = bgVideo.current || bgImage.current;
+            const resMedia = prevBgVideo.current || prevBgImage.current;
+
+            if (resMedia && transitionProgress.current < 1) {
+                renderMedia(resMedia, (1 - transitionProgress.current), true);
+            }
+            if (mainMedia) {
+                renderMedia(mainMedia, transitionProgress.current);
             }
 
             const fadingOut = transitionProgress.current < 1;
@@ -286,6 +321,15 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                             if (p) {
                                 p._mood = activeMood;
                                 particles.current.push(p);
+
+                                // NATURE DOCTRINE: Chance to spawn bees alongside birds
+                                if (type === 'bird' && Math.random() < 0.4) {
+                                    const bee = spawnParticle('bee', w, h, intensity);
+                                    if (bee) {
+                                        bee._mood = activeMood;
+                                        particles.current.push(bee);
+                                    }
+                                }
                             }
                         }
                     }
@@ -295,9 +339,16 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             particles.current.forEach(p => {
                 updateParticle(p, w, h, dt);
 
-                // Aggressive Cleanup: If a particle's mood is no longer the target mood, kill it fast
+                // Handle Walker combat triggers
+                if (p.type === 'walker' && p._shouldFire) {
+                    p._shouldFire = false;
+                    const proj = spawnParticle('projectile', w, h, intensity, p._fireDetails);
+                    if (proj) particles.current.push(proj);
+                }
+
+                // Aggressive Cleanup: Relaxed for "Emotional Bleed"
                 if (p._mood && p._mood !== targetMood.current) {
-                    p.opacity *= 0.8; // Snappy transition out
+                    p.opacity *= 0.98; // Much slower fade out
                     if (p.opacity < 0.01) p.life = 0;
                 }
             });
@@ -308,22 +359,36 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             particles.current.forEach(p => {
                 if (p.type === 'bird') {
                     drawBird(ctx, p.x, p.y, p.size, p.wingPhase, p.vx > 0, p.color, p.opacity);
+                } else if (p.type === 'walker') {
+                    drawWalker(ctx, p.x, p.y, p.size, p.walkPhase, p.vx > 0, p.color, p.opacity);
                 } else if (p.type === 'cloud') {
                     drawVolumetricCloud(ctx, p);
+                } else if (p.type === 'bee') {
+                    drawBee(ctx, p);
                 } else {
                     renderParticle(ctx, p);
                 }
             });
 
-            // Film Grain / Noise Layer — More "Loud" Presence
+            // ─── Cinematic Post-Processing ───
+
+            // 1. Dynamic Synaptic Noise (Velvety Grain)
             ctx.save();
             ctx.globalCompositeOperation = 'overlay';
-            ctx.globalAlpha = 0.06;
-            for (let i = 0; i < 10; i++) {
+            ctx.globalAlpha = 0.05;
+            for (let i = 0; i < 40; i++) { // Increased density
+                const size = Math.random() * 2;
                 ctx.fillStyle = Math.random() > 0.5 ? '#fff' : '#000';
-                ctx.fillRect(Math.random() * w, Math.random() * h, 1, 1);
+                ctx.fillRect(Math.random() * w, Math.random() * h, size, size);
             }
             ctx.restore();
+
+            // 2. Cinematic Vignette (Depth focus)
+            const vignette = ctx.createRadialGradient(w / 2, h / 2, w / 4, w / 2, h / 2, w * 0.8);
+            vignette.addColorStop(0, 'rgba(5, 5, 8, 0)');
+            vignette.addColorStop(1, 'rgba(5, 5, 8, 0.4)');
+            ctx.fillStyle = vignette;
+            ctx.fillRect(0, 0, w, h);
 
             if (lightningFlash.current > 0) {
                 ctx.fillStyle = `rgba(200, 210, 255, ${lightningFlash.current * 0.12})`;
