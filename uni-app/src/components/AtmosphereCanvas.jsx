@@ -51,6 +51,11 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             img.onload = () => {
                 targetBgImage.current = img;
             };
+            img.onerror = () => {
+                console.warn('[•UNI•] Atmosphere BG Load Failed. Falling back to void.');
+                // Fallback to a curated safe image or null to keep CSS bg
+                targetBgImage.current = null;
+            };
         } else {
             targetBgImage.current = null;
         }

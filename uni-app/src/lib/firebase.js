@@ -18,32 +18,37 @@ let app = null;
 let auth = null;
 let db = null;
 let storage = null;
+let googleProvider = null;
 
-const hasConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_KEY_HERE';
+// Debugging block — will help us confirm if Vite is seeing the .env
+const apiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+if (!apiKey) {
+    console.warn('[•UNI•] VITE_FIREBASE_API_KEY is missing in the current build environment.');
+} else {
+    console.log(`[•UNI•] Firebase key detected: ${apiKey.slice(0, 4)}...`);
+}
 
-if (hasConfig) {
+if (apiKey) {
     try {
         app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
         storage = getStorage(app);
+        googleProvider = new GoogleAuthProvider();
     } catch (err) {
-        console.error('[•UNI•] Firebase Services Failure:', err);
+        console.error('[•UNI•] Firebase Init Error:', err);
     }
-} else {
-    console.warn('[•UNI•] Firebase API Key missing. Sanctuary running in offline mode.');
 }
 
-export { auth, db, storage };
+export { auth, db, storage, googleProvider };
 
-let analytics;
+let analytics = null;
 try {
-    analytics = getAnalytics(app);
+    if (app) analytics = getAnalytics(app);
 } catch (e) {
     console.warn('[•UNI•] Analytics inhibited:', e);
 }
 export { analytics };
 
-export const googleProvider = new GoogleAuthProvider();
 export default app;
 
