@@ -30,6 +30,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
 
     const transitionSpeed = useRef(0.003);
     const isLoading = useRef(false);
+    const lastAssetUrl = useRef(null);
 
     const pickNewAsset = useCallback((targetMoodName, force = false) => {
         // Guard: Don't interrupt an active load or transition unless forced
@@ -384,13 +385,6 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             particles.current.forEach(p => {
                 updateParticle(p, w, h, dt);
 
-                // Handle Walker combat triggers
-                if (p.type === 'walker' && p._shouldFire) {
-                    p._shouldFire = false;
-                    const proj = spawnParticle('projectile', w, h, intensity, p._fireDetails);
-                    if (proj) particles.current.push(proj);
-                }
-
                 // Aggressive Cleanup: Relaxed for "Emotional Bleed"
                 if (p._mood && p._mood !== targetMood.current) {
                     p.opacity *= 0.98; // Much slower fade out
@@ -404,8 +398,6 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             particles.current.forEach(p => {
                 if (p.type === 'bird') {
                     drawBird(ctx, p.x, p.y, p.size, p.wingPhase, p.vx > 0, p.color, p.opacity);
-                } else if (p.type === 'walker') {
-                    drawWalker(ctx, p.x, p.y, p.size, p.walkPhase, p.vx > 0, p.color, p.opacity);
                 } else if (p.type === 'cloud') {
                     drawVolumetricCloud(ctx, p);
                 } else if (p.type === 'bee') {

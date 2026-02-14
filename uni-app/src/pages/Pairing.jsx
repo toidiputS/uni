@@ -242,8 +242,10 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
 
                 <form onSubmit={handlePair}>
                     <div className="input-group" style={{ textAlign: 'left' }}>
-                        <label>Partner's Code</label>
+                        <label htmlFor="partnerCode">Partner's Code</label>
                         <input
+                            id="partnerCode"
+                            name="partnerCode"
                             className="input"
                             type="text"
                             placeholder="A1B2C3"

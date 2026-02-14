@@ -405,7 +405,10 @@ export default function Chat({
                     {isUploading ? '...' : '📸'}
                 </button>
 
+                <label htmlFor="mediaUpload" className="sr-only">Upload Media</label>
                 <input
+                    id="mediaUpload"
+                    name="mediaUpload"
                     type="file"
                     ref={fileInputRef}
                     onChange={handleImageSelect}
@@ -414,7 +417,20 @@ export default function Chat({
                     capture="environment" // Allows camera option on mobile
                 />
 
-                <input ref={inputRef} className="input" type="text" placeholder={imagePreview ? "Add a caption..." : "Say something…"} value={text} onChange={handleTextChange} onKeyDown={handleKeyDown} disabled={sending} autoFocus />
+                <label htmlFor="messageInput" className="sr-only">Message</label>
+                <input
+                    id="messageInput"
+                    name="messageInput"
+                    ref={inputRef}
+                    className="input"
+                    type="text"
+                    placeholder={imagePreview ? "Add a caption..." : "Say something…"}
+                    value={text}
+                    onChange={handleTextChange}
+                    onKeyDown={handleKeyDown}
+                    disabled={sending}
+                    autoFocus
+                />
                 <button className="send-btn" onClick={sendMessage} disabled={((!text.trim() && !selectedFile) || sending || isUploading)}>
                     {sending ? '...' : '↑'}
                 </button>

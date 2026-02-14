@@ -218,7 +218,10 @@ export default function Auth({ onBack, onAuthed, setBellConfig }) {
                 <form onSubmit={handleSubmit}>
                     {mode === 'signup' && (
                         <div className="input-group">
+                            <label htmlFor="displayName" className="sr-only">Display Name</label>
                             <input
+                                id="displayName"
+                                name="displayName"
                                 className="input"
                                 type="text"
                                 placeholder="Display Name"
@@ -229,7 +232,10 @@ export default function Auth({ onBack, onAuthed, setBellConfig }) {
                     )}
 
                     <div className="input-group">
+                        <label htmlFor="email" className="sr-only">Email Address</label>
                         <input
+                            id="email"
+                            name="email"
                             className="input"
                             type="email"
                             placeholder="Email"
@@ -240,7 +246,10 @@ export default function Auth({ onBack, onAuthed, setBellConfig }) {
                     </div>
 
                     <div className="input-group">
+                        <label htmlFor="password" className="sr-only">Password</label>
                         <input
+                            id="password"
+                            name="password"
                             className="input"
                             type="password"
                             placeholder="Password"

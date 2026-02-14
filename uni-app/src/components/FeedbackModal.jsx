@@ -82,8 +82,10 @@ export default function FeedbackModal({ onClose, onSubmit }) {
 
                         {/* 4. Best Vibe */}
                         <div className="survey-q" style={{ marginBottom: 30 }}>
-                            <label style={qLabelStyle}>4. Which atmosphere felt most meaningful?</label>
+                            <label htmlFor="bestVibe" style={qLabelStyle}>4. Which atmosphere felt most meaningful?</label>
                             <select
+                                id="bestVibe"
+                                name="bestVibe"
                                 value={bestVibe}
                                 onChange={(e) => setBestVibe(e.target.value)}
                                 style={inputStyle}
@@ -99,8 +101,10 @@ export default function FeedbackModal({ onClose, onSubmit }) {
 
                         {/* 5. Future Discovery */}
                         <div className="survey-q" style={{ marginBottom: 30 }}>
-                            <label style={qLabelStyle}>5. What should we build next to deepen your connection?</label>
+                            <label htmlFor="futureNeed" style={qLabelStyle}>5. What should we build next to deepen your connection?</label>
                             <input
+                                id="futureNeed"
+                                name="futureNeed"
                                 type="text"
                                 placeholder="Voice, Video, Gifts, Art..."
                                 value={futureNeed}
@@ -111,8 +115,10 @@ export default function FeedbackModal({ onClose, onSubmit }) {
 
                         {/* 6. Open Feedback */}
                         <div className="survey-q" style={{ marginBottom: 30 }}>
-                            <label style={qLabelStyle}>6. Final Resonance (Closing Thoughts)</label>
+                            <label htmlFor="comment" style={qLabelStyle}>6. Final Resonance (Closing Thoughts)</label>
                             <textarea
+                                id="comment"
+                                name="comment"
                                 placeholder="Tell us something real... (min 10 characters)"
                                 value={comment}
                                 onChange={(e) => setComment(e.target.value)}
