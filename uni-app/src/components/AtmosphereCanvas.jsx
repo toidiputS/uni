@@ -45,16 +45,25 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
 
         if (selectedSrc) {
             const img = new Image();
-            // Handle both full URLs and Unsplash IDs
-            img.src = selectedSrc.includes('?') ? selectedSrc : `${selectedSrc}?auto=format&fit=crop&q=80&w=1600`;
+            // Use a more reliable source endpoint or the provided photo ID
+            let finalSrc = selectedSrc;
+            if (!selectedSrc.startsWith('http')) {
+                // It's a keyword set or ID
+                finalSrc = `https://source.unsplash.com/featured/1600x900/?${selectedSrc}`;
+            }
+
+            img.src = finalSrc;
             img.crossOrigin = "anonymous";
             img.onload = () => {
                 targetBgImage.current = img;
             };
             img.onerror = () => {
-                console.warn('[•UNI•] Atmosphere BG Load Failed. Falling back to void.');
-                // Fallback to a curated safe image or null to keep CSS bg
-                targetBgImage.current = null;
+                console.warn('[•UNI•] Atmosphere BG Load Failed. Falling back to cosmic stars.');
+                // Ultimate high-quality fallback
+                const fallback = new Image();
+                fallback.src = "https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&q=80&w=1600";
+                fallback.crossOrigin = "anonymous";
+                fallback.onload = () => { targetBgImage.current = fallback; };
             };
         } else {
             targetBgImage.current = null;

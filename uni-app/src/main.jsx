@@ -11,7 +11,7 @@ if (rootEl) {
 try {
     const root = ReactDOM.createRoot(rootEl);
     root.render(<App />);
-    console.log('[•UNI•] Sanctuary Manifested.');
+    console.log('[•UNI•] Sanctuary Manifested. Build: 02.14.0011');
 } catch (err) {
     console.error('[•UNI•] Boot Error:', err);
     if (rootEl) rootEl.innerHTML = `<div style="color:red;padding:20px;">BOOT FAILED: ${err.message}</div>`;

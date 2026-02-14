@@ -94,6 +94,9 @@ export default function Manifesto({ onBegin, setBellConfig }) {
                     <ReflectiveButton variant="primary" onClick={handleNext}>
                         {step < items.length - 1 ? "Understood" : "Enter the Sanctuary"}
                     </ReflectiveButton>
+                    <ReflectiveButton size="sm" onClick={onBegin}>
+                        Skip
+                    </ReflectiveButton>
                 </div>
             </div>
 
