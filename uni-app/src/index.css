@@ -578,6 +578,25 @@ body,
   opacity: 1;
 }
 
+/* ─── Manifesto View ─── */
+.manifesto-view {
+  background: radial-gradient(circle at center, rgba(234, 234, 234, 0.03) 0%, transparent 70%);
+}
+
+.manifesto-content {
+  width: 100%;
+}
+
+.manifesto-lines p {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.manifesto-lines p:first-child {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+
 
 .wordmark {
   font-family: var(--font-display);

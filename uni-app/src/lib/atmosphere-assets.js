@@ -13,7 +13,7 @@ export const ATMOSPHERE_IMAGES = {
      * add '/atmosphere/angry/my_storm.jpg' to the list below.
      */
     angry: [
-        // '/atmosphere/angry/custom_storm_01.jpg', 
+        '/atmosphere/angry/storm_01.jpg', // Local example
         'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd',
         'https://images.unsplash.com/photo-1500674425916-2c6b2ce150ff',
         'https://images.unsplash.com/photo-1475113548554-5a36f1f523d6',
@@ -22,6 +22,7 @@ export const ATMOSPHERE_IMAGES = {
         'https://images.unsplash.com/photo-1519046904884-53103b34b206',
     ],
     sad: [
+        '/atmosphere/sad/rain_01.jpg',
         'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc',
         'https://images.unsplash.com/photo-1490730141103-6cac27aaab94',
         'https://images.unsplash.com/photo-1513002749550-c59d786b8e6c',
@@ -29,6 +30,7 @@ export const ATMOSPHERE_IMAGES = {
         'https://images.unsplash.com/photo-1437435889745-7f9cb6506161',
     ],
     love: [
+        '/atmosphere/love/hearts_01.jpg',
         'https://images.unsplash.com/photo-1615715037327-6f8cc36495b4',
         'https://images.unsplash.com/photo-1506126613408-eca07ce68773',
         'https://images.unsplash.com/photo-1550684848-fac1c5b4e853',
@@ -36,6 +38,7 @@ export const ATMOSPHERE_IMAGES = {
         'https://images.unsplash.com/photo-1518199266791-5375a83190b7',
     ],
     happy: [
+        '/atmosphere/happy/glow_01.jpg',
         'https://images.unsplash.com/photo-1528353518104-dbd48bee7bc4',
         'https://images.unsplash.com/photo-1496450681664-3df85efbd29f',
         'https://images.unsplash.com/photo-1516339901600-2e1a62dc0c45',

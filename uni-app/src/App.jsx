@@ -11,6 +11,7 @@ import Welcome from './pages/Welcome';
 import Auth from './pages/Auth';
 import Pairing from './pages/Pairing';
 import Chat from './pages/Chat';
+import Manifesto from './pages/Manifesto';
 import BellOnboarding from './components/BellOnboarding';
 import AtmosphereCanvas from './components/AtmosphereCanvas';
 import BellDot from './components/BellDot';
@@ -132,7 +133,7 @@ export default function App() {
                         if (data.pairedWith && data.lastRoomId) {
                             setRoomId(data.lastRoomId);
                             if (!hasSeenOnboarding()) {
-                                setView('onboarding');
+                                setView('manifesto');
                             } else {
                                 setView('chat');
                             }
@@ -169,7 +170,7 @@ export default function App() {
                     setRoomId(data.lastRoomId);
                     if (view === 'pairing') {
                         if (!hasSeenOnboarding()) {
-                            setView('onboarding');
+                            setView('manifesto');
                         } else {
                             setView('chat');
                         }
@@ -193,7 +194,7 @@ export default function App() {
     const handlePaired = useCallback((newRoomId) => {
         setRoomId(newRoomId);
         if (!hasSeenOnboarding()) {
-            setView('onboarding');
+            setView('manifesto');
         } else {
             setView('chat');
         }
@@ -285,6 +286,13 @@ export default function App() {
                     onLogout={handleLogout}
                     isPlaying={isPlaying}
                     onToggleAudio={toggleAudio}
+                    setBellConfig={setBellConfig}
+                />
+            )}
+
+            {view === 'manifesto' && (
+                <Manifesto
+                    onBegin={() => setView('onboarding')}
                     setBellConfig={setBellConfig}
                 />
             )}
