@@ -23,47 +23,25 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     const targetBgImage = useRef(null);
     const isDrawing = useRef(false);
 
-    // Load background images
+    // Load Local Assets (optional override)
     useEffect(() => {
         const preset = WEATHER_PRESETS[mood];
         const pool = preset?.skyImages || [];
-        // Prioritize specific context keywords (e.g. from onboarding or chat content)
-        const activeKeywords = contextKeywords || preset?.keywords || 'nebula,stars,space,abstract';
 
-        // Generative Logic: 50% chance to fetch a TRULY fresh image from Unsplash using keywords
-        // OR pick from the curated pool. This ensures variety + safety.
-        let selectedSrc;
-        if (Math.random() > 0.4 && activeKeywords) {
-            const seed = Math.floor(Math.random() * 1000000);
-            // Append 'abstract' or 'bg' to avoid literal objects like cars/buildings
-            const refinedQuery = `${activeKeywords},abstract,nature`;
-            selectedSrc = `https://images.unsplash.com/featured/1600x900/?${refinedQuery}&v=${seed}`;
-        } else if (pool.length > 0) {
+        // Pick one local asset from the pool
+        if (pool.length > 0) {
             const idx = Math.floor(Math.random() * pool.length);
-            selectedSrc = pool[idx];
-        }
+            const selectedSrc = pool[idx];
 
-        if (selectedSrc) {
             const img = new Image();
-            // Use a more reliable source endpoint or the provided photo ID
-            let finalSrc = selectedSrc;
-            if (!selectedSrc.startsWith('http')) {
-                // It's a keyword set or ID
-                finalSrc = `https://source.unsplash.com/featured/1600x900/?${selectedSrc}`;
-            }
-
-            img.src = finalSrc;
+            img.src = selectedSrc;
             img.crossOrigin = "anonymous";
             img.onload = () => {
                 targetBgImage.current = img;
             };
             img.onerror = () => {
-                console.warn('[•UNI•] Atmosphere BG Load Failed. Falling back to cosmic stars.');
-                // Ultimate high-quality fallback
-                const fallback = new Image();
-                fallback.src = "https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?auto=format&fit=crop&q=80&w=1600";
-                fallback.crossOrigin = "anonymous";
-                fallback.onload = () => { targetBgImage.current = fallback; };
+                // If local file doesn't exist yet, we stay purely generative
+                targetBgImage.current = null;
             };
         } else {
             targetBgImage.current = null;
@@ -204,12 +182,63 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                 bgImage.current = targetBgImage.current;
             }
 
-            // Draw Sky Texture Image (Low Opacity for Sentiment Vibe)
+            // ─── Generative Art Layer ───
+            const activeMood = transitionProgress.current >= 1 ? currentMood.current : targetMood.current;
+            const preset = WEATHER_PRESETS[activeMood] || WEATHER_PRESETS.neutral;
+
+            ctx.save();
+            const time = timestamp * 0.0005;
+
+            // Base layer: Slow, breathing gradient
+            const grad = ctx.createRadialGradient(
+                w / 2 + Math.sin(time * 0.2) * (w * 0.2),
+                h / 2 + Math.cos(time * 0.3) * (h * 0.2),
+                0,
+                w / 2, h / 2, Math.max(w, h)
+            );
+
+            const [c1, c2] = preset.sky || ['#050508', '#0a0a12'];
+            grad.addColorStop(0, c2);
+            grad.addColorStop(1, c1);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, w, h);
+
+            // Abstract "Ethereal" Layer (The Generative Part)
+            ctx.globalCompositeOperation = 'screen';
+            ctx.globalAlpha = 0.15;
+
+            for (let i = 0; i < 3; i++) {
+                const shiftX = Math.sin(time * (0.5 + i * 0.1) + i) * (w * 0.1);
+                const shiftY = Math.cos(time * (0.4 - i * 0.1) - i) * (h * 0.1);
+
+                const abstractGrad = ctx.createRadialGradient(
+                    w / 2 + shiftX, h / 2 + shiftY, 0,
+                    w / 2 + shiftX, h / 2 + shiftY, w * (0.6 + i * 0.2)
+                );
+
+                // Mood-reactive accent colors
+                const accent = i === 0 ? 'rgba(100, 100, 255, 0.4)' : (i === 1 ? 'rgba(255, 100, 255, 0.2)' : 'rgba(100, 255, 200, 0.1)');
+                abstractGrad.addColorStop(0, accent);
+                abstractGrad.addColorStop(1, 'transparent');
+
+                ctx.fillStyle = abstractGrad;
+                // Distorted Ovals
+                ctx.save();
+                ctx.translate(w / 2 + shiftX, h / 2 + shiftY);
+                ctx.rotate(time * 0.1 * (i + 1));
+                ctx.scale(1.5, 1);
+                ctx.beginPath();
+                ctx.arc(0, 0, w * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+            ctx.restore();
+
+            // ─── Image Layer ───
             if (bgImage.current) {
                 ctx.save();
-                ctx.globalAlpha = 0.22 * (transitionProgress.current > 0.5 ? 1 : transitionProgress.current * 2);
-                ctx.filter = 'brightness(0.35) contrast(1.1) saturate(0.9)';
-                // Fill & Cover
+                ctx.globalAlpha = 0.35 * (transitionProgress.current > 0.5 ? 1 : transitionProgress.current * 2);
+                ctx.filter = 'brightness(0.4) contrast(1.2) saturate(1.1) blur(40px)';
                 const scale = Math.max(w / bgImage.current.width, h / bgImage.current.height);
                 const x = (w - bgImage.current.width * scale) / 2;
                 const y = (h - bgImage.current.height * scale) / 2;
@@ -217,8 +246,6 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                 ctx.restore();
             }
 
-            const activeMood = transitionProgress.current >= 1 ? currentMood.current : targetMood.current;
-            const preset = WEATHER_PRESETS[activeMood] || WEATHER_PRESETS.neutral;
             const fadingOut = transitionProgress.current < 1;
 
             if (preset.particles) {

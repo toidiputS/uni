@@ -13,64 +13,28 @@ export const ATMOSPHERE_IMAGES = {
      * add '/atmosphere/angry/my_storm.jpg' to the list below.
      */
     angry: [
-        '/atmosphere/angry/storm_01.jpg', // Local example
-        'https://images.unsplash.com/photo-1534067783941-51c9c23ecefd',
-        'https://images.unsplash.com/photo-1500674425916-2c6b2ce150ff',
-        'https://images.unsplash.com/photo-1475113548554-5a36f1f523d6',
-        'https://images.unsplash.com/photo-1532974297617-c0f05fe48bff',
-        'https://images.unsplash.com/photo-1504333638930-c8787321eee0',
-        'https://images.unsplash.com/photo-1519046904884-53103b34b206',
+        '/atmosphere/angry/storm_01.jpg',
     ],
     sad: [
         '/atmosphere/sad/rain_01.jpg',
-        'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc',
-        'https://images.unsplash.com/photo-1490730141103-6cac27aaab94',
-        'https://images.unsplash.com/photo-1513002749550-c59d786b8e6c',
-        'https://images.unsplash.com/photo-1464802686167-b939a6910659',
-        'https://images.unsplash.com/photo-1437435889745-7f9cb6506161',
     ],
     love: [
         '/atmosphere/love/hearts_01.jpg',
-        'https://images.unsplash.com/photo-1615715037327-6f8cc36495b4',
-        'https://images.unsplash.com/photo-1506126613408-eca07ce68773',
-        'https://images.unsplash.com/photo-1550684848-fac1c5b4e853',
-        'https://images.unsplash.com/photo-1535498730771-e735b998cd64',
-        'https://images.unsplash.com/photo-1518199266791-5375a83190b7',
     ],
     happy: [
         '/atmosphere/happy/glow_01.jpg',
-        'https://images.unsplash.com/photo-1528353518104-dbd48bee7bc4',
-        'https://images.unsplash.com/photo-1496450681664-3df85efbd29f',
-        'https://images.unsplash.com/photo-1516339901600-2e1a62dc0c45',
-        'https://images.unsplash.com/photo-1505322022379-7c3353ee6291',
-        'https://images.unsplash.com/photo-1514218953589-2d7d37efd2dc',
     ],
     excited: [
-        'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986',
-        'https://images.unsplash.com/photo-1544911845-1f34a3eb46b1',
-        'https://images.unsplash.com/photo-1493246507139-91e8fad9978e',
-        'https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0',
-        'https://images.unsplash.com/photo-1462331940025-496dfbfc7564',
+        '/atmosphere/excited/energy_01.jpg',
     ],
     playful: [
-        'https://images.unsplash.com/photo-1542332213-31f87348057f',
-        'https://images.unsplash.com/photo-1517649763962-0c623066013b',
-        'https://images.unsplash.com/photo-1519608487953-e999c86e7455',
-        'https://images.unsplash.com/photo-1550100136-e074fa05d8dc',
-        'https://images.unsplash.com/photo-1495001258031-d1b407bc1776',
+        '/atmosphere/playful/neon_01.jpg',
     ],
     tender: [
-        'https://images.unsplash.com/photo-1502481851512-e9e2529bbbf9',
-        'https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0',
-        'https://images.unsplash.com/photo-1532274402911-5a36f1f523d6',
-        'https://images.unsplash.com/photo-1529641484336-ef35148bab06',
-        'https://images.unsplash.com/photo-1437333306196-79e0c80d71b1',
+        '/atmosphere/tender/calm_01.jpg',
     ],
     neutral: [
-        'https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3',
-        'https://images.unsplash.com/photo-1506318137071-a8e063b4bcc0',
-        'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a',
-        'https://images.unsplash.com/photo-1534447677768-be436bb09401',
+        '/atmosphere/neutral/void_01.jpg',
     ]
 };
 
