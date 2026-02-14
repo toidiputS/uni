@@ -43,8 +43,8 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
         if (!force && selectedSrc === lastAssetUrl.current) return;
         lastAssetUrl.current = selectedSrc;
 
-        // Randomized fade speed: 0.001 (very slow) to 0.006 (brisk)
-        transitionSpeed.current = 0.001 + Math.random() * 0.005;
+        // Randomized fade speed: 0.0005 (glacial) to 0.003 (standard)
+        transitionSpeed.current = 0.0005 + Math.random() * 0.0025;
 
         const handleLoad = (asset, isVideo = false) => {
             // CROSS-FADE SWAP: Only capture the old baseline RIGHT as the new one is ready
@@ -299,13 +299,14 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                 if (!source) return;
                 ctx.save();
 
-                const drift = Math.sin(time * 0.2 + (isPrev ? 1.5 : 0)) * 50;
-                const scaleRes = 1.1 + Math.cos(time * 0.3 + (isPrev ? 1.5 : 0)) * 0.05;
-                const dynamicBlur = 15 + Math.sin(time * 0.5) * 10;
+                const drift = Math.sin(time * 0.05 + (isPrev ? 1.5 : 0)) * 15;
+                const scaleRes = 1.02 + Math.cos(time * 0.1 + (isPrev ? 1.5 : 0)) * 0.01;
+                const dynamicBlur = 4 + Math.sin(time * 0.2) * 3; // Crisper (4-7px)
 
-                ctx.globalAlpha = alpha * (source.tagName === 'VIDEO' ? 0.5 : 0.3);
-                ctx.filter = `brightness(0.35) contrast(1.4) saturate(1.2) blur(${dynamicBlur}px)`;
-                ctx.globalCompositeOperation = 'screen';
+                // Consistent alpha tracking to prevent dimming during swaps
+                ctx.globalAlpha = alpha * 0.5;
+                ctx.filter = `brightness(0.45) contrast(1.1) saturate(1.1) blur(${dynamicBlur}px)`;
+                ctx.globalCompositeOperation = 'source-over'; // Standard blending is more stable than 'screen'
 
                 const mWidth = source.videoWidth || source.width;
                 const mHeight = source.videoHeight || source.height;

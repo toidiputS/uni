@@ -14,6 +14,7 @@ import Chat from './pages/Chat';
 import Manifesto from './pages/Manifesto';
 import AtmosphereCanvas from './components/AtmosphereCanvas';
 import BellDot from './components/BellDot';
+import PricingOverlay from './components/PricingOverlay';
 import { hasSeenOnboarding } from './lib/onboarding';
 
 export default function App() {
@@ -41,10 +42,12 @@ export default function App() {
     // Global Bell Persistence State
     const [bellConfig, setBellConfig] = useState({
         state: 'idle',
-        size: 56, // Doubled size influence
+        size: 32, // More refined, subtle size
         sentiment: 'neutral',
-        yOffset: 0 // For manual view adjustments
+        top: '12vh', // Middle up top
+        left: '50%'
     });
+    const [showPricing, setShowPricing] = useState(false);
 
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const [wanderPos, setWanderPos] = useState({ x: 0, y: 0 });
@@ -62,10 +65,10 @@ export default function App() {
         // Procedural Wandering — Observing the Sanctuary
         const wanderInterval = setInterval(() => {
             targetWander.current = {
-                x: (Math.random() - 0.5) * 240, // Wider left/right sweep
-                y: (Math.random() - 0.5) * 80   // More vertical drift
+                x: (Math.random() - 0.5) * 100, // Reduced horizontal sweep
+                y: (Math.random() - 0.5) * 15   // Very tight vertical drift near the top
             };
-        }, 5000); // Slower, more comforting pace
+        }, 6000); // Slower, more calming pace
 
         let raf;
         const frame = () => {
@@ -108,12 +111,13 @@ export default function App() {
         }, 10);
     }, []);
 
-    // Unified mood change handler
-    const handleMoodChange = useCallback((moodBundle) => {
-        if (moodBundle.mood) setMood(moodBundle.mood);
-        if (moodBundle.intensity !== undefined) setIntensity(moodBundle.intensity);
-        if (moodBundle.sceneColors) setSceneColors(moodBundle.sceneColors);
-        if (moodBundle.keywords !== undefined) setKeywords(moodBundle.keywords);
+    // Unified atmosphere update handler
+    const handleAtmosphereUpdate = useCallback((bundle) => {
+        if (bundle.mood) setMood(bundle.mood);
+        if (bundle.intensity !== undefined) setIntensity(bundle.intensity);
+        if (bundle.sceneColors) setSceneColors(bundle.sceneColors);
+        if (bundle.keywords !== undefined) setKeywords(bundle.keywords);
+        if (bundle.showPricing !== undefined) setShowPricing(bundle.showPricing);
     }, []);
 
     const handleBubbleEmit = useCallback((emission) => {
@@ -269,8 +273,8 @@ export default function App() {
             {/* Global Persistent Bell */}
             <div className="global-bell-container" style={{
                 position: 'fixed',
-                top: bellConfig.top || '20%',
-                left: bellConfig.left || '50%',
+                top: '12vh', // LOCKED to top center
+                left: '50%',
                 transform: `translate(-50%, -50%) translate(${mousePos.x + wanderPos.x}px, ${mousePos.y + wanderPos.y}px)`,
                 zIndex: 50,
                 pointerEvents: 'none',
@@ -293,10 +297,11 @@ export default function App() {
             {view === 'welcome' && (
                 <Welcome
                     onGetStarted={() => setView('auth')}
-                    onMoodChange={handleMoodChange}
+                    onMoodChange={handleAtmosphereUpdate}
                     isPlaying={isPlaying}
                     onToggleAudio={toggleAudio}
                     setBellConfig={setBellConfig}
+                    onShowPricing={() => setShowPricing(true)}
                 />
             )}
 
@@ -305,6 +310,7 @@ export default function App() {
                     onBack={() => setView('welcome')}
                     onAuthed={() => setView('pairing')}
                     setBellConfig={setBellConfig}
+                    onShowPricing={() => setShowPricing(true)}
                 />
             )}
 
@@ -316,6 +322,7 @@ export default function App() {
                     isPlaying={isPlaying}
                     onToggleAudio={toggleAudio}
                     setBellConfig={setBellConfig}
+                    onShowPricing={() => setShowPricing(true)}
                 />
             )}
 
@@ -323,6 +330,7 @@ export default function App() {
                 <Manifesto
                     onBegin={handleOnboardingComplete}
                     setBellConfig={setBellConfig}
+                    onShowPricing={() => setShowPricing(true)}
                 />
             )}
 
@@ -331,7 +339,7 @@ export default function App() {
                     user={user}
                     userData={userData}
                     roomId={roomId}
-                    onMoodChange={handleMoodChange}
+                    onMoodChange={handleAtmosphereUpdate}
                     onBubbleEmit={handleBubbleEmit}
                     onSceneChange={setSceneColors}
                     onUnpair={() => setView('pairing')}
@@ -344,6 +352,17 @@ export default function App() {
                     setDrawEmit={setDrawEmit}
                     setBellPos={setBellPos}
                     setBubblePositions={setBubblePositions}
+                    onShowPricing={() => setShowPricing(true)}
+                />
+            )}
+
+            {showPricing && (
+                <PricingOverlay
+                    onClose={() => setShowPricing(false)}
+                    onSponsor={(type) => {
+                        // Hook into Chat's sponsor logic or handle direct
+                        console.log('Sponsoring:', type);
+                    }}
                 />
             )}
 
