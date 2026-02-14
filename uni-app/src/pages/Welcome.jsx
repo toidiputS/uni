@@ -311,14 +311,15 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                 {/* 4. •UNI• (Base Identity) */}
                 <div className="wordmark-reflect" style={{
                     position: 'fixed',
-                    bottom: 'clamp(4vh, 6vh, 10vh)',
+                    top: '55%',
                     left: 0,
                     right: 0,
+                    transform: 'translateY(-50%)',
                     margin: 0,
                     zIndex: 0,
                     opacity: step === 'resonance' ? 0 : 0.08, // Hide when hero wordmark is present
-                    transition: 'opacity 1s ease',
-                    fontSize: 'clamp(40px, 12vw, 120px)',
+                    transition: 'all 1s ease',
+                    fontSize: 'clamp(60px, 15vw, 160px)',
                     pointerEvents: 'none'
                 }}>
                     •UNI•

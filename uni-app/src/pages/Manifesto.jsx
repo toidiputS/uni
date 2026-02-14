@@ -112,12 +112,14 @@ export default function Manifesto({ onBegin, setBellConfig }) {
 
             <div className="wordmark-reflect" style={{
                 position: 'fixed',
-                bottom: 'clamp(2vh, 4vh, 6vh)',
+                top: '55%',
                 left: 0,
                 right: 0,
+                transform: 'translateY(-50%)',
                 opacity: 0.1,
                 pointerEvents: 'none',
-                fontSize: 'clamp(40px, 12vw, 120px)'
+                fontSize: 'clamp(60px, 15vw, 160px)',
+                zIndex: 0
             }}>
                 •UNI•
             </div>
