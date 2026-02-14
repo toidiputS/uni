@@ -92,27 +92,28 @@ export default function Manifesto({ onBegin, setBellConfig }) {
 
                 <div style={{
                     position: 'fixed',
-                    bottom: 'clamp(6vh, 8vh, 12vh)',
+                    bottom: '8vh',
                     left: 0,
                     right: 0,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: 12,
-                    zIndex: 20
+                    gap: 16,
+                    zIndex: 20,
+                    paddingBottom: '2vh'
                 }}>
-                    <ReflectiveButton variant="primary" onClick={handleNext}>
-                        {step < items.length - 1 ? "Understood" : "Enter the Sanctuary"}
-                    </ReflectiveButton>
                     <ReflectiveButton size="sm" onClick={onBegin}>
                         Skip
+                    </ReflectiveButton>
+                    <ReflectiveButton variant="primary" onClick={handleNext}>
+                        {step < items.length - 1 ? "Understood" : "Enter the Sanctuary"}
                     </ReflectiveButton>
                 </div>
             </div>
 
             <div className="wordmark-reflect" style={{
                 position: 'fixed',
-                top: '55%',
+                top: '48%',
                 left: 0,
                 right: 0,
                 transform: 'translateY(-50%)',

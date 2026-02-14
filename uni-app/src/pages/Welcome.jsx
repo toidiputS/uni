@@ -198,13 +198,13 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             </p>
                         </div>
 
-                        <div className="flex flex-col items-center justify-center gap-10 w-full">
-                            <ReflectiveButton variant="primary" onClick={startOnboarding}>
-                                Start Resonance
-                            </ReflectiveButton>
-
+                        <div className="flex flex-col items-center justify-center gap-6 w-full" style={{ marginTop: 20, paddingBottom: '10vh' }}>
                             <ReflectiveButton size="sm" onClick={skipToIntro}>
                                 Skip
+                            </ReflectiveButton>
+
+                            <ReflectiveButton variant="primary" onClick={startOnboarding}>
+                                Start Resonance
                             </ReflectiveButton>
                         </div>
 
@@ -262,7 +262,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                         </div>
 
                         {/* Interaction Zone — Viewport-Locked */}
-                        <div style={{ position: 'fixed', bottom: 'clamp(10vh, 14vh, 18vh)', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
+                        <div style={{ position: 'fixed', bottom: '8vh', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10, paddingBottom: '2vh' }}>
                             <ReflectiveButton variant="primary" onClick={handleNext}>
                                 {currentIdx < SEQUENCE.length - 1 ? 'Next' : 'Continue'}
                             </ReflectiveButton>
@@ -292,7 +292,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             <div className="feature-pill">◈ Permanent Soul-Archive</div>
                         </div>
 
-                        <div style={{ position: 'fixed', bottom: 'clamp(8vh, 12vh, 15vh)', left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, zIndex: 10 }}>
+                        <div style={{ position: 'fixed', bottom: '8vh', left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, zIndex: 10, paddingBottom: '2vh' }}>
                             <ReflectiveButton variant="primary" onClick={onGetStarted}>
                                 Begin Resonance
                             </ReflectiveButton>
@@ -311,7 +311,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                 {/* 4. •UNI• (Base Identity) */}
                 <div className="wordmark-reflect" style={{
                     position: 'fixed',
-                    top: '55%',
+                    top: '48%',
                     left: 0,
                     right: 0,
                     transform: 'translateY(-50%)',
