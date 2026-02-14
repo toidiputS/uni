@@ -156,10 +156,31 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                 {/* ACT 1: RESONANCE (Initial State) */}
                 {step === 'resonance' && (
-                    <div className="flex flex-col items-center justify-center gap-12 fade-in w-full text-center" style={{ flex: 1 }}>
-                        <p style={{ fontSize: 13, letterSpacing: '0.2em', color: 'var(--uni-text-muted)', textTransform: 'uppercase', marginBottom: 20, width: '100%' }}>
-                            Intimate Vibe-Architecture for U & I
-                        </p>
+                    <div className="flex flex-col items-center justify-center gap-12 fade-in w-full text-center" style={{ flex: 1, px: 20 }}>
+                        <h1 style={{
+                            fontSize: 'clamp(24px, 5vw, 42px)',
+                            fontWeight: 700,
+                            letterSpacing: '-0.02em',
+                            maxWidth: 800,
+                            lineHeight: 1.1,
+                            marginBottom: 24,
+                            background: 'linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0.7) 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent'
+                        }}>
+                            The World’s First Conversational Generative Emotion Interface
+                        </h1>
+
+                        <div style={{ maxWidth: 600, display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 40 }}>
+                            <p style={{ fontSize: 18, color: 'var(--uni-text)', lineHeight: 1.6, fontWeight: 400 }}>
+                                •UNI• is a messaging experience that turns your chat into living, breathing emotional art.
+                                Instead of static gray bubbles, the interface reacts to the emotional Resonance between you and your partner.
+                            </p>
+
+                            <p style={{ fontSize: 14, color: 'var(--uni-text-dim)', lineHeight: 1.6, opacity: 0.8 }}>
+                                Built for connection, powered by emotion, UNI listens to the tone beneath your words and transforms the entire conversation space in real time.
+                            </p>
+                        </div>
 
                         <div className="flex items-center justify-center gap-6 w-full">
                             <ReflectiveButton variant="primary" onClick={startOnboarding}>
