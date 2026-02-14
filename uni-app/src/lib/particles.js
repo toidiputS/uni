@@ -172,22 +172,21 @@ export function createBird(canvasW, canvasH) {
 }
 
 export function createBee(canvasW, canvasH) {
-    const x = Math.random() * canvasW;
-    const y = Math.random() * canvasH * 0.7;
+    const fromLeft = Math.random() > 0.5;
     return {
         type: 'bee',
-        x, y,
-        baseX: x, baseY: y,
-        vx: (Math.random() - 0.5) * 2,
-        vy: (Math.random() - 0.5) * 2,
+        x: fromLeft ? -20 : canvasW + 20,
+        y: 50 + Math.random() * canvasH * 0.6,
+        vx: fromLeft ? (0.8 + Math.random() * 1.5) : -(0.8 + Math.random() * 1.5),
+        vy: (Math.random() - 0.5) * 0.4,
         life: 1,
         maxLife: 1,
-        size: 2 + Math.random() * 2,
-        opacity: 0.6 + Math.random() * 0.3,
-        color: '255, 200, 50', // Golden bee yellow
+        size: 0.8 + Math.random() * 0.7, // Tiny specks compared to birds
+        opacity: 0.7,
+        color: '255, 200, 50',
         phase: Math.random() * Math.PI * 2,
-        phaseSpeed: 0.1 + Math.random() * 0.2,
-        orbitRadius: 20 + Math.random() * 30
+        phaseSpeed: 0.2 + Math.random() * 0.3, // High-speed vibrato
+        vibrateRange: 2 + Math.random() * 3
     };
 }
 
@@ -340,7 +339,7 @@ export const WEATHER_PRESETS = {
         keywords: 'twilight,nebula,soft,minimal,calm,ethereal',
         particles: {
             firefly: { count: 25, spawnRate: 0.2 },
-            bird: { count: 4, spawnRate: 0.02 },
+            bird: { count: 2, spawnRate: 0.02 },
         },
         lightning: false,
     },
@@ -556,11 +555,13 @@ export function updateParticle(p, w, h, dt) {
             p.opacity = Math.min(0.5, p.life);
             break;
         case 'bee':
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
             p.phase += p.phaseSpeed * dt;
-            // High-frequency darting/orbiting
-            p.x = p.baseX + Math.cos(p.phase) * p.orbitRadius + Math.sin(p.phase * 2) * 10;
-            p.y = p.baseY + Math.sin(p.phase) * (p.orbitRadius * 0.5) + Math.cos(p.phase * 3) * 5;
-            p.opacity = p.life * (0.8 + Math.sin(p.phase * 5) * 0.2); // Buzzing flicker
+            // High-frequency jitter (vibrato) while traveling
+            p.x += Math.sin(p.phase * 10) * 0.8 * dt;
+            p.y += Math.cos(p.phase * 8) * 0.8 * dt;
+            p.opacity = p.life * (0.6 + Math.sin(p.phase * 15) * 0.2);
             break;
         case 'rose':
             p.y += p.vy * dt;
