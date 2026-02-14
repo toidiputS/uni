@@ -1566,14 +1566,14 @@ body,
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(4, 4, 8, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 100;
-  animation: fadeIn 0.3s var(--ease);
+  z-index: 1000;
+  animation: fadeIn 0.4s var(--ease);
   padding: 24px;
 }
 
@@ -1585,7 +1585,7 @@ body,
   animation: slideUp 0.6s var(--ease-bounce);
   position: relative;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 50px 120px rgba(0, 0, 0, 0.95);
 }
 
 .memory-card-inner {
@@ -1693,21 +1693,26 @@ body,
   animation-delay: 0.4s;
 }
 
-/* ─── Toast ─── */
+/* ─── Toast Notifications ─── */
 .toast {
   position: fixed;
-  bottom: 100px;
+  bottom: 120px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--uni-surface-2);
-  border: 1px solid var(--uni-glass-border);
-  padding: 12px 24px;
+  background: rgba(15, 15, 26, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 12px 28px;
   border-radius: var(--radius-full);
   font-size: 13px;
-  color: var(--uni-text-dim);
-  z-index: 200;
-  animation: fadeSlideUp 0.4s var(--ease-bounce);
+  font-weight: 500;
+  color: var(--uni-text);
+  z-index: 10000;
   backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+  animation: fadeSlideUp 0.4s var(--ease-bounce);
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 /* ─── Responsive ─── */
@@ -2583,23 +2588,4 @@ body,
 .onboarding-btn-next:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
-}
-
-/* ─── Toast Notifications ─── */
-.toast {
-  position: fixed;
-  top: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.9);
-  color: #000;
-  padding: 12px 24px;
-  border-radius: 99px;
-  font-weight: 600;
-  font-size: 14px;
-  z-index: 9999;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  animation: slideDown 0.4s var(--ease-bounce), fadeIn 0.4s var(--ease);
-  white-space: nowrap;
-  pointer-events: none;
 }

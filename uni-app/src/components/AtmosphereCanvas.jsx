@@ -418,7 +418,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                     if (Math.random() < 0.005 * intensity) {
                         const m = spawnParticle('morph', w, h, intensity, {
                             x: b.x, y: b.y, w: b.width, h: b.height,
-                            color: WEATHER_PRESETS[b.sentiment]?.sky?.[0] === '#050508' ? '255,255,255' : '150,150,255',
+                            color: '150, 150, 255', // Softer atmospheric blue, never pure white
                             isBurst: false
                         });
                         if (m) particles.current.push(m);

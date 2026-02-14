@@ -686,8 +686,8 @@ export function renderParticle(ctx, p) {
 
         // Explosion expansion: start tight, end wide and thin
         // Cap expansion to avoid "The Pillar"
-        const expansion = Math.min(1.5, (1.0 - safeLife) * 1.5);
-        const radius = size * (p.isBurst ? 0.8 + expansion : 1.0 + (safeLife * 0.1));
+        const expansion = Math.min(1.2, (1.0 - safeLife) * 1.2);
+        const radius = size * (p.isBurst ? 0.6 + expansion : 0.8 + (safeLife * 0.1));
 
         const grad = ctx.createRadialGradient(
             p.x + driftX, p.y + driftY, 0,
