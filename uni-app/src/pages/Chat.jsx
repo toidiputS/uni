@@ -128,15 +128,14 @@ export default function Chat({
         };
     }, [messages, setBubblePositions]);
 
-    // Sync Global Bell config
+    // Sync Global Bell config (Chat status only)
     useEffect(() => {
-        setBellConfig({
+        setBellConfig(prev => ({
+            ...prev,
             state: bellState,
-            size: 64,
             sentiment: mood,
-            top: '84vh',
-            left: '88vw'
-        });
+            size: 32 // Keep consistent with global size
+        }));
     }, [bellState, mood, setBellConfig]);
 
     // Behavioral Entropy logic

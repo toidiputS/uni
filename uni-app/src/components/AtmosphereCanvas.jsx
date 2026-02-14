@@ -32,6 +32,9 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     const lastAssetUrl = useRef(null);
 
     const pickNewAsset = useCallback((targetMoodName, force = false) => {
+        // Guard: Don't interrupt an active transition fade unless forced
+        if (!force && transitionProgress.current < 1) return;
+
         const preset = WEATHER_PRESETS[targetMoodName];
         const pool = preset?.skyImages || [];
         if (pool.length === 0) return;
@@ -43,8 +46,8 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
         if (!force && selectedSrc === lastAssetUrl.current) return;
         lastAssetUrl.current = selectedSrc;
 
-        // Randomized fade speed: 0.0005 (glacial) to 0.003 (standard)
-        transitionSpeed.current = 0.0005 + Math.random() * 0.0025;
+        // Guaranteed smooth fade speed: ~2.5 to 4 seconds
+        transitionSpeed.current = 0.004 + Math.random() * 0.004;
 
         const handleLoad = (asset, isVideo = false) => {
             // CROSS-FADE SWAP: Only capture the old baseline RIGHT as the new one is ready
@@ -70,9 +73,8 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             video.playsInline = true;
             video.crossOrigin = "anonymous";
             video.oncanplay = () => {
-                if (video.duration) {
-                    video.currentTime = Math.random() * video.duration;
-                }
+                // START AT BEGINNING to avoid jerking at video end
+                video.currentTime = 0;
                 handleLoad(video, true);
             };
         } else {
@@ -87,17 +89,17 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     useEffect(() => {
         if (mood !== targetMood.current) {
             targetMood.current = mood;
-            pickNewAsset(mood);
+            pickNewAsset(mood, true); // Force on mood shift
         }
     }, [mood, pickNewAsset]);
 
     // Constant Atmospheric Bleed: Cycle images even if mood stays same
     useEffect(() => {
         const cycle = () => {
-            const delay = 20000 + Math.random() * 30000; // 20-50 seconds (slower cycle)
+            const delay = 35000 + Math.random() * 45000; // 35-80 seconds (MUCH slower cycle)
             return setTimeout(() => {
                 if (transitionProgress.current >= 1) {
-                    pickNewAsset(targetMood.current, true); // Force a new asset from the same mood
+                    pickNewAsset(targetMood.current, true);
                 }
                 timer = cycle();
             }, delay);
