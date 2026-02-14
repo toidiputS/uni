@@ -14,15 +14,27 @@ const firebaseConfig = {
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-let app;
-try {
-    app = initializeApp(firebaseConfig);
-} catch (err) {
-    console.error('[•UNI•] Firebase Init Error:', err);
+let app = null;
+let auth = null;
+let db = null;
+let storage = null;
+
+const hasConfig = firebaseConfig.apiKey && firebaseConfig.apiKey !== 'YOUR_KEY_HERE';
+
+if (hasConfig) {
+    try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+        storage = getStorage(app);
+    } catch (err) {
+        console.error('[•UNI•] Firebase Services Failure:', err);
+    }
+} else {
+    console.warn('[•UNI•] Firebase API Key missing. Sanctuary running in offline mode.');
 }
-export const auth = app ? getAuth(app) : null;
-export const db = app ? getFirestore(app) : null;
-export const storage = app ? getStorage(app) : null;
+
+export { auth, db, storage };
 
 let analytics;
 try {
