@@ -1579,25 +1579,42 @@ body,
 }
 
 .onboarding-actions {
-  padding: 20px;
+  padding: 32px 24px;
   display: flex;
   justify-content: center;
+  flex-shrink: 0;
+  width: 100%;
+  position: relative;
+  z-index: 100; /* Ensure it's above everything */
+  background: linear-gradient(to top, var(--uni-void) 40%, transparent);
+}
+
+.onboarding-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 440px;
+  justify-content: space-between;
 }
 
 .onboarding-skip {
   background: none;
   border: none;
-  color: var(--uni-chrome-dim);
-  font-size: 12px;
+  color: var(--uni-text-muted);
+  font-size: 11px;
   cursor: pointer;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  padding: 8px 16px;
-  transition: color 0.3s;
+  padding: 12px 0;
+  transition: all 0.3s var(--ease);
+  font-family: var(--font-display);
+  border-bottom: 1px solid transparent;
 }
 
 .onboarding-skip:hover {
-  color: var(--uni-text-dim);
+  color: var(--uni-text);
+  border-bottom-color: var(--uni-text-muted);
 }
 
 /* ─── Valentine's Day Launch Edition ─── */
