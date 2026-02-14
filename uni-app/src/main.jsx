@@ -1,29 +1,18 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import './index.css'
-import './artifacts.css'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
 
-import { Analytics } from '@vercel/analytics/react'
-import { SpeedInsights } from '@vercel/speed-insights/react'
+const rootEl = document.getElementById('root');
+if (rootEl) {
+    rootEl.innerHTML = '<div style="color:white;text-align:center;padding-top:45vh;font-family:sans-serif;letter-spacing:0.2em;font-size:10px;opacity:0.6;">RESONATING AT 72BPM...</div>';
+}
 
 try {
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(
-        <React.StrictMode>
-            <App />
-            <Analytics />
-            <SpeedInsights />
-        </React.StrictMode>
-    );
+    const root = ReactDOM.createRoot(rootEl);
+    root.render(<App />);
     console.log('[•UNI•] Sanctuary Manifested.');
 } catch (err) {
-    console.error('[•UNI•] Fatal Boot Error:', err);
-    document.body.innerHTML = `
-        <div style="padding:40px; color:white; background:#050508; font-family:sans-serif; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
-            <h1 style="letter-spacing:0.2em;">BOOT ERROR</h1>
-            <pre style="opacity:0.6; font-size:12px; max-width:100%; overflow:auto; margin:20px 0;">${err.stack || err.message}</pre>
-            <button onclick="window.location.reload()" style="background:#fff; color:#000; border:none; padding:10px 20px; border-radius:20px; cursor:pointer;">Retry</button>
-        </div>
-    `;
+    console.error('[•UNI•] Boot Error:', err);
+    if (rootEl) rootEl.innerHTML = `<div style="color:red;padding:20px;">BOOT FAILED: ${err.message}</div>`;
 }

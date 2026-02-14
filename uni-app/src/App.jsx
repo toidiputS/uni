@@ -248,6 +248,7 @@ export default function App() {
 
     return (
         <div className="app">
+            <div style={{ position: 'fixed', top: 10, right: 10, background: 'rgba(255,0,0,0.8)', color: 'white', zIndex: 99999, padding: '4px 10px', fontSize: 10, borderRadius: 20, fontFamily: 'sans-serif' }}>v3.1.5-BOOT-TEST</div>
             {/* CGEI Atmosphere — always rendering */}
             <div
                 className="scene-bg"
