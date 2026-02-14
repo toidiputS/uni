@@ -51,7 +51,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
             state: 'idle',
             size: 40,
             sentiment: 'neutral',
-            top: '12vh',
+            top: '8vh',
             left: '50%'
         });
     }, [step, setBellConfig]);
@@ -152,7 +152,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
             <div className={`welcome-content ${visible ? 'visible' : ''}`} style={{ textAlign: 'center' }}>
 
-                <div style={{ height: step === 'onboarding' ? '15vh' : '18vh' }} />
+                <div style={{ height: step === 'onboarding' ? '8vh' : '10vh' }} />
 
                 {/* ACT 1: RESONANCE (Initial State) */}
                 {step === 'resonance' && (

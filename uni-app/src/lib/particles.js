@@ -1,5 +1,5 @@
 // •UNI• CGEI Particle System
-import { ATMOSPHERE_IMAGES } from './atmosphere-assets';
+import { ATMOSPHERE_IMAGES } from './atmosphere-assets.js';
 // The emotional atmosphere expressed through motion
 // Each particle type represents a feeling made visible
 

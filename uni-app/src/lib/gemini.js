@@ -2,7 +2,7 @@
 // Single API call handles: sentiment analysis, UNI persona, scene colors, bubble effects
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { BELL_BRAIN_ASSETS } from './atmosphere-assets';
+import { BELL_BRAIN_ASSETS } from './atmosphere-assets.js';
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY || '');
 

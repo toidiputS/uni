@@ -45,7 +45,7 @@ export default function App() {
         state: 'idle',
         size: 16, // Very small, refined core
         sentiment: 'neutral',
-        top: '12vh', // Middle up top
+        top: '8vh', // Middle up top
         left: '50%'
     });
     const [showPricing, setShowPricing] = useState(false);
@@ -288,8 +288,8 @@ export default function App() {
             {/* Global Persistent Bell */}
             <div className="global-bell-container" style={{
                 position: 'fixed',
-                top: '12vh', // LOCKED to top center
-                left: '50%',
+                top: bellConfig.top || '12vh',
+                left: bellConfig.left || '50%',
                 transform: `translate(-50%, -50%) translate(${mousePos.x + wanderPos.x}px, ${mousePos.y + wanderPos.y}px)`,
                 zIndex: 50,
                 pointerEvents: 'none',

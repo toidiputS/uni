@@ -659,7 +659,7 @@ body,
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: wordmarkGlow 4s ease-in-out infinite, breathe 6s ease-in-out infinite;
-  margin: 8.5vh auto 8px auto;
+  margin: 2vh auto 8px auto;
   user-select: none;
   width: 100%;
   display: flex;
@@ -1961,7 +1961,7 @@ body,
   height: 100%;
   width: 100%;
   max-width: 100vw;
-  padding: 10vh 0 5vh;
+  padding: 4vh 0 5vh;
   opacity: 0;
   transition: opacity 1s var(--ease);
   position: relative;
