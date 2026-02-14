@@ -9,7 +9,7 @@ const PREVIEW_MOODS = [
     { mood: 'excited', sceneColors: ['#081518', '#0d1a1e'], intensity: 0.7 },
 ];
 
-export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggleAudio, setBellConfig }) {
+export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggleAudio, setBellConfig, onShowPricing }) {
     const [visible, setVisible] = useState(false);
     const [step, setStep] = useState('resonance'); // 'resonance', 'onboarding', 'urgency'
     const [messages, setMessages] = useState([]);
@@ -264,7 +264,9 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                 {/* ACT 3: URGENCY (The Join Page) */}
                 {step === 'urgency' && (
                     <div className="flex flex-col items-center justify-center gap-6 fade-in w-full text-center" style={{ flex: 1, paddingBottom: '25vh' }}>
-                        <div className="vday-badge" style={{ margin: '0 auto' }}>🌹 Limited Founder's Sanctum — Ends 2.15</div>
+                        <div className="vday-badge" style={{ margin: '0 auto', cursor: 'pointer' }} onClick={() => onShowPricing()}>
+                            🌹 Limited Founder's Sanctum — Ends 2.15
+                        </div>
 
                         <div className="vday-timer flex justify-center items-center w-full mx-auto" style={{ gap: '24px', margin: '40px auto' }}>
                             {Object.entries(timeLeft).map(([label, val]) => (
@@ -281,10 +283,18 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             <div className="feature-pill">◈ Permanent Soul-Archive</div>
                         </div>
 
-                        <div style={{ position: 'fixed', bottom: '18vh', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
+                        <div style={{ position: 'fixed', bottom: '15vh', left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, zIndex: 10 }}>
                             <ReflectiveButton variant="primary" onClick={onGetStarted}>
-                                Begin
+                                Begin Resonance
                             </ReflectiveButton>
+
+                            <button
+                                className="ethereal-text"
+                                style={{ fontSize: 11, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.8 }}
+                                onClick={() => onShowPricing()}
+                            >
+                                [ Access Founder's Sanctum ]
+                            </button>
                         </div>
                     </div>
                 )}

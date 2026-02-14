@@ -16,6 +16,7 @@ import AtmosphereCanvas from './components/AtmosphereCanvas';
 import BellDot from './components/BellDot';
 import PricingOverlay from './components/PricingOverlay';
 import { hasSeenOnboarding } from './lib/onboarding';
+import { redirectToCheckout } from './lib/stripe';
 
 export default function App() {
     // FORCE Manifesto as the true entry point for this recovery session
@@ -237,6 +238,19 @@ export default function App() {
         }
     }, [user, roomId]);
 
+    const handleGlobalSponsor = useCallback(async (type) => {
+        if (!user) {
+            setView('auth');
+            setShowPricing(false);
+            return;
+        }
+        try {
+            await redirectToCheckout(type, user.email, false);
+        } catch (err) {
+            console.error('Sponsorship error:', err);
+        }
+    }, [user]);
+
     if (view === 'error') {
         return (
             <div className="welcome">
@@ -359,10 +373,8 @@ export default function App() {
             {showPricing && (
                 <PricingOverlay
                     onClose={() => setShowPricing(false)}
-                    onSponsor={(type) => {
-                        // Hook into Chat's sponsor logic or handle direct
-                        console.log('Sponsoring:', type);
-                    }}
+                    onSponsor={handleGlobalSponsor}
+                    hasDiscount={false} // Can be extended with feedback logic if needed
                 />
             )}
 

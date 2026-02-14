@@ -49,7 +49,8 @@ export default function Chat({
     setBellConfig,
     setDrawEmit,
     setBellPos,
-    setBubblePositions
+    setBubblePositions,
+    onShowPricing
 }) {
     const [messages, setMessages] = useState([]);
     const [text, setText] = useState('');
@@ -59,7 +60,6 @@ export default function Chat({
     const [intensity, setIntensity] = useState(0.5);
     const [showMemory, setShowMemory] = useState(false);
     const [showArtifact, setShowArtifact] = useState(false);
-    const [showPricing, setShowPricing] = useState(false);
     const [showMusic, setShowMusic] = useState(false);
     const [showSurvey, setShowSurvey] = useState(false);
     const [hasDiscount, setHasDiscount] = useState(false);
@@ -347,6 +347,7 @@ export default function Chat({
                 </div>
                 {!isDirector && (
                     <div className="chat-header-actions">
+                        <button className="btn btn-glass btn-sm" onClick={() => onShowPricing()} title="Founder's Sanctum">🌹</button>
                         <button className="btn btn-glass btn-sm" onClick={() => setShowSurvey(true)}>★</button>
                         <button className={`btn btn-glass btn-sm ${isPlaying ? 'resonance-active-btn' : ''}`} onClick={() => setShowMusic(true)}>♫</button>
                         <button className="btn btn-glass btn-sm" onClick={() => { setBellState('thinking'); showToast("Reading the room..."); }} disabled={sending}>⟢</button>
@@ -421,7 +422,6 @@ export default function Chat({
 
             {showMemory && <MemoryCard roomId={roomId} messages={messages} mood={mood} partnerName={partnerName} userName={user?.displayName || 'You'} onClose={() => setShowMemory(false)} onToast={(m) => { setBellState('glow'); showToast(m); setTimeout(() => setBellState('idle'), 2000); }} />}
             {showArtifact && soulSong && <ArtifactFrame title={soulSong.title} lyrics={soulSong.lyrics} onClose={() => setShowArtifact(false)} />}
-            {showPricing && <PricingOverlay onClose={() => setShowPricing(false)} onSponsor={handleSponsor} hasDiscount={hasDiscount} />}
             {showSurvey && <FeedbackModal onClose={() => setShowSurvey(false)} onSubmit={handleFeedbackSubmit} />}
             {showMusic && <ResonancePlayer roomId={roomId} user={user} onPlay={playSong} onClose={() => setShowMusic(false)} currentTitle={currentSongTitle} isPlaying={isPlaying} onToggle={onToggleAudio} />}
 
