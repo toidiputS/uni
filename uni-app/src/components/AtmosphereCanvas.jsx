@@ -29,21 +29,37 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     const isDrawing = useRef(false);
 
     const transitionSpeed = useRef(0.003);
+    const lastAssetUrl = useRef(null);
 
-    const pickNewAsset = useCallback((targetMoodName) => {
+    const pickNewAsset = useCallback((targetMoodName, force = false) => {
         const preset = WEATHER_PRESETS[targetMoodName];
         const pool = preset?.skyImages || [];
         if (pool.length === 0) return;
 
-        // CROSS-FADE DOCTRINE: Capture current the active target as the new baseline for fading out
-        prevBgImage.current = targetBgImage.current || bgImage.current;
-        prevBgVideo.current = targetBgVideo.current || bgVideo.current;
-
-        // Randomized fade speed: 0.001 (very slow) to 0.008 (brisk)
-        transitionSpeed.current = 0.001 + Math.random() * 0.006;
-
         const idx = Math.floor(Math.random() * pool.length);
         const selectedSrc = pool[idx];
+
+        // Guard: Don't reload the same asset if it's already active or loading
+        if (!force && selectedSrc === lastAssetUrl.current) return;
+        lastAssetUrl.current = selectedSrc;
+
+        // Randomized fade speed: 0.001 (very slow) to 0.006 (brisk)
+        transitionSpeed.current = 0.001 + Math.random() * 0.005;
+
+        const handleLoad = (asset, isVideo = false) => {
+            // CROSS-FADE SWAP: Only capture the old baseline RIGHT as the new one is ready
+            prevBgImage.current = targetBgImage.current || bgImage.current;
+            prevBgVideo.current = targetBgVideo.current || bgVideo.current;
+
+            if (isVideo) {
+                targetBgVideo.current = asset;
+                targetBgImage.current = null;
+            } else {
+                targetBgImage.current = asset;
+                targetBgVideo.current = null;
+            }
+            transitionProgress.current = 0;
+        };
 
         if (selectedSrc.toLowerCase().endsWith('.mp4')) {
             const video = document.createElement('video');
@@ -57,37 +73,31 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                 if (video.duration) {
                     video.currentTime = Math.random() * video.duration;
                 }
-                targetBgVideo.current = video;
-                targetBgImage.current = null;
-                transitionProgress.current = 0;
+                handleLoad(video, true);
             };
         } else {
             const img = new Image();
             img.src = selectedSrc;
             img.crossOrigin = "anonymous";
-            img.onload = () => {
-                targetBgImage.current = img;
-                targetBgVideo.current = null;
-                transitionProgress.current = 0;
-            };
+            img.onload = () => handleLoad(img, false);
         }
     }, []);
 
-    // Handle mood changes
+    // Handle mood changes with strict target protection
     useEffect(() => {
-        pickNewAsset(mood);
-        if (mood !== currentMood.current) {
+        if (mood !== targetMood.current) {
             targetMood.current = mood;
+            pickNewAsset(mood);
         }
     }, [mood, pickNewAsset]);
 
     // Constant Atmospheric Bleed: Cycle images even if mood stays same
     useEffect(() => {
         const cycle = () => {
-            const delay = 15000 + Math.random() * 25000; // 15-40 seconds
+            const delay = 20000 + Math.random() * 30000; // 20-50 seconds (slower cycle)
             return setTimeout(() => {
                 if (transitionProgress.current >= 1) {
-                    pickNewAsset(targetMood.current);
+                    pickNewAsset(targetMood.current, true); // Force a new asset from the same mood
                 }
                 timer = cycle();
             }, delay);
