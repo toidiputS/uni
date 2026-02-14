@@ -707,8 +707,8 @@ body,
   color: var(--uni-text);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  /* The Secret Sauce */
   -webkit-box-reflect: below 2px linear-gradient(transparent, transparent 40%, rgba(255, 255, 255, 0.15));
+  overflow: hidden;
 }
 
 .btn-reflect-base:hover {

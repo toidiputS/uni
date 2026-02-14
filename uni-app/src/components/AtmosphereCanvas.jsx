@@ -240,12 +240,12 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             ctx.globalAlpha = 0.15;
 
             for (let i = 0; i < 3; i++) {
-                const shiftX = Math.sin(time * (0.5 + i * 0.1) + i) * (w * 0.1);
-                const shiftY = Math.cos(time * (0.4 - i * 0.1) - i) * (h * 0.1);
+                const shiftX = Math.sin(time * (0.3 + i * 0.1) + i) * (w * 0.15); // Slightly wider sweep
+                const shiftY = Math.cos(time * (0.2 - i * 0.1) - i) * (h * 0.1);
 
                 const abstractGrad = ctx.createRadialGradient(
                     w / 2 + shiftX, h / 2 + shiftY, 0,
-                    w / 2 + shiftX, h / 2 + shiftY, w * (0.6 + i * 0.2)
+                    w / 2 + shiftX, h / 2 + shiftY, w * (1.2 + i * 0.3) // Much wider gradient reach
                 );
 
                 // Mood-reactive accent colors
@@ -254,13 +254,13 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                 abstractGrad.addColorStop(1, 'transparent');
 
                 ctx.fillStyle = abstractGrad;
-                // Distorted Ovals
+                // Distorted Ovals - "The Ribbons"
                 ctx.save();
                 ctx.translate(w / 2 + shiftX, h / 2 + shiftY);
-                ctx.rotate(time * 0.1 * (i + 1));
-                ctx.scale(1.5, 1);
+                ctx.rotate(time * 0.05 * (i + 1)); // Slower, more majestic rotation
+                ctx.scale(4.0, 0.8); // Much wider X-scale to create edge-to-edge ribbons
                 ctx.beginPath();
-                ctx.arc(0, 0, w * 0.5, 0, Math.PI * 2);
+                ctx.arc(0, 0, w * 0.8, 0, Math.PI * 2); // Larger base radius
                 ctx.fill();
                 ctx.restore();
             }
