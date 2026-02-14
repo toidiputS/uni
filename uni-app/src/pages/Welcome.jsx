@@ -49,9 +49,9 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
     useEffect(() => {
         setBellConfig({
             state: 'idle',
-            size: 64,
+            size: 40,
             sentiment: 'neutral',
-            top: step === 'resonance' ? '15%' : '15%',
+            top: '12vh',
             left: '50%'
         });
     }, [step, setBellConfig]);
