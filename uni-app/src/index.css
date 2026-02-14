@@ -1179,17 +1179,56 @@ body,
 @keyframes bubble-melt {
   0% {
     border-radius: 12px 18px 12px 18px;
-    transform: scale(1);
+    transform: scale(1) skew(0deg);
   }
 
-  50% {
-    border-radius: 8px 12px 20px 24px;
-    transform: scale(1.02, 0.98);
+  33% {
+    border-radius: 20px 8px 15px 12px;
+    transform: scale(1.03, 0.97) skew(1deg);
+  }
+
+  66% {
+    border-radius: 8px 25px 10px 20px;
+    transform: scale(0.97, 1.03) skew(-1deg);
   }
 
   100% {
     border-radius: 12px 18px 12px 18px;
-    transform: scale(1);
+    transform: scale(1) skew(0deg);
+  }
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-2px, 1px);
+  }
+
+  50% {
+    transform: translate(2px, -1px);
+  }
+
+  75% {
+    transform: translate(-1px, -2px);
+  }
+}
+
+@keyframes warp {
+
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    filter: blur(0px);
+  }
+
+  50% {
+    transform: scale(1.05) rotate(0.5deg);
+    filter: blur(1px);
   }
 }
 
@@ -1224,7 +1263,20 @@ body,
 
 .bubble[data-sentiment="angry"] {
   --aura-color: var(--emo-angry);
-  animation: bubble-melt 4s ease-in-out infinite, shake 0.6s ease-in-out;
+  animation: bubble-melt 3s ease-in-out infinite, shake 0.4s ease-in-out infinite;
+  --aura-intensity: 0.8;
+}
+
+.bubble[data-sentiment="love"] {
+  --aura-color: var(--emo-love);
+  animation: warp 6s ease-in-out infinite;
+  --aura-intensity: 0.6;
+}
+
+.bubble[data-sentiment="excited"] {
+  --aura-color: var(--emo-excited);
+  animation: shake 0.2s ease-in-out infinite;
+  --aura-intensity: 0.9;
 }
 
 .bubble[data-sentiment="excited"] {
