@@ -49,6 +49,7 @@ export default function App() {
         left: '50%'
     });
     const [showPricing, setShowPricing] = useState(false);
+    const [showSurvey, setShowSurvey] = useState(false);
 
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const [wanderPos, setWanderPos] = useState({ x: 0, y: 0 });
@@ -374,8 +375,26 @@ export default function App() {
                 <PricingOverlay
                     onClose={() => setShowPricing(false)}
                     onSponsor={handleGlobalSponsor}
-                    hasDiscount={false} // Can be extended with feedback logic if needed
+                    hasDiscount={false}
+                    onOpenSurvey={() => { setShowPricing(false); setShowSurvey(true); }}
                 />
+            )}
+
+            {showSurvey && (
+                <div className="modal-overlay" onClick={() => setShowSurvey(false)}>
+                    {/* Reuse existing Chat's FeedbackModal logic or move to global */}
+                    <div className="artifact-frame" onClick={e => e.stopPropagation()}>
+                        <div className="artifact-paper" style={{ padding: 40, textAlign: 'center' }}>
+                            <h2>Share Your Thoughts</h2>
+                            <p>We're building the future of emotional tech together.</p>
+                            <textarea
+                                placeholder="What does UNI feel like to you?"
+                                style={{ width: '100%', height: 100, background: 'rgba(0,0,0,0.05)', border: 'none', padding: 15, margin: '20px 0', borderRadius: 12 }}
+                            />
+                            <button className="btn btn-primary" onClick={() => setShowSurvey(false)}>Complete Study</button>
+                        </div>
+                    </div>
+                </div>
             )}
 
             <audio ref={audioRef} src={currentSong} loop />

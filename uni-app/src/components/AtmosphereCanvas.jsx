@@ -29,11 +29,11 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     const isDrawing = useRef(false);
 
     const transitionSpeed = useRef(0.003);
-    const lastAssetUrl = useRef(null);
+    const isLoading = useRef(false);
 
     const pickNewAsset = useCallback((targetMoodName, force = false) => {
-        // Guard: Don't interrupt an active transition fade unless forced
-        if (!force && transitionProgress.current < 1) return;
+        // Guard: Don't interrupt an active load or transition unless forced
+        if (!force && (isLoading.current || transitionProgress.current < 1)) return;
 
         const preset = WEATHER_PRESETS[targetMoodName];
         const pool = preset?.skyImages || [];
@@ -42,12 +42,14 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
         const idx = Math.floor(Math.random() * pool.length);
         const selectedSrc = pool[idx];
 
-        // Guard: Don't reload the same asset if it's already active or loading
+        // Guard: Don't reload the same asset if it's already active or pending
         if (!force && selectedSrc === lastAssetUrl.current) return;
-        lastAssetUrl.current = selectedSrc;
 
-        // Guaranteed smooth fade speed: ~2.5 to 4 seconds
-        transitionSpeed.current = 0.004 + Math.random() * 0.004;
+        lastAssetUrl.current = selectedSrc;
+        isLoading.current = true;
+
+        // Guaranteed smooth fade speed: ~2.5 to 5 seconds
+        transitionSpeed.current = 0.003 + Math.random() * 0.003;
 
         const handleLoad = (asset, isVideo = false) => {
             // CROSS-FADE SWAP: Only capture the old baseline RIGHT as the new one is ready
@@ -61,6 +63,8 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                 targetBgImage.current = asset;
                 targetBgVideo.current = null;
             }
+
+            isLoading.current = false;
             transitionProgress.current = 0;
         };
 
@@ -73,7 +77,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             video.playsInline = true;
             video.crossOrigin = "anonymous";
             video.oncanplay = () => {
-                // START AT BEGINNING to avoid jerking at video end
+                video.oncanplay = null; // Prevent multi-triggers
                 video.currentTime = 0;
                 handleLoad(video, true);
             };
@@ -89,7 +93,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     useEffect(() => {
         if (mood !== targetMood.current) {
             targetMood.current = mood;
-            pickNewAsset(mood, true); // Force on mood shift
+            pickNewAsset(mood, true);
         }
     }, [mood, pickNewAsset]);
 
