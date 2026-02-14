@@ -15,6 +15,7 @@ import BellDot from '../components/BellDot';
 import AtmosphereCanvas from '../components/AtmosphereCanvas';
 import ResonancePlayer from '../components/ResonancePlayer';
 import FeedbackModal from '../components/FeedbackModal';
+import { supabase } from '../lib/supabase';
 
 import { analyzeMessage, composeSoulSong } from '../lib/gemini';
 import { getDocs, updateDoc } from 'firebase/firestore';
@@ -65,6 +66,13 @@ export default function Chat({
     const [soulSong, setSoulSong] = useState(null);
     const [toast, setToast] = useState('');
     const [bellState, setBellState] = useState('idle');
+
+    // Photo state
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef(null);
+
     const bellRef = useRef(null);
     const messagesContainerRef = useRef(null);
     const [isDirector, setIsDirector] = useState(false);
@@ -232,15 +240,60 @@ export default function Chat({
         } else setBellState('idle');
     };
 
+    const handleImageSelect = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+            showToast("Only images are supported ✨");
+            return;
+        }
+        setSelectedFile(file);
+        const reader = new FileReader();
+        reader.onloadend = () => setImagePreview(reader.result);
+        reader.readAsDataURL(file);
+    };
+
     const sendMessage = useCallback(async () => {
         const trimmed = text.trim();
-        if (!trimmed || sending || !roomId || !user) return;
-        setSending(true); setText(''); setBellState('thinking');
+        if ((!trimmed && !selectedFile) || sending || !roomId || !user) return;
+        setSending(true);
+        setText('');
+        setBellState('thinking');
+
+        let imageUrl = null;
+        if (selectedFile) {
+            if (!supabase) {
+                showToast("Storage not configured.");
+                setSending(false);
+                return;
+            }
+            setIsUploading(true);
+            try {
+                const filePath = `chat/${roomId}/${Date.now()}_${selectedFile.name}`;
+                const { data, error } = await supabase.storage
+                    .from('media') // Create this bucket or mapping to one
+                    .upload(filePath, selectedFile);
+                if (error) throw error;
+                const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(filePath);
+                imageUrl = publicUrl;
+            } catch (err) {
+                console.error('[UNI] Image Upload Failed:', err);
+                showToast("Failed to upload image.");
+            } finally {
+                setIsUploading(false);
+                setSelectedFile(null);
+                setImagePreview(null);
+            }
+        }
+
         try {
+            const msgContent = trimmed || (imageUrl ? 'shared an image' : '');
             const context = messages.slice(-8).map(m => ({ text: m.text, senderName: m.senderName, isUni: m.isUni }));
-            const analysis = await analyzeMessage(trimmed, context);
+            const analysis = await analyzeMessage(msgContent, context);
+
             await addDoc(collection(db, 'chatRooms', roomId, 'messages'), {
                 text: trimmed,
+                imageUrl: imageUrl,
                 sender: user.uid,
                 senderName: user.displayName || 'You',
                 sentiment: analysis.sentiment,
@@ -312,8 +365,11 @@ export default function Chat({
                         const isArchived = messages.length > 12 && idx < messages.length - 12;
                         return (
                             <div key={msg.id} className={`msg-row ${isUni ? 'uni-msg' : isMe ? 'sent' : 'received'} ${isArchived ? 'archived' : ''}`}>
-                                <div className={`bubble ${isUni ? 'uni' : isMe ? 'sent' : 'received'}`} data-sentiment={msg.sentiment || 'neutral'} data-effect={isArchived ? 'none' : (msg.bubbleEffect || 'breathe')}>
-                                    {msg.text}
+                                <div className={`bubble ${isUni ? 'uni' : isMe ? 'sent' : 'received'} ${msg.imageUrl ? 'image-bubble' : ''}`} data-sentiment={msg.sentiment || 'neutral'} data-effect={isArchived ? 'none' : (msg.bubbleEffect || 'breathe')}>
+                                    {msg.imageUrl && (
+                                        <img src={msg.imageUrl} alt="Shared" onClick={() => window.open(msg.imageUrl, '_blank')} />
+                                    )}
+                                    {msg.text && <div>{msg.text}</div>}
                                 </div>
                             </div>
                         );
@@ -325,8 +381,30 @@ export default function Chat({
             <div className="bell-gravitation-well" ref={bellRef} />
 
             <div className="input-bar">
-                <input ref={inputRef} className="input" type="text" placeholder="Say something…" value={text} onChange={handleTextChange} onKeyDown={handleKeyDown} disabled={sending} autoFocus />
-                <button className="send-btn" onClick={sendMessage} disabled={!text.trim() || sending}>↑</button>
+                {imagePreview && (
+                    <div className="image-preview-wrap">
+                        <img src={imagePreview} className="image-preview" alt="Preview" />
+                        <button className="clear-preview" onClick={() => { setSelectedFile(null); setImagePreview(null); }}>×</button>
+                    </div>
+                )}
+
+                <button className="photo-btn" onClick={() => fileInputRef.current?.click()} disabled={sending || isUploading}>
+                    {isUploading ? '...' : '📸'}
+                </button>
+
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageSelect}
+                    accept="image/*"
+                    hidden
+                    capture="environment" // Allows camera option on mobile
+                />
+
+                <input ref={inputRef} className="input" type="text" placeholder={imagePreview ? "Add a caption..." : "Say something…"} value={text} onChange={handleTextChange} onKeyDown={handleKeyDown} disabled={sending} autoFocus />
+                <button className="send-btn" onClick={sendMessage} disabled={((!text.trim() && !selectedFile) || sending || isUploading)}>
+                    {sending ? '...' : '↑'}
+                </button>
             </div>
 
             {showMemory && <MemoryCard roomId={roomId} messages={messages} mood={mood} partnerName={partnerName} userName={user?.displayName || 'You'} onClose={() => setShowMemory(false)} onToast={(m) => { setBellState('glow'); showToast(m); setTimeout(() => setBellState('idle'), 2000); }} />}

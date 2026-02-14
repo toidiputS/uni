@@ -1309,6 +1309,89 @@ body,
   flex: 1;
   border-radius: var(--radius-full);
   padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--uni-text);
+  font-family: var(--font);
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s var(--ease);
+}
+
+.photo-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--uni-chrome);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s var(--ease);
+  flex-shrink: 0;
+}
+
+.photo-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--uni-text);
+}
+
+.image-preview-wrap {
+  position: absolute;
+  bottom: 100%;
+  left: 16px;
+  padding: 8px;
+  background: rgba(5, 5, 8, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: slideUp 0.3s var(--ease-bounce);
+}
+
+.image-preview {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+}
+
+.clear-preview {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bubble.image-bubble {
+  padding: 4px;
+  max-width: 250px;
+  overflow: hidden;
+}
+
+.bubble.image-bubble img {
+  width: 100%;
+  border-radius: calc(var(--radius-md) - 4px);
+  display: block;
+  cursor: pointer;
+  transition: opacity 0.3s var(--ease);
+}
+
+.bubble.image-bubble img:hover {
+  opacity: 0.9;
 }
 
 .send-btn {
