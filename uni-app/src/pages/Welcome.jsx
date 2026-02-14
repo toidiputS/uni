@@ -152,11 +152,11 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
             <div className={`welcome-content ${visible ? 'visible' : ''}`} style={{ textAlign: 'center' }}>
 
-                <div style={{ height: '2vh' }} />
+                <div style={{ height: '8vh' }} />
 
                 {/* ACT 1: RESONANCE (Initial State) */}
                 {step === 'resonance' && (
-                    <div className="flex flex-col items-center justify-start fade-in w-full text-center" style={{ flex: 1, padding: '2vh 24px 0', position: 'relative', zIndex: 1, minHeight: '60vh' }}>
+                    <div className="flex flex-col items-center justify-start fade-in w-full text-center" style={{ flex: 1, padding: '4vh 24px 0', position: 'relative', zIndex: 1, minHeight: '60vh' }}>
 
                         <div className="ethereal-text" style={{ fontSize: 10, letterSpacing: '0.5em', marginBottom: 24, opacity: 0.5 }}>
                             CGEI — SYNAPTIC LINK 01
@@ -198,7 +198,14 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             </p>
                         </div>
 
-                        <div className="flex flex-col items-center justify-center gap-6 w-full" style={{ marginTop: 20, paddingBottom: '10vh' }}>
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: 16,
+                            marginTop: 40,
+                            paddingBottom: '15vh' // Pushing buttons lower to clear UNI and show reflections
+                        }}>
                             <ReflectiveButton size="sm" onClick={skipToIntro}>
                                 Skip
                             </ReflectiveButton>
@@ -218,7 +225,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                 {step === 'onboarding' && (
                     <div className="flex flex-col items-center w-full fade-in" style={{
                         flex: 1,
-                        paddingTop: 'clamp(10px, 4vh, 30px)',
+                        paddingTop: 'clamp(40px, 8vh, 80px)',
                         paddingBottom: '25vh' // Give space for fixed elements
                     }}>
                         <div className="flex flex-col items-center w-full" style={{ gap: 'clamp(24px, 6vh, 48px)' }}>

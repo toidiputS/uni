@@ -55,7 +55,7 @@ export default function Manifesto({ onBegin, setBellConfig }) {
                 maxWidth: 600,
                 width: '100%',
                 margin: '0 auto',
-                paddingTop: 'clamp(20px, 6vh, 40px)', // Move it way up
+                paddingTop: 'clamp(60px, 12vh, 120px)', // Pushing down to clear Bell
                 textAlign: 'center',
                 zIndex: 10,
                 flex: 1,
@@ -92,7 +92,7 @@ export default function Manifesto({ onBegin, setBellConfig }) {
 
                 <div style={{
                     position: 'fixed',
-                    bottom: '8vh',
+                    bottom: '6vh',
                     left: 0,
                     right: 0,
                     display: 'flex',
@@ -100,7 +100,7 @@ export default function Manifesto({ onBegin, setBellConfig }) {
                     alignItems: 'center',
                     gap: 16,
                     zIndex: 20,
-                    paddingBottom: '2vh'
+                    paddingBottom: '4vh'
                 }}>
                     <ReflectiveButton size="sm" onClick={onBegin}>
                         Skip
