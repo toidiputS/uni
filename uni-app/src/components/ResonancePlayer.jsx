@@ -43,21 +43,25 @@ export default function ResonancePlayer({ roomId, user, onPlay, onClose, current
         setProgress(10); // Start progress
 
         try {
-            const filePath = `rooms/${roomId}/${Date.now()}_${file.name}`;
+            // Use the 'media' bucket as it is already configured for the chat
+            const filePath = `shared-songs/${roomId}/${Date.now()}_${file.name}`;
 
             const { data, error: uploadError } = await supabase.storage
-                .from('resonance')
+                .from('media')
                 .upload(filePath, file, {
                     cacheControl: '3600',
                     upsert: false
                 });
 
-            if (uploadError) throw uploadError;
+            if (uploadError) {
+                console.error('[Supabase Storage Error]', uploadError);
+                throw new Error(`Storage error: ${uploadError.message}`);
+            }
 
             setProgress(90);
 
             const { data: { publicUrl } } = supabase.storage
-                .from('resonance')
+                .from('media')
                 .getPublicUrl(filePath);
 
             await addDoc(collection(db, 'chatRooms', roomId, 'resonance'), {
@@ -69,8 +73,8 @@ export default function ResonancePlayer({ roomId, user, onPlay, onClose, current
             });
 
         } catch (err) {
-            console.error('[Resonance] Upload failed:', err);
-            alert(`Upload failed: ${err.message}`);
+            console.error('[Resonance] Action failed:', err);
+            alert(`Resonance Sync Failed: ${err.message}`);
         } finally {
             setUploading(false);
             setProgress(0);

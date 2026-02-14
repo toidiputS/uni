@@ -152,19 +152,19 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
             <div className={`welcome-content ${visible ? 'visible' : ''}`} style={{ textAlign: 'center' }}>
 
-                <div style={{ height: step === 'onboarding' ? '8vh' : '10vh' }} />
+                <div style={{ height: '2vh' }} />
 
                 {/* ACT 1: RESONANCE (Initial State) */}
                 {step === 'resonance' && (
-                    <div className="flex flex-col items-center justify-center fade-in w-full text-center" style={{ flex: 1, padding: '0 24px', position: 'relative', zIndex: 1, minHeight: '60vh' }}>
+                    <div className="flex flex-col items-center justify-start fade-in w-full text-center" style={{ flex: 1, padding: '2vh 24px 0', position: 'relative', zIndex: 1, minHeight: '60vh' }}>
 
                         <div className="ethereal-text" style={{ fontSize: 10, letterSpacing: '0.5em', marginBottom: 24, opacity: 0.5 }}>
                             CGEI — SYNAPTIC LINK 01
                         </div>
 
                         <h1 className="wordmark" style={{
-                            fontSize: 'clamp(44px, 12vw, 92px)',
-                            marginBottom: 40,
+                            fontSize: 'clamp(40px, 10vw, 84px)',
+                            marginBottom: 'clamp(12px, 3vh, 24px)',
                             lineHeight: 1,
                             background: 'linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0.6) 100%)',
                             WebkitBackgroundClip: 'text',
@@ -173,7 +173,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             •UNI•
                         </h1>
 
-                        <div style={{ maxWidth: 540, display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 48 }}>
+                        <div style={{ maxWidth: 540, display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 40 }}>
                             <p style={{
                                 fontSize: 'clamp(18px, 4vw, 22px)',
                                 color: 'var(--uni-text)',
@@ -216,30 +216,39 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                 {/* ACT 2: SPEAKING (Sovereign Stack) */}
                 {step === 'onboarding' && (
-                    <div className="flex flex-col items-center w-full fade-in" style={{ flex: 1, paddingTop: '5vh' }}>
-                        <div className="flex flex-col items-center w-full" style={{ gap: 48 }}>
+                    <div className="flex flex-col items-center w-full fade-in" style={{
+                        flex: 1,
+                        paddingTop: 'clamp(10px, 4vh, 30px)',
+                        paddingBottom: '25vh' // Give space for fixed elements
+                    }}>
+                        <div className="flex flex-col items-center w-full" style={{ gap: 'clamp(24px, 6vh, 48px)' }}>
                             {messages.map((msg, i) => (
                                 <div key={msg.id || i} className="onboarding-msg flex flex-col items-center w-full" style={{
                                     opacity: i === messages.length - 1 ? 1 : 0.25,
                                     transition: 'all 0.8s',
-                                    marginBottom: 0
+                                    marginBottom: 0,
+                                    padding: '0 24px'
                                 }}>
                                     {msg.text && (
-                                        <p className="onboarding-text" style={{ fontSize: 16, maxWidth: 500 }}>
+                                        <p className="onboarding-text" style={{
+                                            fontSize: 'clamp(14px, 4vw, 16px)',
+                                            maxWidth: 500,
+                                            lineHeight: 1.5
+                                        }}>
                                             {msg.text}
                                         </p>
                                     )}
 
                                     {msg.features && (
-                                        <div className="flex flex-wrap justify-center gap-6 mt-12" style={{ maxWidth: 540 }}>
+                                        <div className="flex flex-wrap justify-center gap-4 mt-8" style={{ maxWidth: 540 }}>
                                             {msg.features.map((f, j) => (
                                                 <div key={j} className="onboarding-future-card"
                                                     style={{
                                                         background: 'var(--uni-glass)',
                                                         border: '1px solid var(--uni-glass-border)',
-                                                        padding: '10px 24px',
+                                                        padding: '8px 20px',
                                                         borderRadius: 'var(--radius-full)',
-                                                        fontSize: 13,
+                                                        fontSize: 12,
                                                         color: 'var(--uni-text-dim)',
                                                         backdropFilter: 'blur(12px)',
                                                         animation: 'fadeSlideUp 0.8s ease both',
@@ -253,7 +262,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                         </div>
 
                         {/* Interaction Zone — Viewport-Locked */}
-                        <div style={{ position: 'fixed', bottom: '18vh', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
+                        <div style={{ position: 'fixed', bottom: 'clamp(10vh, 14vh, 18vh)', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
                             <ReflectiveButton variant="primary" onClick={handleNext}>
                                 {currentIdx < SEQUENCE.length - 1 ? 'Next' : 'Continue'}
                             </ReflectiveButton>
@@ -283,7 +292,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             <div className="feature-pill">◈ Permanent Soul-Archive</div>
                         </div>
 
-                        <div style={{ position: 'fixed', bottom: '15vh', left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, zIndex: 10 }}>
+                        <div style={{ position: 'fixed', bottom: 'clamp(8vh, 12vh, 15vh)', left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, zIndex: 10 }}>
                             <ReflectiveButton variant="primary" onClick={onGetStarted}>
                                 Begin Resonance
                             </ReflectiveButton>
@@ -302,13 +311,15 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                 {/* 4. •UNI• (Base Identity) */}
                 <div className="wordmark-reflect" style={{
                     position: 'fixed',
-                    bottom: '22vh',
+                    bottom: 'clamp(4vh, 6vh, 10vh)',
                     left: 0,
                     right: 0,
                     margin: 0,
                     zIndex: 0,
-                    opacity: step === 'resonance' ? 0 : 1, // Hide when hero wordmark is present
-                    transition: 'opacity 1s ease'
+                    opacity: step === 'resonance' ? 0 : 0.08, // Hide when hero wordmark is present
+                    transition: 'opacity 1s ease',
+                    fontSize: 'clamp(40px, 12vw, 120px)',
+                    pointerEvents: 'none'
                 }}>
                     •UNI•
                 </div>

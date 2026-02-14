@@ -19,8 +19,7 @@ import { hasSeenOnboarding } from './lib/onboarding';
 import { redirectToCheckout } from './lib/stripe';
 
 export default function App() {
-    // FORCE Manifesto as the true entry point for this recovery session
-    const [view, setView] = useState('manifesto');
+    const [view, setView] = useState('welcome');
     const [user, setUser] = useState(null);
     const [userData, setOrderedUserData] = useState(null);
     const [roomId, setRoomId] = useState(null);
@@ -146,8 +145,8 @@ export default function App() {
                         setOrderedUserData(data);
                         if (data.pairedWith && data.lastRoomId) {
                             setRoomId(data.lastRoomId);
-                            // Always go to manifesto first, then chat if onboarding is done
-                            setView('manifesto');
+                            // Always go to welcome first, then chat if onboarding is done
+                            setView('welcome');
                         } else {
                             setView('pairing');
                         }
@@ -163,7 +162,7 @@ export default function App() {
                 setOrderedUserData(null);
                 setRoomId(null);
                 if (!hasSeenOnboarding()) {
-                    setView('manifesto');
+                    setView('welcome');
                 } else {
                     setView('welcome');
                 }
@@ -174,7 +173,7 @@ export default function App() {
         const failsafe = setTimeout(() => {
             setView(prev => {
                 if (prev === 'loading') {
-                    return hasSeenOnboarding() ? 'welcome' : 'manifesto';
+                    return 'welcome';
                 }
                 return prev;
             });
@@ -198,7 +197,7 @@ export default function App() {
                     setRoomId(data.lastRoomId);
                     if (view === 'pairing') {
                         if (!hasSeenOnboarding()) {
-                            setView('manifesto');
+                            setView('welcome');
                         } else {
                             setView('chat');
                         }
@@ -225,7 +224,7 @@ export default function App() {
         // But the system should have landed them on Manifesto first.
         // If for some reason they are here and haven't onboarded, Manifesto is next.
         if (!hasSeenOnboarding()) {
-            setView('manifesto');
+            setView('welcome');
         } else {
             setView('chat');
         }

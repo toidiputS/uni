@@ -10,9 +10,9 @@ export default function Manifesto({ onBegin, setBellConfig }) {
         setVisible(true);
         setBellConfig({
             state: 'idle',
-            size: 80,
+            size: 40,
             sentiment: 'neutral',
-            top: '25%',
+            top: '8vh',
             left: '50%',
             yOffset: 0
         });
@@ -47,30 +47,38 @@ export default function Manifesto({ onBegin, setBellConfig }) {
     };
 
     return (
-        <div className={`welcome manifesto-view ${visible ? 'visible' : ''}`}>
+        <div className={`welcome manifesto-view ${visible ? 'visible' : ''}`} style={{
+            justifyContent: 'flex-start',
+            paddingTop: 'calc(env(safe-area-inset-top) + 12px)'
+        }}>
             <div className="manifesto-container" style={{
                 maxWidth: 600,
+                width: '100%',
                 margin: '0 auto',
-                paddingTop: '35vh',
+                paddingTop: 'clamp(20px, 6vh, 40px)', // Move it way up
                 textAlign: 'center',
-                zIndex: 10
+                zIndex: 10,
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-start' // Align to top
             }}>
                 <div key={step} className="manifesto-content fade-in">
                     <h1 style={{
-                        fontSize: 14,
+                        fontSize: 'clamp(11px, 2.5vw, 13px)',
                         letterSpacing: '0.4em',
                         color: 'var(--uni-text-muted)',
                         textTransform: 'uppercase',
-                        marginBottom: 32
+                        marginBottom: 'clamp(24px, 5vh, 48px)'
                     }}>
                         {items[step].title}
                     </h1>
 
-                    <div className="manifesto-lines" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div className="manifesto-lines" style={{ display: 'flex', flexDirection: 'column', gap: 'clamp(12px, 3vh, 24px)', padding: '0 20px' }}>
                         {items[step].lines.map((line, i) => (
                             <p key={i} style={{
-                                fontSize: 18,
-                                lineHeight: 1.6,
+                                fontSize: 'clamp(16px, 4.5vw, 20px)',
+                                lineHeight: 1.5,
                                 color: 'var(--uni-text-bright)',
                                 fontWeight: 300,
                                 opacity: 0,
@@ -84,12 +92,14 @@ export default function Manifesto({ onBegin, setBellConfig }) {
 
                 <div style={{
                     position: 'fixed',
-                    bottom: '15vh',
+                    bottom: 'clamp(6vh, 8vh, 12vh)',
                     left: 0,
                     right: 0,
                     display: 'flex',
-                    justifyContent: 'center',
-                    gap: 12
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 12,
+                    zIndex: 20
                 }}>
                     <ReflectiveButton variant="primary" onClick={handleNext}>
                         {step < items.length - 1 ? "Understood" : "Enter the Sanctuary"}
@@ -102,10 +112,12 @@ export default function Manifesto({ onBegin, setBellConfig }) {
 
             <div className="wordmark-reflect" style={{
                 position: 'fixed',
-                bottom: '22vh',
+                bottom: 'clamp(2vh, 4vh, 6vh)',
                 left: 0,
                 right: 0,
-                opacity: 0.1
+                opacity: 0.1,
+                pointerEvents: 'none',
+                fontSize: 'clamp(40px, 12vw, 120px)'
             }}>
                 •UNI•
             </div>
