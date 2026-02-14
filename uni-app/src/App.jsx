@@ -42,7 +42,7 @@ export default function App() {
     // Global Bell Persistence State
     const [bellConfig, setBellConfig] = useState({
         state: 'idle',
-        size: 32, // More refined, subtle size
+        size: 16, // Very small, refined core
         sentiment: 'neutral',
         top: '12vh', // Middle up top
         left: '50%'

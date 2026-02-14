@@ -40,8 +40,8 @@ export default function BellDot({
         <div
             className={`bell-dot-wrap ${state !== 'idle' ? `bell-${state}` : ''}`}
             style={{
-                width: `${size * 3.5}px`,
-                height: `${size * 3.5}px`,
+                width: `${size * 2.5}px`,
+                height: `${size * 2.5}px`,
                 position: 'relative',
                 display: 'flex',
                 alignItems: 'center',
