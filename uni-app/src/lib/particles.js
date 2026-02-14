@@ -111,12 +111,12 @@ export function createFirefly(canvasW, canvasH) {
         vy: (Math.random() - 0.5) * 0.3,
         life: 1,
         maxLife: 1,
-        size: 2 + Math.random() * 3,
+        size: 1 + Math.random() * 1.5,
         opacity: 0,
-        targetOpacity: 0.3 + Math.random() * 0.5,
+        targetOpacity: 0.3 + Math.random() * 0.4,
         color: '255, 220, 100',
         phase: Math.random() * Math.PI * 2,
-        phaseSpeed: 0.01 + Math.random() * 0.015,
+        phaseSpeed: 0.005 + Math.random() * 0.01,
         wanderAngle: Math.random() * Math.PI * 2,
     };
 }
@@ -163,11 +163,11 @@ export function createBird(canvasW, canvasH) {
         vy: (Math.random() - 0.5) * 0.5,
         life: 1,
         maxLife: 1,
-        size: 5 + Math.random() * 10,
+        size: 15 + Math.random() * 10, // Much larger and more majestic
         opacity: 0.3 + Math.random() * 0.4,
         color: Math.random() > 0.8 ? '200, 200, 255' : (Math.random() > 0.5 ? '180, 180, 200' : '150, 150, 170'),
-        wingPhase: Math.random() * Math.PI * 2, // Desynced wings
-        wingSpeed: 0.05 + Math.random() * 0.04,
+        wingPhase: Math.random() * Math.PI * 2,
+        wingSpeed: 0.03 + Math.random() * 0.03, // Slower, more graceful wings
     };
 }
 
@@ -181,12 +181,12 @@ export function createBee(canvasW, canvasH) {
         vy: (Math.random() - 0.5) * 0.4,
         life: 1,
         maxLife: 1,
-        size: 0.8 + Math.random() * 0.7, // Tiny specks compared to birds
-        opacity: 0.7,
-        color: '255, 200, 50',
+        size: 0.4 + Math.random() * 0.6, // Tiny specks, almost invisible but for the movement
+        opacity: 0.6,
+        color: '255, 210, 80',
         phase: Math.random() * Math.PI * 2,
-        phaseSpeed: 0.2 + Math.random() * 0.3, // High-speed vibrato
-        vibrateRange: 2 + Math.random() * 3
+        phaseSpeed: 0.15 + Math.random() * 0.2,
+        vibrateRange: 1 + Math.random() * 1
     };
 }
 
@@ -338,8 +338,8 @@ export const WEATHER_PRESETS = {
         skyImages: ATMOSPHERE_IMAGES.tender,
         keywords: 'twilight,nebula,soft,minimal,calm,ethereal',
         particles: {
-            firefly: { count: 25, spawnRate: 0.2 },
-            bird: { count: 2, spawnRate: 0.02 },
+            firefly: { count: 12, spawnRate: 0.05 }, // Drastically reduced
+            bird: { count: 1, spawnRate: 0.005 }, // Rare and majestic
         },
         lightning: false,
     },

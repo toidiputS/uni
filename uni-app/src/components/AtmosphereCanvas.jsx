@@ -351,17 +351,17 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                                 p._mood = activeMood;
                                 particles.current.push(p);
 
-                                // NATURE DOCTRINE: Rare chance to spawn a tight PACK of bees alongside a bird
-                                if (type === 'bird' && Math.random() < 0.15) {
-                                    const packSize = 3 + Math.floor(Math.random() * 3);
+                                // NATURE DOCTRINE: Ultra-rare chance to spawn a tiny PACK of bees alongside a bird
+                                if (type === 'bird' && Math.random() < 0.08) {
+                                    const packSize = 1 + Math.floor(Math.random() * 2);
                                     const packLead = spawnParticle('bee', w, h, intensity);
                                     if (packLead) {
                                         for (let i = 0; i < packSize; i++) {
                                             const offsetBee = {
                                                 ...packLead,
-                                                x: packLead.x + (Math.random() - 0.5) * 40,
-                                                y: packLead.y + (Math.random() - 0.5) * 40,
-                                                phase: packLead.phase + i * 0.5, // Desync wings slightly
+                                                x: packLead.x + (Math.random() - 0.5) * 30,
+                                                y: packLead.y + (Math.random() - 0.5) * 30,
+                                                phase: packLead.phase + i * 0.8, // Desync wings slightly
                                                 _mood: activeMood
                                             };
                                             particles.current.push(offsetBee);
