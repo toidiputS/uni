@@ -1,7 +1,7 @@
 // •UNI• Service Worker
 // Basic caching for PWA reliability and "Install" prompt trigger
 
-const CACHE_NAME = 'uni-v1';
+const CACHE_NAME = 'uni-v2';
 const ASSETS = [
     '/',
     '/index.html',
