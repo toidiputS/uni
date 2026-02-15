@@ -12,9 +12,13 @@ import Auth from './pages/Auth';
 import Pairing from './pages/Pairing';
 import Chat from './pages/Chat';
 import Manifesto from './pages/Manifesto';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 import AtmosphereCanvas from './components/AtmosphereCanvas';
 import BellDot from './components/BellDot';
+import Footer from './components/Footer';
 import PricingOverlay from './components/PricingOverlay';
+import './artifacts.css';
 import { hasSeenOnboarding } from './lib/onboarding';
 import { redirectToCheckout } from './lib/stripe';
 
@@ -23,6 +27,21 @@ export default function App() {
     const [user, setUser] = useState(null);
     const [userData, setOrderedUserData] = useState(null);
     const [roomId, setRoomId] = useState(null);
+
+    // Initial routing for direct addresses
+    useEffect(() => {
+        const path = window.location.pathname;
+        if (path === '/privacy') setView('privacy');
+        else if (path === '/tos') setView('tos');
+    }, []);
+
+    // Helper to change view and update URL if needed
+    const navigateTo = useCallback((newView) => {
+        if (newView === 'privacy') window.history.pushState({}, '', '/privacy');
+        else if (newView === 'tos') window.history.pushState({}, '', '/tos');
+        else if (newView === 'welcome') window.history.pushState({}, '', '/');
+        setView(newView);
+    }, []);
 
     // CGEI Atmosphere state
     const [mood, setMood] = useState('neutral');
@@ -370,6 +389,20 @@ export default function App() {
                 />
             )}
 
+            {view === 'privacy' && (
+                <Privacy
+                    onBack={() => navigateTo('welcome')}
+                    setBellConfig={setBellConfig}
+                />
+            )}
+
+            {view === 'tos' && (
+                <Terms
+                    onBack={() => navigateTo('welcome')}
+                    setBellConfig={setBellConfig}
+                />
+            )}
+
             {showPricing && (
                 <PricingOverlay
                     onClose={() => setShowPricing(false)}
@@ -397,6 +430,7 @@ export default function App() {
             )}
 
             <audio ref={audioRef} src={currentSong} loop />
+            {view !== 'chat' && view !== 'manifesto' && <Footer setView={navigateTo} />}
         </div>
     );
 }

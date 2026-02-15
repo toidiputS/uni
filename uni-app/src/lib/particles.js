@@ -181,12 +181,44 @@ export function createBee(canvasW, canvasH) {
         vy: (Math.random() - 0.5) * 0.4,
         life: 1,
         maxLife: 1,
-        size: 0.4 + Math.random() * 0.6, // Tiny specks, almost invisible but for the movement
+        size: 0.8 + Math.random() * 1.2, // Slightly more visible
         opacity: 0.6,
         color: '255, 210, 80',
         phase: Math.random() * Math.PI * 2,
         phaseSpeed: 0.15 + Math.random() * 0.2,
         vibrateRange: 1 + Math.random() * 1
+    };
+}
+
+export function createShadowPerson(canvasW, canvasH) {
+    const fromLeft = Math.random() > 0.5;
+    const personas = ['spy', 'mover', 'lovers', 'observer'];
+    let persona = personas[Math.floor(Math.random() * personas.length)];
+
+    // SPY VS SPY DOCTRINE: 50% chance a spy is part of the "Eternal Battle"
+    const side = Math.random() > 0.5 ? 'white' : 'black';
+    const color = side === 'white' ? '255, 255, 255' : '0, 0, 0';
+
+    return {
+        type: 'shadowperson',
+        persona,
+        side,
+        x: fromLeft ? -100 : canvasW + 100,
+        y: canvasH - 60 - Math.random() * 60,
+        vx: fromLeft ? (0.4 + Math.random() * 0.5) : -(0.4 + Math.random() * 0.5),
+        vy: 0,
+        life: 1,
+        maxLife: 1,
+        size: 35 + Math.random() * 15,
+        opacity: 0,
+        targetOpacity: side === 'white' ? 0.15 : 0.25, // Black needs more opacity to be seen
+        color,
+        phase: Math.random() * Math.PI * 2,
+        phaseSpeed: 0.02 + Math.random() * 0.03,
+        fadeSpeed: 0.005,
+        behaviorTimer: 0,
+        state: 'moving',
+        hasBomb: persona === 'spy' && Math.random() > 0.7
     };
 }
 
@@ -269,16 +301,15 @@ function drawHeart(ctx, x, y, size, color, opacity, style = 'filled', shapeBias 
 
 // ─── Weather Presets ───
 
-// ─── Weather Presets ───
-
 export const WEATHER_PRESETS = {
     angry: {
         sky: ['#1a0505', '#200808'],
         skyImages: ATMOSPHERE_IMAGES.angry,
         keywords: 'storm,dark,thunder,lightning,void,chaos,abstract',
         particles: {
-            rain: { count: 600, spawnRate: 20 }, // Heavier, more intense "Onboarding Demo" Storm
-            cloud: { count: 18, spawnRate: 0.12 }, // Thick "North Side" Clouds
+            rain: { count: 600, spawnRate: 20 },
+            cloud: { count: 18, spawnRate: 0.12 },
+            shadowperson: { count: 1, spawnRate: 0.2 }, // Running through the storm
         },
         lightning: true,
         lightningInterval: [1500, 4000],
@@ -290,6 +321,7 @@ export const WEATHER_PRESETS = {
         particles: {
             drop: { count: 40, spawnRate: 1.2 },
             cloud: { count: 4, spawnRate: 0.02 },
+            shadowperson: { count: 1, spawnRate: 0.08 }, // Somber witness
         },
         lightning: false,
     },
@@ -300,6 +332,8 @@ export const WEATHER_PRESETS = {
         particles: {
             heart: { count: 20, spawnRate: 0.6 },
             firefly: { count: 20, spawnRate: 0.2 },
+            bird: { count: 1, spawnRate: 0.02 },
+            shadowperson: { count: 1, spawnRate: 0.1 }, // Hidden romantic observers
         },
         lightning: false,
     },
@@ -310,6 +344,8 @@ export const WEATHER_PRESETS = {
         particles: {
             firefly: { count: 30, spawnRate: 0.3 },
             spark: { count: 8, spawnRate: 0.2 },
+            bee: { count: 6, spawnRate: 0.1 },
+            shadowperson: { count: 1, spawnRate: 0.08 },
         },
         lightning: false,
     },
@@ -320,6 +356,8 @@ export const WEATHER_PRESETS = {
         particles: {
             spark: { count: 25, spawnRate: 1.2 },
             bounce: { count: 15, spawnRate: 0.5 },
+            bird: { count: 2, spawnRate: 0.1 },
+            shadowperson: { count: 1, spawnRate: 0.15 }, // Fast moving silhouettes
         },
         lightning: false,
     },
@@ -330,6 +368,8 @@ export const WEATHER_PRESETS = {
         particles: {
             bounce: { count: 20, spawnRate: 0.6 },
             firefly: { count: 12, spawnRate: 0.2 },
+            bee: { count: 10, spawnRate: 0.3 },
+            shadowperson: { count: 2, spawnRate: 0.1 }, // Playful marginalia
         },
         lightning: false,
     },
@@ -338,8 +378,9 @@ export const WEATHER_PRESETS = {
         skyImages: ATMOSPHERE_IMAGES.tender,
         keywords: 'twilight,nebula,soft,minimal,calm,ethereal',
         particles: {
-            firefly: { count: 12, spawnRate: 0.05 }, // Drastically reduced
-            bird: { count: 1, spawnRate: 0.005 }, // Rare and majestic
+            firefly: { count: 12, spawnRate: 0.05 },
+            bird: { count: 2, spawnRate: 0.05 },
+            shadowperson: { count: 2, spawnRate: 0.02 }, // The Sovereign Witness is watching
         },
         lightning: false,
     },
@@ -347,7 +388,21 @@ export const WEATHER_PRESETS = {
         sky: ['#050508', '#0a0a12'],
         skyImages: ATMOSPHERE_IMAGES.neutral,
         keywords: 'stars,horizon,cosmic,galaxy,minimal,dark,space',
-        particles: {}, // Truly clean sanctuary start
+        particles: {
+            shadowperson: { count: 1, spawnRate: 0.05 }, // Occasional witness in the void
+        },
+    },
+    nature: {
+        sky: ['#0a1505', '#10200a'],
+        skyImages: ATMOSPHERE_IMAGES.happy, // Reuse happy/nature-ish assets
+        keywords: 'forest,green,garden,life,earthy,birds,bees',
+        particles: {
+            bird: { count: 4, spawnRate: 0.4 },
+            bee: { count: 12, spawnRate: 0.8 },
+            firefly: { count: 20, spawnRate: 0.2 },
+            shadowperson: { count: 2, spawnRate: 0.05 }, // Garden ghosts
+        },
+        lightning: false,
     },
     valentine: {
         sky: ['#1a050d', '#200810'],
@@ -357,6 +412,7 @@ export const WEATHER_PRESETS = {
             rose: { count: 30, spawnRate: 0.5 },
             heart: { count: 20, spawnRate: 0.2 },
             spark: { count: 15, spawnRate: 0.2 },
+            bird: { count: 1, spawnRate: 0.05 }, // Love birds
         },
         lightning: false,
     },
@@ -442,6 +498,128 @@ export function drawBee(ctx, p) {
     ctx.restore();
 }
 
+export function drawShadowPerson(ctx, p) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.globalAlpha = p.opacity;
+
+    const h = p.size;
+    const w = h * 0.3;
+    const sway = Math.sin(p.phase) * 2;
+    const legSway = Math.sin(p.phase * 4) * (h * 0.15);
+
+    ctx.fillStyle = `rgba(${p.color}, 0.8)`;
+    ctx.shadowColor = `rgba(${p.color}, 0.4)`;
+    ctx.shadowBlur = 12;
+
+    if (p.persona === 'spy') {
+        const dir = p.vx > 0 ? 1 : -1;
+        // The Iconic Proportions: Long beak, sharp hat, hunch
+        ctx.strokeStyle = `rgba(${p.color}, 0.8)`;
+        ctx.fillStyle = `rgba(${p.color}, 0.8)`;
+        ctx.lineWidth = 1.2;
+
+        // Hat
+        ctx.beginPath();
+        ctx.moveTo(0, -h);
+        ctx.lineTo(w * 0.8 * dir, -h * 0.5);
+        ctx.lineTo(-w * 0.8 * dir, -h * 0.5);
+        ctx.closePath();
+        ctx.fill();
+
+        // Face & The Beak
+        ctx.beginPath();
+        ctx.ellipse(sway, -h * 0.35, w * 0.7, h * 0.15, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(sway + (w * 0.5 * dir), -h * 0.4);
+        ctx.lineTo(sway + (w * 1.5 * dir), -h * 0.25); // THE BEAK
+        ctx.lineTo(sway + (w * 0.5 * dir), -h * 0.15);
+        ctx.fill();
+
+        // Eyes (Contrasting)
+        ctx.fillStyle = p.side === 'white' ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)';
+        ctx.beginPath();
+        ctx.arc(sway + (w * 0.3 * dir), -h * 0.35, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (p.hasBomb) {
+            ctx.fillStyle = `rgba(${p.color}, 0.9)`;
+            ctx.beginPath();
+            ctx.arc(sway - (w * dir), -h * 0.2, 5, 0, Math.PI * 2);
+            ctx.fill();
+            // Fuse
+            ctx.strokeStyle = `rgba(${p.color}, 0.6)`;
+            ctx.beginPath();
+            ctx.moveTo(sway - (w * dir), -h * 0.2 - 5);
+            ctx.lineTo(sway - (w * dir) + 3, -h * 0.2 - 10);
+            ctx.stroke();
+            // Spark
+            if (Math.random() > 0.5) {
+                ctx.fillStyle = '#ffb432';
+                ctx.fillRect(sway - (w * dir) + 3, -h * 0.2 - 11, 2, 2);
+            }
+        }
+    } else if (p.persona === 'mover') {
+        // Stick figure movement - classic marginalia style
+        ctx.strokeStyle = `rgba(${p.color}, 0.85)`;
+        ctx.lineWidth = 1.5;
+        ctx.lineCap = 'round';
+
+        ctx.beginPath();
+        ctx.arc(0, -h * 0.8, w * 0.45, 0, Math.PI * 2); // Head
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(0, -h * 0.7);
+        ctx.lineTo(sway, -h * 0.3); // Spine
+        // Arms
+        const armSway = Math.sin(p.phase * 4) * (h * 0.2);
+        ctx.moveTo(sway, -h * 0.6);
+        ctx.lineTo(sway - 10, -h * 0.5 + armSway);
+        ctx.moveTo(sway, -h * 0.6);
+        ctx.lineTo(sway + 10, -h * 0.5 - armSway);
+        // Legs
+        ctx.moveTo(sway, -h * 0.3);
+        ctx.lineTo(sway - legSway, 0); // Leg 1
+        ctx.moveTo(sway, -h * 0.3);
+        ctx.lineTo(sway + legSway, 0); // Leg 2
+        ctx.stroke();
+    } else if (p.persona === 'lovers') {
+        // Two figures leaning
+        for (let i = 0; i < 2; i++) {
+            const ox = (i === 0 ? -12 : 12) + sway;
+            ctx.beginPath();
+            ctx.arc(ox, -h * 0.8, w * 0.4, 0, Math.PI * 2); // Head
+            ctx.moveTo(ox, -h * 0.7);
+            ctx.quadraticCurveTo(ox + (i === 0 ? 5 : -5), -h * 0.3, ox, 0); // Body leaning in
+            ctx.fill();
+            if (i === 0) {
+                // Little heart between them
+                ctx.fillStyle = `rgba(${p.color}, 0.7)`;
+                ctx.font = '12px serif';
+                ctx.fillText('♥', sway, -h * 0.9);
+                ctx.fillStyle = `rgba(${p.color}, 0.8)`;
+            }
+        }
+    } else {
+        // Default Observer (The Classic)
+        ctx.beginPath();
+        ctx.arc(sway, -h * 0.85, w * 0.5, 0, Math.PI * 2); // Head
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(-w * 0.4 + sway, -h * 0.75);
+        ctx.lineTo(w * 0.4 + sway, -h * 0.75);
+        ctx.lineTo(w * 0.8 + sway, 0);
+        ctx.lineTo(-w * 0.8 + sway, 0);
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    ctx.restore();
+}
+
 function createRipple(x, y) {
     return {
         type: 'ripple',
@@ -499,6 +677,7 @@ export function spawnParticle(type, canvasW, canvasH, intensity, origin) {
         case 'melt': return createMelt(origin?.x, origin?.y, origin?.color);
         case 'pop': return createPop(origin?.x, origin?.y, origin?.color);
         case 'bee': return createBee(canvasW, canvasH);
+        case 'shadowperson': return createShadowPerson(canvasW, canvasH);
         default: return null;
     }
 }
@@ -512,7 +691,7 @@ export function updateParticle(p, w, h, dt) {
     }
 
     // Environmental particles persist until off-screen
-    const isEnvironmental = p.type === 'rain' || p.type === 'cloud' || p.type === 'bird' || p.type === 'bee';
+    const isEnvironmental = p.type === 'rain' || p.type === 'cloud' || p.type === 'bird' || p.type === 'bee' || p.type === 'shadowperson';
     if (!isEnvironmental) {
         p.life -= 0.005 * dt;
     }
@@ -562,6 +741,28 @@ export function updateParticle(p, w, h, dt) {
             p.x += Math.sin(p.phase * 10) * 0.8 * dt;
             p.y += Math.cos(p.phase * 8) * 0.8 * dt;
             p.opacity = p.life * (0.6 + Math.sin(p.phase * 15) * 0.2);
+            break;
+        case 'shadowperson':
+            p.x += p.vx * dt;
+            p.phase += p.phaseSpeed * dt;
+            p.behaviorTimer += dt;
+
+            // Behavior Logic (Peeking, Stopping, etc)
+            if (p.persona === 'spy') {
+                if (p.behaviorTimer > 100) {
+                    p.vx = -p.vx; // Quick peek back
+                    p.behaviorTimer = 0;
+                }
+            } else if (p.persona === 'observer') {
+                if (Math.random() < 0.005) p.vx = 0; // Occasionally just stops to watch
+            }
+
+            // Ethereal fading in/out - deliberate and subtle
+            if (p.opacity < p.targetOpacity) p.opacity += p.fadeSpeed * dt;
+
+            // Auto-fade out before life ends or distance limit
+            if (p.x < -150 || p.x > w + 150) p.opacity -= p.fadeSpeed * 2 * dt;
+            if (p.opacity < 0) p.life = 0;
             break;
         case 'rose':
             p.y += p.vy * dt;
@@ -706,6 +907,8 @@ export function renderParticle(ctx, p) {
         ctx.restore();
     } else if (p.type === 'bee') {
         drawBee(ctx, p);
+    } else if (p.type === 'shadowperson') {
+        drawShadowPerson(ctx, p);
     } else if (p.type === 'melt' || p.type === 'pop') {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);

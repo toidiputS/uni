@@ -1152,7 +1152,92 @@ body,
   border-bottom-left-radius: 6px;
 }
 
-/* Bell's quips — she speaks from the center, softly */
+/* ─── Neural Diagnostics ─── */
+.neural-layers {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.neural-node {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.neural-node.active .node-icon {
+  background: var(--uni-text-bright);
+  color: #000;
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.neural-node.simulated {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.node-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.node-info h4 {
+  font-size: 13px;
+  margin: 0;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+
+.node-info p {
+  font-size: 10px;
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.node-pulse {
+  position: absolute;
+  right: 16px;
+  width: 8px;
+  height: 8px;
+  background: #00ff88;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #00ff88;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 .bubble.uni {
   background: transparent;
   border: none;
@@ -2588,4 +2673,199 @@ body,
 .onboarding-btn-next:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+/* ─── Resonance Event Pills ─── */
+.msg-row.resonance-event {
+  justify-content: center;
+  margin: 16px 0;
+  width: 100%;
+}
+
+.resonance-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 20px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.resonance-pill:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.resonance-pill .icon {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.resonance-pill .text {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--uni-text-dim);
+  font-weight: 500;
+}
+
+/* ─── Sanctuary Vault ─── */
+.resonance-vault {
+  width: 100%;
+  max-width: 440px;
+  height: 600px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  overflow: hidden;
+  animation: slideUp 0.6s var(--ease-bounce);
+}
+
+.vault-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 30px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.vault-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vault-tabs {
+  display: flex;
+  padding: 0 20px;
+  gap: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.vault-tab {
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  color: var(--uni-text-muted);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s var(--ease);
+}
+
+.vault-tab.active {
+  color: var(--uni-text);
+}
+
+.vault-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20px;
+  right: 20px;
+  height: 2px;
+  background: var(--uni-gradient);
+}
+
+.vault-content-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px;
+}
+
+.vault-content-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.vault-content-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--uni-text-dim);
+  font-size: 13px;
+  margin-top: 40px;
+  font-style: italic;
+}
+
+.memory-item-preview,
+.artifact-item-preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(4, 4, 8, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+}
+
+.memory-item-preview:hover,
+.artifact-item-preview:hover {
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+
+.memory-mood-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.memory-info,
+.artifact-info {
+  flex: 1;
+}
+
+.memory-name,
+.artifact-name {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 2px;
+  color: var(--uni-text);
+}
+
+.memory-date,
+.artifact-meta {
+  font-size: 11px;
+  color: var(--uni-text-dim);
+}
+
+.vault-footer {
+  padding: 20px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.sub-modal {
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1100;
+}
+
+@keyframes bell-breathe {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.1;
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.2;
+  }
 }

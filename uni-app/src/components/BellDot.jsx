@@ -71,7 +71,7 @@ export default function BellDot({
                         border: `1px solid ${color}`,
                         opacity: 0.1,
                         filter: 'blur(4px)',
-                        animation: 'bell-breathe 3.333s ease-in-out infinite'
+                        animation: 'bell-breathe 3.07s ease-in-out infinite'
                     }}
                 />
             )}
@@ -138,14 +138,14 @@ export default function BellDot({
 
                 {/* Inner Beating Ring */}
                 <circle cx="50" cy="50" r="24" fill="none" stroke={color} strokeWidth="0.3" strokeOpacity="0.2">
-                    <animate attributeName="r" values="22;26;22" dur="6s" repeatCount="indefinite" />
+                    <animate attributeName="r" values="22;26;22" dur="6.15s" repeatCount="indefinite" />
                 </circle>
 
                 {/* Inner Rotating Ring */}
                 <circle cx="50" cy="50" r="18" fill="none" stroke={color} strokeWidth="0.4" strokeOpacity="0.25" strokeDasharray="2 6" className="bell-orbit">
-                    <animate attributeName="r" values="16;20;16" dur="8s" repeatCount="indefinite" />
+                    <animate attributeName="r" values="16;20;16" dur="9.23s" repeatCount="indefinite" />
                     {isActive && (
-                        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="15s" repeatCount="indefinite" />
+                        <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="15.38s" repeatCount="indefinite" />
                     )}
                 </circle>
 
@@ -156,8 +156,8 @@ export default function BellDot({
                     className="bell-core"
                     style={{ filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.9))' }}
                 >
-                    <animate attributeName="r" values="7;9;7" dur="3.333s" repeatCount="indefinite" />
-                    <animate attributeName="fill-opacity" values="0.9;1;0.9" dur="3.333s" repeatCount="indefinite" />
+                    <animate attributeName="r" values="7;9;7" dur="3.07s" repeatCount="indefinite" />
+                    <animate attributeName="fill-opacity" values="0.9;1;0.9" dur="3.07s" repeatCount="indefinite" />
                 </circle>
 
                 {/* Firing Neurons (Animated Particles) */}

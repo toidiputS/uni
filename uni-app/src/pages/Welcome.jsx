@@ -1,6 +1,7 @@
 // •UNI• Global Landing — Sovereign Reflection Edition
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ReflectiveButton } from '../components/ReflectiveButton';
+import ReviewTicker from '../components/ReviewTicker';
 import SEQUENCE, { markOnboardingComplete } from '../lib/onboarding';
 
 const PREVIEW_MOODS = [
@@ -11,14 +12,14 @@ const PREVIEW_MOODS = [
 
 export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggleAudio, setBellConfig, onShowPricing }) {
     const [visible, setVisible] = useState(false);
-    const [step, setStep] = useState('resonance'); // 'resonance', 'onboarding', 'urgency'
-    const [messages, setMessages] = useState([]);
-    const moodRef = useRef(0);
+    const [currentIdx, setCurrentIdx] = useState(-1); // -1 is Hero
+    const scrollContainerRef = useRef(null);
+    const sectionRefs = useRef([]);
     const [timeLeft, setTimeLeft] = useState({ d: 0, h: 0, m: 0, s: 0 });
 
     // Timer Logic
     useEffect(() => {
-        const target = new Date('2026-02-15T00:00:00').getTime();
+        const target = new Date('2026-03-17T00:00:00').getTime();
         const tick = () => {
             const diff = target - new Date().getTime();
             if (diff <= 0) return;
@@ -34,102 +35,77 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
         return () => clearInterval(timer);
     }, []);
 
-    // Scene Rotation during Ambient/Init
+    // Intersection Observer to sync Bell and atmosphere with manual scroll
     useEffect(() => {
-        if (step !== 'resonance') return;
-        const moodTimer = setInterval(() => {
-            moodRef.current = (moodRef.current + 1) % PREVIEW_MOODS.length;
-            onMoodChange(PREVIEW_MOODS[moodRef.current]);
-        }, 8000);
-        onMoodChange(PREVIEW_MOODS[0]);
-        return () => clearInterval(moodTimer);
-    }, [step, onMoodChange]);
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const idx = parseInt(entry.target.getAttribute('data-idx'));
+                    if (!isNaN(idx)) {
+                        handleSectionVisible(idx);
+                    }
+                }
+            });
+        }, { threshold: 0.5 }); // Use 0.5 for more responsive switching
 
-    // Sync Global Bell
-    useEffect(() => {
-        setBellConfig({
-            state: 'idle',
-            size: 40,
-            sentiment: 'neutral',
-            top: '8vh',
-            left: '50%'
+        sectionRefs.current.forEach(ref => {
+            if (ref) observer.observe(ref);
         });
-    }, [step, setBellConfig]);
+
+        return () => observer.disconnect();
+    }, []);
+
+    const handleSectionVisible = (idx) => {
+        setCurrentIdx(idx);
+
+        // Hero
+        if (idx === -1) {
+            setBellConfig({ state: 'idle', size: 40, sentiment: 'neutral', top: '8vh', left: '50%' });
+            onMoodChange(PREVIEW_MOODS[0]);
+            return;
+        }
+
+        // Onboarding Steps
+        if (idx >= 0 && idx < SEQUENCE.length) {
+            const current = SEQUENCE[idx];
+            setBellConfig(prev => ({ ...prev, state: current.bellState }));
+            if (current.sceneColors) {
+                onMoodChange({
+                    mood: current.sentiment || 'neutral',
+                    sceneColors: current.sceneColors,
+                    intensity: current.sentiment === 'love' ? 0.8 : 0.4,
+                    keywords: current.keywords
+                });
+            }
+        }
+
+        // Reviews & Join
+        if (idx >= SEQUENCE.length) {
+            setBellConfig({ state: 'idle', size: 30, sentiment: 'neutral', top: '5vh', left: '50%' });
+        }
+    };
+
+    const scrollTo = (idx) => {
+        const targetIndex = idx + 1; // map -1, 0, 1... to 0, 1, 2...
+        const target = sectionRefs.current[targetIndex];
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    const startOnboarding = () => {
+        if (!isPlaying) onToggleAudio();
+        scrollTo(0); // Scroll to first boarding step
+    };
 
     useEffect(() => {
         setTimeout(() => setVisible(true), 100);
     }, []);
 
-    const [currentIdx, setCurrentIdx] = useState(0);
-
-    const startOnboarding = () => {
-        if (!isPlaying) onToggleAudio();
-        // Set initial track-specific keywords if starting from scratch
-        onMoodChange({ keywords: 'fountain,coins,ripples,wish,water' });
-        setStep('onboarding');
-        setMessages([]);
-        setCurrentIdx(0);
-        runSequenceStep(0);
-    };
-
-    const runSequenceStep = (idx) => {
-        const current = SEQUENCE[idx];
-        if (!current) return;
-
-        setBellConfig(prev => ({ ...prev, state: current.bellState }));
-
-        // Atmosphere Shift
-        if (current.sceneColors) {
-            onMoodChange({
-                mood: current.sentiment || 'neutral',
-                sceneColors: current.sceneColors,
-                intensity: current.sentiment === 'love' ? 0.8 : 0.4,
-                keywords: current.keywords
-            });
-        }
-
-        // Narrative Logic: Stack messages, but isolate Features
-        if (current.futureFeatures) {
-            // "Take all these that are scrunched up and put them on the next page"
-            setMessages([{
-                id: Date.now(),
-                text: "Coming soon...",
-                features: current.futureFeatures
-            }]);
-        } else if (current.text) {
-            setMessages(prev => {
-                // If the previous message was the "Features Page", we start a new stack
-                // (though in this specific sequence, final text comes after features)
-                const lastMsg = prev[prev.length - 1];
-                if (lastMsg && lastMsg.features) {
-                    return [{ id: Date.now(), text: current.text }];
-                }
-                return [...prev, {
-                    id: Date.now(),
-                    text: current.text,
-                    label: current.demoLabel
-                }];
-            });
-        }
-    };
-
-    const handleNext = () => {
-        const nextIdx = currentIdx + 1;
-        if (nextIdx >= SEQUENCE.length) {
-            setStep('urgency');
-            markOnboardingComplete();
-            return;
-        }
-        setCurrentIdx(nextIdx);
-        runSequenceStep(nextIdx);
-    };
-
-    const skipToIntro = () => {
-        setStep('urgency');
-        markOnboardingComplete();
-        if (!isPlaying) onToggleAudio();
-    };
-
+    const icon = useMemo(() => {
+        const now = new Date();
+        return (now.getMonth() + 1 === 3 && now.getDate() === 17) ? "🍀" : "❤️";
+    }, []);
 
     return (
         <div className="welcome">
@@ -152,188 +128,217 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
             <div className={`welcome-content ${visible ? 'visible' : ''}`} style={{ textAlign: 'center' }}>
 
-                <div style={{ height: '8vh' }} />
+                <div className="wordmark-bg">•UNI•</div>
 
-                {/* ACT 1: RESONANCE (Initial State) */}
-                {step === 'resonance' && (
-                    <div className="flex flex-col items-center justify-start fade-in w-full text-center" style={{ flex: 1, padding: '4vh 24px 0', position: 'relative', zIndex: 1, minHeight: '60vh' }}>
-
+                <div className="landing-scroll-container" ref={scrollContainerRef}>
+                    {/* SECTION -1: Hero */}
+                    <section
+                        className="landing-section hero-section"
+                        data-idx="-1"
+                        ref={el => sectionRefs.current[0] = el}
+                    >
                         <div className="ethereal-text" style={{ fontSize: 10, letterSpacing: '0.5em', marginBottom: 24, opacity: 0.5 }}>
-                            CGEI — SYNAPTIC LINK 01
+                            • CGEI PROTOCOL v4 •
                         </div>
 
                         <h1 className="wordmark" style={{
-                            fontSize: 'clamp(40px, 10vw, 84px)',
-                            marginBottom: 'clamp(12px, 3vh, 24px)',
+                            fontSize: 'clamp(60px, 12vw, 120px)',
+                            marginBottom: '2vh',
                             lineHeight: 1,
-                            background: 'linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0.6) 100%)',
+                            background: 'linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0.4) 100%)',
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent'
                         }}>
                             •UNI•
                         </h1>
 
-                        <div style={{ maxWidth: 540, display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 40 }}>
-                            <p style={{
-                                fontSize: 'clamp(18px, 4vw, 22px)',
-                                color: 'var(--uni-text)',
-                                lineHeight: 1.4,
-                                fontWeight: 300,
-                                letterSpacing: '-0.01em'
-                            }}>
-                                The World’s First <em>Conversational Generative Emotion Interface</em>.
-                            </p>
-
-                            <p style={{
-                                fontSize: 14,
-                                color: 'var(--uni-text-dim)',
-                                lineHeight: 1.7,
-                                fontWeight: 400,
-                                maxWidth: 460,
-                                margin: '0 auto',
-                                opacity: 0.8
-                            }}>
-                                •UNI• turns your chat into living, breathing emotional art.
-                                It listens to the tone beneath your words and transforms the space through emotional <strong>Resonance</strong>.
-                            </p>
-                        </div>
-
-                        <div style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            gap: 16,
-                            marginTop: 40,
-                            paddingBottom: '15vh' // Pushing buttons lower to clear UNI and show reflections
+                        <p className="lead-text" style={{
+                            fontSize: 'clamp(20px, 5vw, 24px)',
+                            fontWeight: 200,
+                            letterSpacing: '-0.02em',
+                            color: 'rgba(255,255,255,0.9)',
+                            marginBottom: '8vh'
                         }}>
-                            <ReflectiveButton size="sm" onClick={skipToIntro}>
-                                Skip
-                            </ReflectiveButton>
-
-                            <ReflectiveButton variant="primary" onClick={startOnboarding}>
-                                Start Resonance
-                            </ReflectiveButton>
-                        </div>
-
-                        <p className="ethereal-text" style={{ fontSize: 9, marginTop: 12, opacity: 0.3 }}>
-                            Best experienced with sound.
+                            Your connection, immortalized in art.
                         </p>
-                    </div>
-                )}
 
-                {/* ACT 2: SPEAKING (Sovereign Stack) */}
-                {step === 'onboarding' && (
-                    <div className="flex flex-col items-center w-full fade-in" style={{
-                        flex: 1,
-                        paddingTop: 'clamp(40px, 8vh, 80px)',
-                        paddingBottom: '25vh' // Give space for fixed elements
-                    }}>
-                        <div className="flex flex-col items-center w-full" style={{ gap: 'clamp(24px, 6vh, 48px)' }}>
-                            {messages.map((msg, i) => (
-                                <div key={msg.id || i} className="onboarding-msg flex flex-col items-center w-full" style={{
-                                    opacity: i === messages.length - 1 ? 1 : 0.25,
-                                    transition: 'all 0.8s',
-                                    marginBottom: 0,
-                                    padding: '0 24px'
-                                }}>
-                                    {msg.text && (
-                                        <p className="onboarding-text" style={{
-                                            fontSize: 'clamp(14px, 4vw, 16px)',
-                                            maxWidth: 500,
-                                            lineHeight: 1.5
-                                        }}>
-                                            {msg.text}
+                        <div className="hero-actions">
+                            <ReflectiveButton variant="primary" onClick={startOnboarding} size="lg">
+                                Experience Resonance
+                            </ReflectiveButton>
+                            <p style={{ fontSize: 10, marginTop: 24, opacity: 0.3, letterSpacing: '0.2em' }}>
+                                A SYMPHONIC EMOTION INTERFACE
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* SECTION 0-N: Bell's Narrative Sequence (The Real Landing) */}
+                    {SEQUENCE.map((stepData, i) => (
+                        <section
+                            key={i}
+                            className="landing-section onboarding-section"
+                            data-idx={i}
+                            ref={el => sectionRefs.current[i + 1] = el}
+                        >
+                            <div className="section-content" style={{ opacity: currentIdx === i ? 1 : 0.1, transition: 'all 1s ease' }}>
+                                {stepData.text && (
+                                    <p className="onboarding-text" style={{
+                                        fontSize: 'clamp(18px, 4.5vw, 28px)',
+                                        maxWidth: 700,
+                                        lineHeight: 1.5,
+                                        fontWeight: 200,
+                                        margin: '0 auto',
+                                        color: '#fff'
+                                    }}>
+                                        {stepData.text}
+                                    </p>
+                                )}
+
+                                {stepData.futureFeatures && (
+                                    <div className="flex flex-wrap justify-center gap-4 mt-12" style={{ maxWidth: 700, margin: '40px auto 0' }}>
+                                        {stepData.futureFeatures.map((f, j) => (
+                                            <div key={j} className="onboarding-future-card"
+                                                style={{
+                                                    background: 'rgba(255,255,255,0.03)',
+                                                    border: '1px solid rgba(255,255,255,0.08)',
+                                                    padding: '14px 28px',
+                                                    borderRadius: 'var(--radius-full)',
+                                                    fontSize: 14,
+                                                    color: 'var(--uni-text-dim)',
+                                                    backdropFilter: 'blur(30px)',
+                                                    animation: 'fadeSlideUp 1s ease both',
+                                                    animationDelay: `${j * 0.1}s`
+                                                }}>{f}</div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {stepData.demoLabel && (
+                                    <div className="demo-label-pill">
+                                        {stepData.demoLabel}
+                                    </div>
+                                )}
+
+                                <div style={{ marginTop: 60 }}>
+                                    <ReflectiveButton variant="primary" size="lg" onClick={() => scrollTo(i + 1)}>
+                                        {i === SEQUENCE.length - 1 ? 'Unlock Sanctuary' : 'Next Resonance'}
+                                    </ReflectiveButton>
+                                    {i < SEQUENCE.length - 1 && (
+                                        <p style={{ fontSize: 9, marginTop: 16, opacity: 0.3, cursor: 'pointer' }} onClick={() => scrollTo(SEQUENCE.length + 1)}>
+                                            Skip Journey
                                         </p>
                                     )}
-
-                                    {msg.features && (
-                                        <div className="flex flex-wrap justify-center gap-4 mt-8" style={{ maxWidth: 540 }}>
-                                            {msg.features.map((f, j) => (
-                                                <div key={j} className="onboarding-future-card"
-                                                    style={{
-                                                        background: 'var(--uni-glass)',
-                                                        border: '1px solid var(--uni-glass-border)',
-                                                        padding: '8px 20px',
-                                                        borderRadius: 'var(--radius-full)',
-                                                        fontSize: 12,
-                                                        color: 'var(--uni-text-dim)',
-                                                        backdropFilter: 'blur(12px)',
-                                                        animation: 'fadeSlideUp 0.8s ease both',
-                                                        animationDelay: `${j * 0.1}s`
-                                                    }}>{f}</div>
-                                            ))}
-                                        </div>
-                                    )}
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        </section>
+                    ))}
 
-                        {/* Interaction Zone — Viewport-Locked */}
-                        <div style={{ position: 'fixed', bottom: '8vh', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10, paddingBottom: '2vh' }}>
-                            <ReflectiveButton variant="primary" onClick={handleNext}>
-                                {currentIdx < SEQUENCE.length - 1 ? 'Next' : 'Continue'}
+                    {/* SECTION: Social Proof */}
+                    <section
+                        className="landing-section reviews-section"
+                        data-idx={SEQUENCE.length}
+                        ref={el => sectionRefs.current[SEQUENCE.length + 1] = el}
+                    >
+                        <h2 className="section-title" style={{ marginBottom: 40, fontWeight: 200, fontSize: 40 }}>The Resonance Echo</h2>
+                        <ReviewTicker />
+                        <div style={{ marginTop: 60 }}>
+                            <ReflectiveButton variant="primary" onClick={() => scrollTo(SEQUENCE.length + 1)}>
+                                Join the Founder's Run
                             </ReflectiveButton>
                         </div>
-                    </div>
-                )}
+                    </section>
 
-                {/* ACT 3: URGENCY (The Join Page) */}
-                {step === 'urgency' && (
-                    <div className="flex flex-col items-center justify-center gap-6 fade-in w-full text-center" style={{ flex: 1, paddingBottom: '25vh' }}>
-                        <div className="vday-badge" style={{ margin: '0 auto', cursor: 'pointer' }} onClick={() => onShowPricing()}>
-                            🌹 Limited Founder's Sanctum — Ends 2.15
+                    {/* SECTION: Urgency / Joining */}
+                    <section
+                        className="landing-section offer-section"
+                        data-idx={SEQUENCE.length + 1}
+                        ref={el => sectionRefs.current[SEQUENCE.length + 2] = el}
+                    >
+                        <div className="vday-badge" style={{ margin: '0 auto 30px', cursor: 'pointer' }} onClick={() => onShowPricing()}>
+                            {icon} Founder's Run — Ends 03.17
                         </div>
 
-                        <div className="vday-timer flex justify-center items-center w-full mx-auto" style={{ gap: '24px', margin: '40px auto' }}>
+                        <div className="vday-timer flex justify-center items-center w-full mx-auto" style={{ gap: '24px', marginBottom: '40px' }}>
                             {Object.entries(timeLeft).map(([label, val]) => (
-                                <div key={label} className="timer-unit flex flex-col items-center" style={{ minWidth: '60px' }}>
-                                    <span className="timer-val" style={{ fontSize: 32 }}>{String(val).padStart(2, '0')}</span>
-                                    <span className="timer-label" style={{ fontSize: 10 }}>{label}</span>
+                                <div key={label} className="timer-unit flex flex-col items-center" style={{ minWidth: '70px' }}>
+                                    <span className="timer-val" style={{ fontSize: 54, fontWeight: 100 }}>{String(val).padStart(2, '0')}</span>
+                                    <span className="timer-label" style={{ fontSize: 10, textTransform: 'uppercase', opacity: 0.4, letterSpacing: '0.1em' }}>{label}</span>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="flex flex-wrap justify-center gap-3 w-full" style={{ maxWidth: 500, margin: '20px auto' }}>
-                            <div className="feature-pill">◈ Generative Vibe-Architecture</div>
-                            <div className="feature-pill">◈ Neural Soul-Song Weaving</div>
-                            <div className="feature-pill">◈ Permanent Soul-Archive</div>
-                        </div>
-
-                        <div style={{ position: 'fixed', bottom: '8vh', left: 0, right: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, zIndex: 10, paddingBottom: '2vh' }}>
-                            <ReflectiveButton variant="primary" onClick={onGetStarted}>
-                                Begin Resonance
+                        <div className="hero-actions" style={{ gap: 20, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <ReflectiveButton variant="primary" onClick={onGetStarted} size="lg">
+                                Begin Your Resonance
                             </ReflectiveButton>
-
                             <button
                                 className="ethereal-text"
-                                style={{ fontSize: 11, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.8 }}
+                                style={{ fontSize: 12, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.6 }}
                                 onClick={() => onShowPricing()}
                             >
-                                [ Access Founder's Sanctum ]
+                                [ Founder's Sanctum Access ]
                             </button>
                         </div>
-                    </div>
-                )}
+                    </section>
 
-                {/* 4. •UNI• (Base Identity) */}
-                <div className="wordmark-reflect" style={{
-                    position: 'fixed',
-                    top: '48%',
-                    left: 0,
-                    right: 0,
-                    transform: 'translateY(-50%)',
-                    margin: 0,
-                    zIndex: 0,
-                    opacity: step === 'resonance' ? 0 : 0.08, // Hide when hero wordmark is present
-                    transition: 'all 1s ease',
-                    fontSize: 'clamp(60px, 15vw, 160px)',
-                    pointerEvents: 'none'
-                }}>
-                    •UNI•
+                    <style>{`
+                        .landing-scroll-container {
+                            width: 100%;
+                            height: 100vh;
+                            overflow-y: auto;
+                            scroll-snap-type: y mandatory;
+                            scroll-behavior: smooth;
+                            scrollbar-width: none;
+                        }
+                        .landing-scroll-container::-webkit-scrollbar { display: none; }
+                        
+                        .landing-section {
+                            width: 100%;
+                            height: 100vh;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            scroll-snap-align: start;
+                            padding: 0 40px;
+                            position: relative;
+                        }
+                        .section-content {
+                            maxWidth: 900px;
+                            text-align: center;
+                            transition: all 1s ease;
+                        }
+                        .demo-label-pill {
+                            display: inline-block;
+                            margin-top: 32px;
+                            padding: 8px 20px;
+                            background: rgba(255,255,255,0.05);
+                            border: 1px solid rgba(255,255,255,0.1);
+                            border-radius: 99px;
+                            font-size: 11px;
+                            letter-spacing: 0.2em;
+                            text-transform: uppercase;
+                            color: var(--uni-text-dim);
+                        }
+                        .wordmark-bg {
+                            position: fixed;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            font-size: clamp(80px, 30vw, 400px);
+                            font-weight: 700;
+                            opacity: 0.03;
+                            pointer-events: none;
+                            z-index: 0;
+                            letter-spacing: -0.05em;
+                        }
+                        @media (max-width: 768px) {
+                            .landing-section { padding: 40px 24px; scroll-snap-align: none; }
+                            .landing-scroll-container { scroll-snap-type: none; }
+                        }
+                    `}</style>
                 </div>
-
             </div>
         </div>
     );
 }
-

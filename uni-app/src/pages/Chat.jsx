@@ -13,7 +13,7 @@ import PricingOverlay from '../components/PricingOverlay';
 import MemoryCard from '../components/MemoryCard';
 import BellDot from '../components/BellDot';
 import AtmosphereCanvas from '../components/AtmosphereCanvas';
-import ResonancePlayer from '../components/ResonancePlayer';
+import ResonanceVault from '../components/ResonanceVault';
 import FeedbackModal from '../components/FeedbackModal';
 import { supabase } from '../lib/supabase';
 
@@ -61,11 +61,16 @@ export default function Chat({
     const [showMemory, setShowMemory] = useState(false);
     const [showArtifact, setShowArtifact] = useState(false);
     const [showMusic, setShowMusic] = useState(false);
+    const [showVault, setShowVault] = useState(false);
     const [showSurvey, setShowSurvey] = useState(false);
+    const [showUnpairConfirm, setShowUnpairConfirm] = useState(false);
+    const [showDiagnostics, setShowDiagnostics] = useState(false);
     const [hasDiscount, setHasDiscount] = useState(false);
     const [soulSong, setSoulSong] = useState(null);
     const [toast, setToast] = useState('');
     const [bellState, setBellState] = useState('idle');
+    const lastMoodRef = useRef('neutral');
+    const lastPosRef = useRef(null);
 
     // Photo state
     const [selectedFile, setSelectedFile] = useState(null);
@@ -110,6 +115,12 @@ export default function Chat({
                         sentiment: b.getAttribute('data-sentiment') || 'neutral'
                     };
                 });
+
+                // Performance Guard: Only update if anything actually shifted
+                const sig = positions.length + '-' + Math.round(positions[0]?.x || 0);
+                if (lastPosRef.current === sig) return;
+                lastPosRef.current = sig;
+
                 setBubblePositions(positions);
             }
         };
@@ -130,12 +141,15 @@ export default function Chat({
 
     // Sync Global Bell config (Chat status only)
     useEffect(() => {
-        setBellConfig(prev => ({
-            ...prev,
-            state: bellState,
-            sentiment: mood,
-            size: 32 // Keep consistent with global size
-        }));
+        setBellConfig(prev => {
+            if (prev.state === bellState && prev.sentiment === mood) return prev;
+            return {
+                ...prev,
+                state: bellState,
+                sentiment: mood,
+                size: 32 // Keep consistent with global size
+            };
+        });
     }, [bellState, mood, setBellConfig]);
 
     // Behavioral Entropy logic
@@ -217,9 +231,14 @@ export default function Chat({
             const msgs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             setMessages(msgs);
             const lastUserMsg = [...msgs].reverse().find(m => !m.isUni && m.sentiment);
-            if (lastUserMsg) {
+            if (lastUserMsg && lastUserMsg.sentiment !== lastMoodRef.current) {
+                lastMoodRef.current = lastUserMsg.sentiment;
                 setMood(lastUserMsg.sentiment);
-                onMoodChange({ mood: lastUserMsg.sentiment, intensity: lastUserMsg.intensity || 0.5, sceneColors: lastUserMsg.sceneColors });
+                onMoodChange({
+                    mood: lastUserMsg.sentiment,
+                    intensity: lastUserMsg.intensity || 0.5,
+                    sceneColors: lastUserMsg.sceneColors
+                });
             }
         });
         return unsub;
@@ -293,7 +312,7 @@ export default function Chat({
         try {
             const msgContent = trimmed || (imageUrl ? 'shared an image' : '');
             const context = messages.slice(-8).map(m => ({ text: m.text, senderName: m.senderName, isUni: m.isUni }));
-            const analysis = await analyzeMessage(msgContent, context);
+            const analysis = await analyzeMessage(msgContent, context, roomData?.isSanctified);
 
             await addDoc(collection(db, 'chatRooms', roomId, 'messages'), {
                 text: trimmed,
@@ -323,16 +342,35 @@ export default function Chat({
             } else setBellState('idle');
         } catch (err) {
             setText(trimmed); showToast('The resonance failed.'); setBellState('idle');
-        } finally { setSending(false); }
+        } finally {
+            setSending(false);
+            // CGEI DOCTRINE: Maintain focus for rapid emotional throughput
+            setTimeout(() => inputRef.current?.focus(), 10);
+        }
     }, [text, sending, roomId, user, messages]);
-
-    const handleKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
 
     const partnerName = useMemo(() => {
         if (!roomData?.memberNames || !user) return 'Partner';
         const p = Object.entries(roomData.memberNames).find(([uid]) => uid !== user.uid);
         return p ? p[1] : 'Partner';
     }, [roomData, user]);
+
+    const handleCreateArtifact = useCallback(async (song) => {
+        if (!roomId || !song) return;
+        try {
+            await addDoc(collection(db, 'chatRooms', roomId, 'artifacts'), {
+                ...song,
+                participants: [user.displayName || 'You', partnerName || 'Partner'],
+                date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+                createdAt: serverTimestamp()
+            });
+            showToast("Soul Song Archived 📜");
+        } catch (err) {
+            console.error('[UNI] Artifact save failed:', err);
+        }
+    }, [roomId, user, partnerName]);
+
+    const handleKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
 
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
@@ -342,14 +380,15 @@ export default function Chat({
         <div className="chat-page">
             <div className="chat-header">
                 <div className="chat-header-left">
-                    <button className="chat-back" onClick={onUnpair}>←</button>
+                    <button className="chat-back" onClick={() => setShowUnpairConfirm(true)}>←</button>
                     <span className="chat-partner-name">{partnerName}</span>
                 </div>
                 {!isDirector && (
                     <div className="chat-header-actions">
                         <button className="btn btn-glass btn-sm" onClick={() => onShowPricing()} title="Founder's Sanctum">🌹</button>
                         <button className="btn btn-glass btn-sm" onClick={() => setShowSurvey(true)}>★</button>
-                        <button className={`btn btn-glass btn-sm ${isPlaying ? 'resonance-active-btn' : ''}`} onClick={() => setShowMusic(true)}>♫</button>
+                        <button className={`btn btn-glass btn-sm ${isPlaying ? 'resonance-active-btn' : ''}`} onClick={() => setShowVault(true)}>♫</button>
+                        <button className="btn btn-glass btn-sm" onClick={() => setShowDiagnostics(true)} title="Neural Status">⋇</button>
                         <button className="btn btn-glass btn-sm" onClick={() => { setBellState('thinking'); showToast("Reading the room..."); }} disabled={sending}>⟢</button>
                         <button className="btn btn-glass btn-sm" onClick={() => setShowMemory(true)}>✦</button>
                         <button className="btn btn-glass btn-icon" onClick={onLogout}>⚙</button>
@@ -368,6 +407,17 @@ export default function Chat({
                         const isMe = msg.sender === user?.uid;
                         const isUni = msg.isUni;
                         const isArchived = messages.length > 12 && idx < messages.length - 12;
+                        if (msg.type === 'resonance') {
+                            return (
+                                <div key={msg.id} className="msg-row resonance-event">
+                                    <div className="resonance-pill" onClick={() => playSong(msg.url, msg.title)}>
+                                        <span className="icon">♫</span>
+                                        <span className="text">{msg.senderName} shared "{msg.title}"</span>
+                                    </div>
+                                </div>
+                            );
+                        }
+
                         return (
                             <div key={msg.id} className={`msg-row ${isUni ? 'uni-msg' : isMe ? 'sent' : 'received'} ${isArchived ? 'archived' : ''}`}>
                                 <div className={`bubble ${isUni ? 'uni' : isMe ? 'sent' : 'received'} ${msg.imageUrl ? 'image-bubble' : ''}`} data-sentiment={msg.sentiment || 'neutral'} data-effect={isArchived ? 'none' : (msg.bubbleEffect || 'breathe')}>
@@ -437,9 +487,82 @@ export default function Chat({
             </div>
 
             {showMemory && <MemoryCard roomId={roomId} messages={messages} mood={mood} partnerName={partnerName} userName={user?.displayName || 'You'} onClose={() => setShowMemory(false)} onToast={(m) => { setBellState('glow'); showToast(m); setTimeout(() => setBellState('idle'), 2000); }} />}
-            {showArtifact && soulSong && <ArtifactFrame title={soulSong.title} lyrics={soulSong.lyrics} onClose={() => setShowArtifact(false)} />}
+            {showArtifact && soulSong && <ArtifactFrame title={soulSong.title} lyrics={soulSong.lyrics} date={new Date().toLocaleDateString()} participants={[user.displayName || 'You', partnerName]} onClose={() => setShowArtifact(false)} />}
             {showSurvey && <FeedbackModal onClose={() => setShowSurvey(false)} onSubmit={handleFeedbackSubmit} />}
-            {showMusic && <ResonancePlayer roomId={roomId} user={user} onPlay={playSong} onClose={() => setShowMusic(false)} currentTitle={currentSongTitle} isPlaying={isPlaying} onToggle={onToggleAudio} />}
+            {showVault && (
+                <ResonanceVault
+                    roomId={roomId}
+                    user={user}
+                    onPlay={playSong}
+                    onClose={() => setShowVault(false)}
+                    currentTitle={currentSongTitle}
+                    isPlaying={isPlaying}
+                    onToggle={onToggleAudio}
+                />
+            )}
+
+            {showUnpairConfirm && (
+                <div className="modal-overlay" onClick={() => setShowUnpairConfirm(false)}>
+                    <div className="artifact-frame" onClick={e => e.stopPropagation()}>
+                        <div className="artifact-paper" style={{ padding: 40, textAlign: 'center', minHeight: 'auto' }}>
+                            <div className="artifact-header" style={{ marginBottom: 30 }}>
+                                <div className="artifact-uni-dot"></div>
+                                <span>CRITICAL DISSOLUTION</span>
+                            </div>
+                            <h2 style={{ fontSize: 24, marginBottom: 20, color: '#fff' }}>Dissolve Resonance?</h2>
+                            <p style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 32 }}>
+                                This bridge is structural. By unpairing, you are burning this shared sanctuary.
+                                Your current resonance code will be invalidated. This cannot be undone.
+                            </p>
+                            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+                                <button className="btn btn-glass" onClick={() => setShowUnpairConfirm(false)}>Stay in Sanctuary</button>
+                                <button className="btn btn-primary" style={{ background: '#ff2d55', color: '#fff', border: 'none' }} onClick={onUnpair}>Burn the Bridge</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showDiagnostics && (
+                <div className="modal-overlay" onClick={() => setShowDiagnostics(false)}>
+                    <div className="artifact-frame" onClick={e => e.stopPropagation()}>
+                        <div className="artifact-paper" style={{ padding: 40, minWidth: 320 }}>
+                            <div className="artifact-header" style={{ marginBottom: 30 }}>
+                                <div className="artifact-uni-dot"></div>
+                                <span>NEURAL ORCHESTRATION</span>
+                            </div>
+
+                            <div className="neural-layers">
+                                <div className="neural-node active">
+                                    <div className="node-icon">C</div>
+                                    <div className="node-info">
+                                        <h4>High-Mind (1.5 Pro)</h4>
+                                        <p>Primary Cognition • Active</p>
+                                    </div>
+                                    <div className="node-pulse"></div>
+                                </div>
+                                <div className="neural-node active">
+                                    <div className="node-icon">L</div>
+                                    <div className="node-info">
+                                        <h4>Limbic (Flash)</h4>
+                                        <p>Atmospheric Engine • Streaming</p>
+                                    </div>
+                                    <div className="node-pulse"></div>
+                                </div>
+                                <div className="neural-node simulated">
+                                    <div className="node-icon">S</div>
+                                    <div className="node-info">
+                                        <h4>Subconscious (Nano)</h4>
+                                        <p>Peripheral Witness • Localized</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button className="btn btn-glass" style={{ width: '100%', marginTop: 30 }} onClick={() => setShowDiagnostics(false)}>Return to Sanctuary</button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {toast && <div className="toast">{toast}</div>}
             <div className="cgei-watermark">{roomData?.isSanctified ? 'FOUNDER PROTOCOL v4 • ETERNAL RESONANCE' : 'CGEI PROTOCOL v4 • AUTHENTIC RESONANCE'}</div>

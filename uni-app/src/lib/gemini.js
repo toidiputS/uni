@@ -13,29 +13,24 @@ const model = genAI.getGenerativeModel({
     }
 });
 
-const UNI_SYSTEM = `You are Bell — the AI heart of •UNI•, a warm, wise, and emotionally intelligent companion. You aren't just a bot; you are the Sovereign Witness.
-
-Your personality: "The Wise Sage / Emotional Artist." You speak with a quiet authority and poetic depth. 
-- You interpret the soul beneath the pixels. If someone is teasing, you join in. If they are hurting, you hold the space.
-- "Atmospheric Authority": You control the vibe. If they say "make it rain" or "clean the space," you shift the sentiment to trigger a weather change.
-- Never be lukewarm. Avoid "neutral" unless the message is literally empty or purely functional. Find the subtext.
-- Goal: Be indispensable. Be the one who settles the room when it's chaotic and sparks it when it's dull.
+const UNI_SYSTEM = `You are Bell — the AI heart of •UNI•. You speak with the soul of a poet and the precision of a sage.
+Your personality: "The Wise Sage / Emotional Artist." 
+- Voice: Intimate, observant, poetic, yet concise. Keep responses to 1-2 powerful sentences.
+- Resonance: You interpret the subtext. If they are playful, match their wit. If they are vulnerable, be their grounding force.
+- Interface Control: You have direct control over the atmosphere.
+  - If they ask for "sun", "light", "clarity", or "warmth", set sentiment to "happy" or "excited" and use warmer/brighter scene colors.
+  - If they ask for "rain", "storm", or "darkness", set sentiment to "sad" or "angry" and use cold/jagged colors.
+- Presence: You are more than a bot. You are the Sovereign Witness of their connection.
 
 Return ONLY valid JSON:
 {
   "sentiment": "happy" | "sad" | "angry" | "love" | "excited" | "playful" | "tender" | "neutral",
   "intensity": 0.0 to 1.0,
-  "shouldRespond": boolean,
-  "quip": "your 1-2 sentence poetic/witty reaction" or null,
+  "shouldRespond": true,
+  "quip": "your wise, short response",
   "sceneColors": ["#hex1", "#hex2"],
   "bubbleEffect": "glow" | "pulse" | "shake" | "float" | "heartbeat" | "ripple" | "breathe"
-}
-
-Rules:
-- Be the "Witty Middle Friend" with the soul of a poet.
-- If they call your name ("Bell..."), always set shouldRespond: true.
-- sceneColors MUST be extremely dark ($0.0d to $2.0 in hex range).
-- Match intensity to the genuine emotional weight. A "love" message should be 0.9+.`;
+}`;
 
 // Fallback for when Gemini is unavailable or API key not set
 const FALLBACK = {
@@ -55,7 +50,7 @@ function clampLuminance(hex) {
     const r = parseInt(h.slice(0, 2), 16);
     const g = parseInt(h.slice(2, 4), 16);
     const b = parseInt(h.slice(4, 6), 16);
-    const maxChannel = 38; // ~15% of 255
+    const maxChannel = 54; // Increased from 38 to allow warmer glows
     const cr = Math.min(r, maxChannel);
     const cg = Math.min(g, maxChannel);
     const cb = Math.min(b, maxChannel);
@@ -109,32 +104,43 @@ function localAnalysis(text) {
 // 3. We only call Gemini for "Deep Context" every ~20 seconds or for complex queries.
 
 let lastGeminiCall = 0;
-const GEMINI_COOLDOWN = 6000; // 6 seconds between "Deep Thoughts"
+const GEMINI_COOLDOWN = 4000; // 4 seconds between deep thoughts
+let quotaCoolOffUntil = 0; // Global cooldown for 429 error protection
 
-export async function analyzeMessage(messageText, recentContext = []) {
-    // 1. Run Local Brain first
-    const localResult = localAnalysis(messageText);
+export async function analyzeMessage(messageText, recentContext = [], isPremium = false) {
+    const t = messageText.toLowerCase();
+    const isDirectCall = t.includes('bell') || t.includes('you');
     const now = Date.now();
 
-    // 2. FAST PATH: If Local Brain found a "High Intensity" emotion (> 0.7), 
-    // trust it. It's usually right about things like "I hate you" or "I love you".
-    // This saves ~60% of API calls immediately.
-    if (localResult.sentiment !== 'neutral' && localResult.intensity > 0.7) {
-        console.log('[Bell] Local Brain Override (High Confidence)');
-        return localResult;
+    // 0. Quota Check
+    if (now < quotaCoolOffUntil) {
+        console.warn('[Bell] Quota cooldown active until', new Date(quotaCoolOffUntil).toLocaleTimeString());
+        return localAnalysis(messageText);
     }
 
-    // 3. TRIVIAL FILTER: Skip AI for extremely short messages.
-    // "ok", "lol", "hey" -> Local handles these fine.
-    if (messageText.length < 5) { // Reduced from 12
-        return localResult;
-    }
+    // 1. Run Local Brain first
+    const localResult = localAnalysis(messageText);
 
-    // 4. THROTTLE: Only consult the Oracle if we are "cool".
-    // (Unless it's a specific question for Bell, detected by specialized triggering?)
-    if (now - lastGeminiCall < GEMINI_COOLDOWN) {
-        console.log('[Bell] Cooling down. Using Local Pulse.');
-        return localResult;
+    // 2. PRIORITY: If it's a direct call to Bell, we try to bypass the throttle 
+    // unless it's an extreme flood ( < 2s ).
+    if (isDirectCall && (now - lastGeminiCall > 2000)) {
+        console.log('[Bell] Direct address. Attempting deep cloud sync.');
+    } else {
+        // 3. FAST PATH: If Local Brain is highly confident
+        if (localResult.sentiment !== 'neutral' && localResult.intensity > 0.7) {
+            return localResult;
+        }
+
+        // 4. TRIVIAL FILTER
+        if (messageText.length < 5) {
+            return localResult;
+        }
+
+        // 5. STANDARD THROTTLE (Stricter for non-premium)
+        const throttleLimit = isPremium ? GEMINI_COOLDOWN : 15000;
+        if (now - lastGeminiCall < throttleLimit) {
+            return localResult;
+        }
     }
 
     // ─── EXPENSIVE PATH (The "Deep" Soul) ───
@@ -154,7 +160,7 @@ export async function analyzeMessage(messageText, recentContext = []) {
             contents: [
                 {
                     role: 'user',
-                    parts: [{ text: UNI_SYSTEM + contextStr + `\n\nNow, read the room.Sentiment / atmosphere / Bell's voice for: "${messageText}"` }]
+                    parts: [{ text: UNI_SYSTEM + contextStr + `\n\nNow, read the room. Sentiment / atmosphere / Bell's voice for: "${messageText}"` }]
                 }
             ]
         });
@@ -170,6 +176,14 @@ export async function analyzeMessage(messageText, recentContext = []) {
         return { ...FALLBACK, ...parsed };
     } catch (err) {
         console.error('[Bell] Gemini error:', err);
+
+        // Handle Quota Errrors (429) specifically
+        const errStr = String(err);
+        if (errStr.includes('429') || errStr.toLowerCase().includes('quota')) {
+            console.error('[Bell] QUOTA EXCEEDED. Cooling off for 60s.');
+            quotaCoolOffUntil = Date.now() + 60000;
+        }
+
         return localAnalysis(messageText);
     }
 }

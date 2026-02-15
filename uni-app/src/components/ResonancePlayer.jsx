@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../lib/firebase';
-import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, where } from 'firebase/firestore';
 import { supabase } from '../lib/supabase';
 
 export default function ResonancePlayer({ roomId, user, onPlay, onClose, currentTitle, isPlaying, onToggle }) {
@@ -12,7 +12,12 @@ export default function ResonancePlayer({ roomId, user, onPlay, onClose, current
     useEffect(() => {
         if (!roomId) return;
         setLoading(true);
-        const q = query(collection(db, 'chatRooms', roomId, 'resonance'), orderBy('createdAt', 'desc'));
+        // Query the messages collection for resonance types - this uses the same permissions as chat
+        const q = query(
+            collection(db, 'chatRooms', roomId, 'messages'),
+            where('type', '==', 'resonance'),
+            orderBy('createdAt', 'desc')
+        );
         const unsub = onSnapshot(q, (snap) => {
             const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             setSongs(list);
@@ -43,8 +48,8 @@ export default function ResonancePlayer({ roomId, user, onPlay, onClose, current
         setProgress(10); // Start progress
 
         try {
-            // Use the 'media' bucket as it is already configured for the chat
-            const filePath = `shared-songs/${roomId}/${Date.now()}_${file.name}`;
+            // Use the 'chat' folder prefix as it has verified RLS permissions in the 'media' bucket
+            const filePath = `chat/${roomId}/resonance_${Date.now()}_${file.name}`;
 
             const { data, error: uploadError } = await supabase.storage
                 .from('media')
@@ -54,7 +59,7 @@ export default function ResonancePlayer({ roomId, user, onPlay, onClose, current
                 });
 
             if (uploadError) {
-                console.error('[Supabase Storage Error]', uploadError);
+                console.error('[•UNI• Storage Action Failed]', uploadError);
                 throw new Error(`Storage error: ${uploadError.message}`);
             }
 
@@ -64,17 +69,24 @@ export default function ResonancePlayer({ roomId, user, onPlay, onClose, current
                 .from('media')
                 .getPublicUrl(filePath);
 
-            await addDoc(collection(db, 'chatRooms', roomId, 'resonance'), {
+            // Using the 'messages' collection which we know has working permissions
+            await addDoc(collection(db, 'chatRooms', roomId, 'messages'), {
+                type: 'resonance',
                 title: file.name.replace(/\.[^/.]+$/, ""),
                 url: publicUrl,
-                sharedBy: user.uid,
-                sharedByName: user.displayName || 'Partner',
-                createdAt: serverTimestamp()
+                sender: user.uid,
+                senderName: user.displayName || 'Partner',
+                createdAt: serverTimestamp(),
+                sentiment: 'tender', // Atmosphere trigger
+                isUni: false
             });
 
         } catch (err) {
-            console.error('[Resonance] Action failed:', err);
-            alert(`Resonance Sync Failed: ${err.message}`);
+            console.error('[•UNI• Resonance Error]', err);
+            const friendlyMsg = err.message?.includes('Storage error')
+                ? `Storage failed: ${err.message}`
+                : `Database failed: ${err.message}`;
+            alert(`Resonance Sync Failed: ${friendlyMsg}`);
         } finally {
             setUploading(false);
             setProgress(0);
@@ -107,7 +119,7 @@ export default function ResonancePlayer({ roomId, user, onPlay, onClose, current
                         <div key={song.id} className="song-item" onClick={() => onPlay(song.url, song.title)}>
                             <div className="song-info">
                                 <div className="song-name">{song.title}</div>
-                                <div className="song-meta">Shared by {song.sharedByName}</div>
+                                <div className="song-meta">Shared by {song.senderName}</div>
                             </div>
                             <div className="play-indicator">▶</div>
                         </div>

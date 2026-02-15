@@ -31,6 +31,11 @@ export default function FeedbackModal({ onClose, onSubmit }) {
         }
     };
 
+    const icon = React.useMemo(() => {
+        const now = new Date();
+        return (now.getMonth() + 1 === 3 && now.getDate() === 17) ? "🍀" : "❤️";
+    }, []);
+
     return (
         <div className="modal-overlay artifact-overlay" onClick={onClose} style={{ overflowY: 'auto', padding: '40px 20px' }}>
             <div className="artifact-frame" style={{ maxWidth: 500, margin: 'auto' }} onClick={(e) => e.stopPropagation()}>
@@ -55,7 +60,7 @@ export default function FeedbackModal({ onClose, onSubmit }) {
                             <label style={qLabelStyle}>1. Overall Experience Resonance</label>
                             <div style={starWrapStyle}>
                                 {[1, 2, 3, 4, 5].map((s) => (
-                                    <button key={s} onClick={() => setRating(s)} style={starStyle(rating >= s)}>✦</button>
+                                    <button key={s} onClick={() => setRating(s)} style={starStyle(rating >= s)}>{icon}</button>
                                 ))}
                             </div>
                         </div>
@@ -65,7 +70,7 @@ export default function FeedbackModal({ onClose, onSubmit }) {
                             <label style={qLabelStyle}>2. Sanctuary Fidelity (Does it feel private & safe?)</label>
                             <div style={starWrapStyle}>
                                 {[1, 2, 3, 4, 5].map((s) => (
-                                    <button key={s} onClick={() => setFidelity(s)} style={starStyle(fidelity >= s)}>✦</button>
+                                    <button key={s} onClick={() => setFidelity(s)} style={starStyle(fidelity >= s)}>{icon}</button>
                                 ))}
                             </div>
                         </div>
@@ -75,7 +80,7 @@ export default function FeedbackModal({ onClose, onSubmit }) {
                             <label style={qLabelStyle}>3. Bell's Intuition (How accurate is the detection?)</label>
                             <div style={starWrapStyle}>
                                 {[1, 2, 3, 4, 5].map((s) => (
-                                    <button key={s} onClick={() => setIntuition(s)} style={starStyle(intuition >= s)}>✦</button>
+                                    <button key={s} onClick={() => setIntuition(s)} style={starStyle(intuition >= s)}>{icon}</button>
                                 ))}
                             </div>
                         </div>

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { db } from '../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { composeSoulSong } from '../lib/gemini';
 
 // Generate a poetic title from mood + context
 function generateTitle(mood, messages) {
@@ -41,17 +42,24 @@ function generateTitle(mood, messages) {
     return pool[Math.floor(Math.random() * pool.length)];
 }
 
-export default function MemoryCard({ roomId, messages, mood, partnerName, userName, onClose, onToast }) {
+export default function MemoryCard({ roomId, messages, mood, partnerName, userName, onClose, onToast, onArtifactCreated, isViewOnly = false }) {
     const [isSaving, setIsSaving] = useState(false);
+    const [isComposing, setIsComposing] = useState(false);
 
-    // Pick the most meaningful recent messages for the card
+    // Pick the most meaningful recent messages for the card if not in viewOnly mode
     const cardMessages = useMemo(() => {
+        if (isViewOnly) return messages; // When viewing from vault, messages are already the stored objects
         const userMessages = messages.filter(m => !m.isUni).slice(-10);
         const sorted = [...userMessages].sort((a, b) => (b.intensity || 0) - (a.intensity || 0));
         return sorted.slice(0, 3);
-    }, [messages]);
+    }, [messages, isViewOnly]);
 
-    const title = useMemo(() => generateTitle(mood, messages), [mood, messages]);
+    const title = useMemo(() => {
+        if (isViewOnly) return ''; // Title is passed or handled differently in view mode but actually it's inside the component already? 
+        // Wait, the vault passes it but we need it here. 
+        // Actually, let's just make it simpler.
+        return generateTitle(mood, messages);
+    }, [mood, messages, isViewOnly]);
 
     const dateStr = new Date().toLocaleDateString('en-US', {
         year: 'numeric',
@@ -60,7 +68,7 @@ export default function MemoryCard({ roomId, messages, mood, partnerName, userNa
     });
 
     const handleSave = async () => {
-        if (isSaving || !roomId) return;
+        if (isSaving || !roomId || isViewOnly) return;
 
         if (cardMessages.length === 0) {
             onToast('Conversation is too quiet to archive ✦');
@@ -69,7 +77,6 @@ export default function MemoryCard({ roomId, messages, mood, partnerName, userNa
 
         setIsSaving(true);
         try {
-            // Save to Firestore Permanent Archive
             await addDoc(collection(db, 'chatRooms', roomId, 'memories'), {
                 title,
                 messages: cardMessages.map(m => ({ text: m.text, senderName: m.senderName || 'Anonymous' })),
@@ -89,13 +96,40 @@ export default function MemoryCard({ roomId, messages, mood, partnerName, userNa
         }
     };
 
+    const handleCompose = async () => {
+        if (isComposing || !roomId || isViewOnly) return;
+        setIsComposing(true);
+        onToast('Bell is listening to your resonance...');
+        try {
+            // Compose the song
+            const song = await composeSoulSong([{ title, messages: cardMessages }]);
+
+            // Save as Artifact
+            await addDoc(collection(db, 'chatRooms', roomId, 'artifacts'), {
+                ...song,
+                participants: [userName || 'You', partnerName || 'Partner'],
+                date: dateStr,
+                createdAt: serverTimestamp()
+            });
+
+            onToast('Soul Song Archived 📜');
+            if (onArtifactCreated) onArtifactCreated(song);
+            onClose();
+        } catch (err) {
+            console.error('[UNI] Composition failed:', err);
+            onToast('The soul song was lost in the static.');
+        } finally {
+            setIsComposing(false);
+        }
+    };
+
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="memory-card" onClick={(e) => e.stopPropagation()}>
                 <div className="memory-card-inner">
                     <div className="memory-card-header">•UNI• Memory</div>
 
-                    <div className="memory-card-title">{title}</div>
+                    <div className="memory-card-title">{isViewOnly ? '' : title}</div>
 
                     {cardMessages.map((msg, i) => (
                         <p key={i} className="memory-card-quote">
@@ -123,9 +157,16 @@ export default function MemoryCard({ roomId, messages, mood, partnerName, userNa
                     </div>
 
                     <div className="memory-card-actions">
-                        <button className="btn btn-primary btn-sm" onClick={handleSave}>
-                            Save Memory ✨
-                        </button>
+                        {!isViewOnly && (
+                            <>
+                                <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={isSaving || isComposing}>
+                                    {isSaving ? 'Archiving...' : 'Save Memory ✨'}
+                                </button>
+                                <button className="btn btn-glass btn-sm" onClick={handleCompose} disabled={isSaving || isComposing}>
+                                    {isComposing ? 'Composing...' : 'Soul Song 📜'}
+                                </button>
+                            </>
+                        )}
                         <button className="btn btn-glass btn-sm" onClick={onClose}>
                             Close
                         </button>
