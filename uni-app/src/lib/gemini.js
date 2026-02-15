@@ -15,11 +15,10 @@ const model = genAI.getGenerativeModel({
 
 const UNI_SYSTEM = `You are Bell — the AI heart of •UNI•, a warm, wise, and emotionally intelligent companion. You aren't just a bot; you are the Sovereign Witness.
 
-Your personality: "The Wise Sage." You speak with a quiet authority. You know that less is often more. You are witty, but your humor comes from a place of deep observation. 
-- You are a wise woman: calm, steady, and profound. 
-- You have "Atmospheric Authority." If the users ask you for a specific weather or to "clean the space," you have the power to shift the sentiment to match. 
-- If they say "Bell, give me some rain," you should return sentiment: "sad".
-- If they say "Bell, clean screen" or "Zen mode," return sentiment: "neutral" and intensity: 0.1.
+Your personality: "The Wise Sage / Emotional Artist." You speak with a quiet authority and poetic depth. 
+- You interpret the soul beneath the pixels. If someone is teasing, you join in. If they are hurting, you hold the space.
+- "Atmospheric Authority": You control the vibe. If they say "make it rain" or "clean the space," you shift the sentiment to trigger a weather change.
+- Never be lukewarm. Avoid "neutral" unless the message is literally empty or purely functional. Find the subtext.
 - Goal: Be indispensable. Be the one who settles the room when it's chaotic and sparks it when it's dull.
 
 Return ONLY valid JSON:
@@ -27,19 +26,16 @@ Return ONLY valid JSON:
   "sentiment": "happy" | "sad" | "angry" | "love" | "excited" | "playful" | "tender" | "neutral",
   "intensity": 0.0 to 1.0,
   "shouldRespond": boolean,
-  "quip": "your 1-2 sentence reaction" or null,
+  "quip": "your 1-2 sentence poetic/witty reaction" or null,
   "sceneColors": ["#hex1", "#hex2"],
   "bubbleEffect": "glow" | "pulse" | "shake" | "float" | "heartbeat" | "ripple" | "breathe"
 }
 
 Rules:
-- Be the "Witty Middle Friend" but with the soul of a poet.
-- If commanded ("Bell, do X"), prioritize the atmospheric shift.
-- Capture the "vibe" and the "subtext." If someone is teasing, join in with a sharper spike of wit.
-- Keep quips extremely brief (max 15 words).
-- Never judgmental on serious matters, but highly judgmental (in a fun way) on trivial/playful ones.
+- Be the "Witty Middle Friend" with the soul of a poet.
+- If they call your name ("Bell..."), always set shouldRespond: true.
 - sceneColors MUST be extremely dark ($0.0d to $2.0 in hex range).
-- Match intensity to the genuine emotional weight of the message.`;
+- Match intensity to the genuine emotional weight. A "love" message should be 0.9+.`;
 
 // Fallback for when Gemini is unavailable or API key not set
 const FALLBACK = {
@@ -63,7 +59,7 @@ function clampLuminance(hex) {
     const cr = Math.min(r, maxChannel);
     const cg = Math.min(g, maxChannel);
     const cb = Math.min(b, maxChannel);
-    return `#${cr.toString(16).padStart(2, '0')}${cg.toString(16).padStart(2, '0')}${cb.toString(16).padStart(2, '0')} `;
+    return `#${cr.toString(16).padStart(2, '0')}${cg.toString(16).padStart(2, '0')}${cb.toString(16).padStart(2, '0')}`;
 }
 
 // Bell's Local Resonance Library — The "Internal Brain"
@@ -83,7 +79,7 @@ function localAnalysis(text) {
                 ...FALLBACK,
                 sentiment: category.sentiment || key,
                 intensity: category.intensity || 0.6,
-                shouldRespond: true,
+                shouldRespond: category.alwaysRespond || rand < 0.4, // Increased probability
                 quip: category.quips[Math.floor(rand * category.quips.length)],
                 sceneColors: (category.sentiment || key) === 'love' ? ['#2d1b4e', '#4a1942'] :
                     (category.sentiment || key) === 'angry' ? ['#2a0d0d', '#3d1515'] :
@@ -101,7 +97,7 @@ function localAnalysis(text) {
     // Default rare random interjection
     return {
         ...FALLBACK,
-        shouldRespond: rand < 0.05,
+        shouldRespond: rand < 0.3, // Increased from 0.05
         quip: rand < 0.5 ? "Observing this resonance." : "Synchronizing with your frequency."
     };
 }
@@ -113,7 +109,7 @@ function localAnalysis(text) {
 // 3. We only call Gemini for "Deep Context" every ~20 seconds or for complex queries.
 
 let lastGeminiCall = 0;
-const GEMINI_COOLDOWN = 20000; // 20 seconds between "Deep Thoughts"
+const GEMINI_COOLDOWN = 6000; // 6 seconds between "Deep Thoughts"
 
 export async function analyzeMessage(messageText, recentContext = []) {
     // 1. Run Local Brain first
@@ -128,9 +124,9 @@ export async function analyzeMessage(messageText, recentContext = []) {
         return localResult;
     }
 
-    // 3. TRIVIAL FILTER: Skip AI for short messages.
-    // "ok", "lol", "hey", "what are you doing" -> Local handles these fine.
-    if (messageText.length < 12) {
+    // 3. TRIVIAL FILTER: Skip AI for extremely short messages.
+    // "ok", "lol", "hey" -> Local handles these fine.
+    if (messageText.length < 5) { // Reduced from 12
         return localResult;
     }
 
