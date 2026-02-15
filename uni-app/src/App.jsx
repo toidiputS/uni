@@ -214,7 +214,9 @@ export default function App() {
                 setOrderedUserData(data);
                 if (data.pairedWith && data.lastRoomId) {
                     setRoomId(data.lastRoomId);
-                    if (view === 'pairing') {
+                    // AUTH DOCTRINE: If already in pairing, let the Pairing component handle 
+                    // the resonance animation and transition. Don't auto-switch.
+                    if (view !== 'pairing' && view !== 'chat') {
                         if (!hasSeenOnboarding()) {
                             setView('welcome');
                         } else {

@@ -58,13 +58,24 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
             if (userSnap.exists()) {
                 const userData = userSnap.data();
                 if (userData.pairedWith && userData.lastRoomId) {
+                    // CGEI DOCTRINE: If the signal is already there, start the resonance immediately
+                    setResonance(true);
+
                     // Check room readiness
                     const roomUnsub = onSnapshot(doc(db, 'chatRooms', userData.lastRoomId), (roomSnap) => {
                         if (roomSnap.exists()) {
                             const room = roomSnap.data();
                             const partnerId = userData.pairedWith;
+
+                            // If partner already signaled connect, but I haven't yet, auto-connect me
+                            if (room[`ready_${partnerId}`] && !room[`ready_${user.uid}`]) {
+                                updateDoc(doc(db, 'chatRooms', userData.lastRoomId), {
+                                    [`ready_${user.uid}`]: true
+                                });
+                            }
+
                             if (room[`ready_${user.uid}`] && room[`ready_${partnerId}`]) {
-                                setResonance(true);
+                                // Double sync success — enter the sanctuary
                                 setTimeout(() => onPaired(userData.lastRoomId), 3000);
                                 roomUnsub(); // Stop listening to room
                             }

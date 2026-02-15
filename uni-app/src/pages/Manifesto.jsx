@@ -69,7 +69,9 @@ export default function Manifesto({ onBegin, setBellConfig }) {
                         letterSpacing: '0.4em',
                         color: 'var(--uni-text-muted)',
                         textTransform: 'uppercase',
-                        marginBottom: 'clamp(24px, 5vh, 48px)'
+                        marginBottom: 'clamp(24px, 5vh, 48px)',
+                        opacity: 0,
+                        animation: `manifestoGhostIn 1.4s var(--ease) forwards`
                     }}>
                         {items[step].title}
                     </h1>
@@ -82,7 +84,7 @@ export default function Manifesto({ onBegin, setBellConfig }) {
                                 color: 'var(--uni-text-bright)',
                                 fontWeight: 300,
                                 opacity: 0,
-                                animation: `fadeSlideUp 0.8s ease forwards ${i * 0.2}s`
+                                animation: `manifestoGhostIn 1.8s var(--ease) forwards ${0.6 + i * 0.4}s`
                             }}>
                                 {line}
                             </p>
@@ -92,22 +94,24 @@ export default function Manifesto({ onBegin, setBellConfig }) {
 
                 <div style={{
                     position: 'fixed',
-                    bottom: '6vh',
+                    bottom: '8vh', // Matches Welcome.jsx exactly
                     left: 0,
                     right: 0,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     gap: 16,
-                    zIndex: 20,
-                    paddingBottom: '4vh'
+                    zIndex: 20
                 }}>
-                    <ReflectiveButton size="sm" onClick={onBegin}>
-                        Skip
-                    </ReflectiveButton>
-                    <ReflectiveButton variant="primary" onClick={handleNext}>
+                    <ReflectiveButton variant="primary" onClick={handleNext} size="lg">
                         {step < items.length - 1 ? "Understood" : "Enter the Sanctuary"}
                     </ReflectiveButton>
+                    <p
+                        onClick={onBegin}
+                        style={{ fontSize: 9, marginTop: 8, opacity: 0.3, cursor: 'pointer', letterSpacing: '0.2em', textTransform: 'uppercase' }}
+                    >
+                        Skip Journey
+                    </p>
                 </div>
             </div>
 

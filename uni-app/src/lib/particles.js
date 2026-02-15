@@ -209,9 +209,9 @@ export function createShadowPerson(canvasW, canvasH) {
         vy: 0,
         life: 1,
         maxLife: 1,
-        size: 35 + Math.random() * 15,
+        size: 24 + Math.random() * 12, // Toned down from 35-50
         opacity: 0,
-        targetOpacity: side === 'white' ? 0.15 : 0.25, // Black needs more opacity to be seen
+        targetOpacity: side === 'white' ? 0.08 : 0.12, // Toned down from 0.15-0.25
         color,
         phase: Math.random() * Math.PI * 2,
         phaseSpeed: 0.02 + Math.random() * 0.03,
@@ -309,7 +309,7 @@ export const WEATHER_PRESETS = {
         particles: {
             rain: { count: 600, spawnRate: 20 },
             cloud: { count: 18, spawnRate: 0.12 },
-            shadowperson: { count: 1, spawnRate: 0.2 }, // Running through the storm
+            shadowperson: { count: 1, spawnRate: 0.05 }, // Rare witness in the storm
         },
         lightning: true,
         lightningInterval: [1500, 4000],
@@ -321,7 +321,7 @@ export const WEATHER_PRESETS = {
         particles: {
             drop: { count: 40, spawnRate: 1.2 },
             cloud: { count: 4, spawnRate: 0.02 },
-            shadowperson: { count: 1, spawnRate: 0.08 }, // Somber witness
+            shadowperson: { count: 1, spawnRate: 0.02 }, // Somber witness
         },
         lightning: false,
     },
@@ -333,7 +333,7 @@ export const WEATHER_PRESETS = {
             heart: { count: 20, spawnRate: 0.6 },
             firefly: { count: 20, spawnRate: 0.2 },
             bird: { count: 1, spawnRate: 0.02 },
-            shadowperson: { count: 1, spawnRate: 0.1 }, // Hidden romantic observers
+            shadowperson: { count: 1, spawnRate: 0.01 }, // Hidden romantic observers
         },
         lightning: false,
     },
@@ -345,7 +345,7 @@ export const WEATHER_PRESETS = {
             firefly: { count: 30, spawnRate: 0.3 },
             spark: { count: 8, spawnRate: 0.2 },
             bee: { count: 6, spawnRate: 0.1 },
-            shadowperson: { count: 1, spawnRate: 0.08 },
+            shadowperson: { count: 1, spawnRate: 0.02 },
         },
         lightning: false,
     },
@@ -357,7 +357,7 @@ export const WEATHER_PRESETS = {
             spark: { count: 25, spawnRate: 1.2 },
             bounce: { count: 15, spawnRate: 0.5 },
             bird: { count: 2, spawnRate: 0.1 },
-            shadowperson: { count: 1, spawnRate: 0.15 }, // Fast moving silhouettes
+            shadowperson: { count: 1, spawnRate: 0.03 }, // Fast moving silhouettes
         },
         lightning: false,
     },
@@ -369,7 +369,7 @@ export const WEATHER_PRESETS = {
             bounce: { count: 20, spawnRate: 0.6 },
             firefly: { count: 12, spawnRate: 0.2 },
             bee: { count: 10, spawnRate: 0.3 },
-            shadowperson: { count: 2, spawnRate: 0.1 }, // Playful marginalia
+            shadowperson: { count: 1, spawnRate: 0.02 }, // Playful marginalia
         },
         lightning: false,
     },
@@ -380,7 +380,7 @@ export const WEATHER_PRESETS = {
         particles: {
             firefly: { count: 12, spawnRate: 0.05 },
             bird: { count: 2, spawnRate: 0.05 },
-            shadowperson: { count: 2, spawnRate: 0.02 }, // The Sovereign Witness is watching
+            shadowperson: { count: 1, spawnRate: 0.01 }, // The Sovereign Witness is watching
         },
         lightning: false,
     },
@@ -389,7 +389,7 @@ export const WEATHER_PRESETS = {
         skyImages: ATMOSPHERE_IMAGES.neutral,
         keywords: 'stars,horizon,cosmic,galaxy,minimal,dark,space',
         particles: {
-            shadowperson: { count: 1, spawnRate: 0.05 }, // Occasional witness in the void
+            shadowperson: { count: 1, spawnRate: 0.01 }, // Occasional witness in the void
         },
     },
     nature: {
@@ -400,7 +400,7 @@ export const WEATHER_PRESETS = {
             bird: { count: 4, spawnRate: 0.4 },
             bee: { count: 12, spawnRate: 0.8 },
             firefly: { count: 20, spawnRate: 0.2 },
-            shadowperson: { count: 2, spawnRate: 0.05 }, // Garden ghosts
+            shadowperson: { count: 1, spawnRate: 0.02 }, // Garden ghosts
         },
         lightning: false,
     },

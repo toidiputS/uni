@@ -180,7 +180,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             data-idx={i}
                             ref={el => sectionRefs.current[i + 1] = el}
                         >
-                            <div className="section-content" style={{ opacity: currentIdx === i ? 1 : 0.1, transition: 'all 1s ease' }}>
+                            <div className="section-content" style={{ opacity: currentIdx === i ? 1 : 0.05, transition: 'all 1.5s ease' }}>
                                 {stepData.text && (
                                     <p className="onboarding-text" style={{
                                         fontSize: 'clamp(18px, 4.5vw, 28px)',
@@ -188,7 +188,12 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                                         lineHeight: 1.5,
                                         fontWeight: 200,
                                         margin: '0 auto',
-                                        color: '#fff'
+                                        color: '#fff',
+                                        opacity: currentIdx === i ? 1 : 0,
+                                        transform: currentIdx === i ? 'translateY(0)' : 'translateY(30px)',
+                                        filter: currentIdx === i ? 'blur(0)' : 'blur(15px)',
+                                        transition: 'all 2.4s cubic-bezier(0.16, 1, 0.3, 1)', // Even more ethereal
+                                        letterSpacing: currentIdx === i ? '0.02em' : '0.12em'
                                     }}>
                                         {stepData.text}
                                     </p>
@@ -218,17 +223,6 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                                         {stepData.demoLabel}
                                     </div>
                                 )}
-
-                                <div style={{ marginTop: 60 }}>
-                                    <ReflectiveButton variant="primary" size="lg" onClick={() => scrollTo(i + 1)}>
-                                        {i === SEQUENCE.length - 1 ? 'Unlock Sanctuary' : 'Next Resonance'}
-                                    </ReflectiveButton>
-                                    {i < SEQUENCE.length - 1 && (
-                                        <p style={{ fontSize: 9, marginTop: 16, opacity: 0.3, cursor: 'pointer' }} onClick={() => scrollTo(SEQUENCE.length + 1)}>
-                                            Skip Journey
-                                        </p>
-                                    )}
-                                </div>
                             </div>
                         </section>
                     ))}
@@ -281,12 +275,40 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                         </div>
                     </section>
 
+                    {/* PERSISTENT ANCHOR: The psychological center */}
+                    {currentIdx >= 0 && currentIdx <= SEQUENCE.length && (
+                        <div className="fixed-resonance-anchor" style={{
+                            position: 'fixed',
+                            bottom: '8vh',
+                            left: 0,
+                            right: 0,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            zIndex: 100,
+                            animation: 'fadeSlideUp 1s ease'
+                        }}>
+                            <ReflectiveButton
+                                variant="primary"
+                                size="lg"
+                                onClick={currentIdx === SEQUENCE.length ? onGetStarted : () => scrollTo(currentIdx + 1)}
+                            >
+                                {currentIdx === SEQUENCE.length - 1 ? 'Unlock Sanctuary' :
+                                    currentIdx === SEQUENCE.length ? 'Begin Journey' : 'Next Resonance'}
+                            </ReflectiveButton>
+                            {currentIdx < SEQUENCE.length && (
+                                <p style={{ fontSize: 9, marginTop: 16, opacity: 0.3, cursor: 'pointer', letterSpacing: '0.2em' }} onClick={() => scrollTo(SEQUENCE.length + 1)}>
+                                    SKIP JOURNEY
+                                </p>
+                            )}
+                        </div>
+                    )}
+
                     <style>{`
                         .landing-scroll-container {
                             width: 100%;
                             height: 100vh;
                             overflow-y: auto;
-                            scroll-snap-type: y mandatory;
                             scroll-behavior: smooth;
                             scrollbar-width: none;
                         }
@@ -294,19 +316,18 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                         
                         .landing-section {
                             width: 100%;
-                            height: 100vh;
+                            min-height: 100vh;
                             display: flex;
                             flex-direction: column;
                             align-items: center;
                             justify-content: center;
-                            scroll-snap-align: start;
-                            padding: 0 40px;
+                            padding: 10vh 40px;
                             position: relative;
                         }
                         .section-content {
                             maxWidth: 900px;
                             text-align: center;
-                            transition: all 1s ease;
+                            transition: all 1.5s ease;
                         }
                         .demo-label-pill {
                             display: inline-block;
