@@ -42,9 +42,11 @@ function generateTitle(mood, messages) {
     return pool[Math.floor(Math.random() * pool.length)];
 }
 
-export default function MemoryCard({ roomId, messages, mood, partnerName, userName, onClose, onToast, onArtifactCreated, isViewOnly = false }) {
+export default function MemoryCard({ roomId, messages, mood, tier, partnerName, userName, onClose, onToast, onArtifactCreated, isViewOnly = false }) {
     const [isSaving, setIsSaving] = useState(false);
     const [isComposing, setIsComposing] = useState(false);
+
+    const isSage = tier === 'sage' || tier === 'trial';
 
     // Pick the most meaningful recent messages for the card if not in viewOnly mode
     const cardMessages = useMemo(() => {
@@ -158,14 +160,20 @@ export default function MemoryCard({ roomId, messages, mood, partnerName, userNa
 
                     <div className="memory-card-actions">
                         {!isViewOnly && (
-                            <>
-                                <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={isSaving || isComposing}>
-                                    {isSaving ? 'Archiving...' : 'Save Memory ✨'}
+                            isSage ? (
+                                <>
+                                    <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={isSaving || isComposing}>
+                                        {isSaving ? 'Archiving...' : 'Save Memory ✨'}
+                                    </button>
+                                    <button className="btn btn-glass btn-sm" onClick={handleCompose} disabled={isSaving || isComposing}>
+                                        {isComposing ? 'Composing...' : 'Soul Song 📜'}
+                                    </button>
+                                </>
+                            ) : (
+                                <button className="btn btn-primary btn-sm" style={{ opacity: 0.8 }} onClick={() => onToast("Upgrade to Sovereign Sage for permanent archiving ✨")}>
+                                    Upgrade for Memory ✨
                                 </button>
-                                <button className="btn btn-glass btn-sm" onClick={handleCompose} disabled={isSaving || isComposing}>
-                                    {isComposing ? 'Composing...' : 'Soul Song 📜'}
-                                </button>
-                            </>
+                            )
                         )}
                         <button className="btn btn-glass btn-sm" onClick={onClose}>
                             Close

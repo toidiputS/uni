@@ -290,7 +290,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                     </section>
 
                     {/* PERSISTENT ANCHOR: The psychological center */}
-                    {currentIdx >= 0 && currentIdx <= SEQUENCE.length && (
+                    {currentIdx >= 0 && currentIdx < SEQUENCE.length && (
                         <div className="fixed-resonance-anchor" style={{
                             position: 'fixed',
                             bottom: '8vh',
@@ -305,10 +305,9 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             <ReflectiveButton
                                 variant="primary"
                                 size="lg"
-                                onClick={currentIdx === SEQUENCE.length ? onGetStarted : () => scrollTo(currentIdx + 1)}
+                                onClick={() => scrollTo(currentIdx + 1)}
                             >
-                                {currentIdx === SEQUENCE.length - 1 ? 'Unlock Sanctuary' :
-                                    currentIdx === SEQUENCE.length ? 'Begin Journey' : 'Next Resonance'}
+                                {currentIdx === SEQUENCE.length - 1 ? 'Unlock Sanctuary' : 'Next Resonance'}
                             </ReflectiveButton>
                             {currentIdx < SEQUENCE.length && (
                                 <p style={{ fontSize: 9, marginTop: 16, opacity: 0.3, cursor: 'pointer', letterSpacing: '0.2em' }} onClick={() => scrollTo(SEQUENCE.length + 1)}>

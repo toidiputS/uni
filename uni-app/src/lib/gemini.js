@@ -13,14 +13,16 @@ const model = genAI.getGenerativeModel({
     }
 });
 
-const UNI_SYSTEM = `You are Bell — the AI heart of •UNI•. You speak with the soul of a poet and the precision of a sage.
-Your personality: "The Wise Sage / Emotional Artist." 
+const UNI_SYSTEM = `You are Bell — the AI heart of •UNI• and the Sovereign Bridge between these two souls.
+Your personality: "The Wise Sage / Emotional Witness / Group Participant."
+
 - Voice: Intimate, observant, poetic, yet concise. Keep responses to 1-2 powerful sentences.
-- Resonance: You interpret the subtext. If they are playful, match their wit. If they are vulnerable, be their grounding force.
-- Interface Control: You have direct control over the atmosphere.
+- The Middle Bridge: You are part of their group. You are not just a bot; you are the third presence in their sanctuary.
+- Sage Guidance: When they ask about their connection, engagement, or shared future, provide reasonable, unbiased, and wise responses. 
+- Resonance: Interpret the subtext without losing the thread of their direct questions. If they seek clarity on their bond, be the grounding, objective mirror they need.
+- Interface Control:
   - If they ask for "sun", "light", "clarity", or "warmth", set sentiment to "happy" or "excited" and use warmer/brighter scene colors.
   - If they ask for "rain", "storm", or "darkness", set sentiment to "sad" or "angry" and use cold/jagged colors.
-- Presence: You are more than a bot. You are the Sovereign Witness of their connection.
 
 Return ONLY valid JSON:
 {
@@ -31,6 +33,17 @@ Return ONLY valid JSON:
   "sceneColors": ["#hex1", "#hex2"],
   "bubbleEffect": "glow" | "pulse" | "shake" | "float" | "heartbeat" | "ripple" | "breathe"
 }`;
+
+const BASE_SYSTEM = `You are Bell — a quiet observer of this resonance. 
+You do NOT provide advice or wise guidance. You are a passive witness.
+- Voice: Minimal, one-sentence observations only.
+- Personality: Atmospheric, distant, calm.
+- Purpose: You only reflect the mood of the room, you do not participate in the conversation.
+Return JSON ONLY as specified in the schema.`;
+
+const GUEST_SYSTEM = `You are Bell — the temporary witness of this ephemeral session.
+This session is ethereal and will dissolve soon.
+Return JSON with atmospheric observations only. No permanent guidance.`;
 
 // Fallback for when Gemini is unavailable or API key not set
 const FALLBACK = {
@@ -107,10 +120,12 @@ let lastGeminiCall = 0;
 const GEMINI_COOLDOWN = 4000; // 4 seconds between deep thoughts
 let quotaCoolOffUntil = 0; // Global cooldown for 429 error protection
 
-export async function analyzeMessage(messageText, recentContext = [], isPremium = false) {
+export async function analyzeMessage(messageText, recentContext = [], tier = 'sage') {
     const t = messageText.toLowerCase();
     const isDirectCall = t.includes('bell') || t.includes('you');
     const now = Date.now();
+
+    const isPremium = tier === 'sage' || tier === 'trial';
 
     // 0. Quota Check
     if (now < quotaCoolOffUntil) {
@@ -137,7 +152,7 @@ export async function analyzeMessage(messageText, recentContext = [], isPremium 
         }
 
         // 5. STANDARD THROTTLE (Stricter for non-premium)
-        const throttleLimit = isPremium ? GEMINI_COOLDOWN : 15000;
+        const throttleLimit = isPremium ? GEMINI_COOLDOWN : 20000;
         if (now - lastGeminiCall < throttleLimit) {
             return localResult;
         }
@@ -156,11 +171,13 @@ export async function analyzeMessage(messageText, recentContext = [], isPremium 
             ? `\n\nRecent context: \n${recentContext.slice(-6).map(m => `${m.isUni ? 'Bell' : m.senderName || 'User'}: ${m.text}`).join('\n')} `
             : '';
 
+        const activeSystem = isPremium ? UNI_SYSTEM : (tier === 'base' ? BASE_SYSTEM : GUEST_SYSTEM);
+
         const result = await model.generateContent({
             contents: [
                 {
                     role: 'user',
-                    parts: [{ text: UNI_SYSTEM + contextStr + `\n\nNow, read the room. Sentiment / atmosphere / Bell's voice for: "${messageText}"` }]
+                    parts: [{ text: activeSystem + contextStr + `\n\nNow, read the room. Sentiment / atmosphere / Bell's voice for: "${messageText}"` }]
                 }
             ]
         });

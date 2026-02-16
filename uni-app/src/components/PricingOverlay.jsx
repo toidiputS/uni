@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 
 export default function PricingOverlay({ onClose, onSponsor, hasDiscount, onOpenSurvey }) {
-    const [selected, setSelected] = useState('lifetime'); // 'lifetime' | 'monthly'
-
-    const lifetimePrice = hasDiscount ? 20.00 : 25.00;
+    const [selected, setSelected] = useState('sage'); // 'base' | 'sage'
 
     return (
         <div className="modal-overlay artifact-overlay" onClick={onClose}>
@@ -11,65 +9,54 @@ export default function PricingOverlay({ onClose, onSponsor, hasDiscount, onOpen
                 <div className="artifact-paper" style={{ minHeight: 'auto', padding: '40px 30px' }}>
                     <div className="artifact-header">
                         <div className="artifact-uni-dot" style={{ background: 'var(--emo-happy)' }} />
-                        <span>•UNI• {hasDiscount ? 'SPECIAL DISCOUNT APPLIED' : "FOUNDER'S TIER: PRICES INCREASE ON 3.17"}</span>
+                        <span>•UNI• 14-DAY TRIAL INCLUDED FOR NEW FOUNDERS</span>
                     </div>
 
-                    <h1 className="artifact-title" style={{ fontSize: 24, marginBottom: 16 }}>Choose Your Path</h1>
+                    <h1 className="artifact-title" style={{ fontSize: 24, marginBottom: 16 }}>Choose Your Resonance</h1>
                     <div className="artifact-divider" />
 
-                    <p style={{ fontSize: 13, lineHeight: 1.6, color: '#666', marginBottom: 24, textAlign: 'center' }}>
-                        •UNI• is a boutique digital sanctuary. Your support allows us to keep the atmosphere pure, the AI wise, and your history private forever.
+                    <p style={{ fontSize: 12, lineHeight: 1.6, color: '#666', marginBottom: 24, textAlign: 'center' }}>
+                        All new accounts begin with 14 days of full sage wisdom.
+                        Guest sessions are ephemeral and will be erased upon dissolution.
                     </p>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 15, marginBottom: 20 }}>
                         <div
-                            className={`pricing-card ${selected === 'lifetime' ? 'active' : ''}`}
-                            onClick={() => setSelected('lifetime')}
-                            style={cardStyle(selected === 'lifetime')}
+                            className={`pricing-card ${selected === 'base' ? 'active' : ''}`}
+                            onClick={() => setSelected('base')}
+                            style={cardStyle(selected === 'base')}
                         >
-                            <div style={labelStyle}>Lifetime Access</div>
-                            <div style={priceStyle}>${lifetimePrice.toFixed(0)}</div>
-                            <div style={descStyle}>One-time payment.<br />Own it forever.</div>
-                            {!hasDiscount && <div style={{ fontSize: 9, color: 'var(--emo-angry)', marginTop: 8 }}>$49.99 after 3.17</div>}
+                            <div style={labelStyle}>Base Observer</div>
+                            <div style={priceStyle}>$3.99<span>/mo</span></div>
+                            <div style={descStyle}>Bell is a quiet observer.<br />Visual atmosphere only.</div>
                         </div>
 
                         <div
-                            className={`pricing-card ${selected === 'monthly' ? 'active' : ''}`}
-                            onClick={() => setSelected('monthly')}
-                            style={cardStyle(selected === 'monthly')}
+                            className={`pricing-card ${selected === 'sage' ? 'active' : ''}`}
+                            onClick={() => setSelected('sage')}
+                            style={cardStyle(selected === 'sage')}
                         >
-                            <div style={labelStyle}>Monthly Bloom</div>
-                            <div style={priceStyle}>$4.99<span>/mo</span></div>
-                            <div style={descStyle}>Cancel anytime.<br />Boutique entry.</div>
-                            <div style={{ fontSize: 9, color: 'var(--emo-angry)', marginTop: 8 }}>$8.99/mo after 3.17</div>
+                            <div style={labelStyle}>Sovereign Sage</div>
+                            <div style={priceStyle}>$8.99<span>/mo</span></div>
+                            <div style={descStyle}>Full poetic wisdom.<br />Permanent Archiving.</div>
                         </div>
                     </div>
 
-                    {!hasDiscount && (
-                        <div
-                            onClick={onOpenSurvey}
-                            style={{
-                                fontSize: 11,
-                                textAlign: 'center',
-                                color: 'var(--emo-happy)',
-                                marginBottom: 20,
-                                cursor: 'pointer',
-                                textDecoration: 'underline'
-                            }}
-                        >
-                            PERMANENT BENEFIT: Get $5.00 off by sharing your thoughts ✨
-                        </div>
-                    )}
-
                     <div className="pricing-perks" style={{ marginBottom: 30 }}>
-                        <div style={perkStyle}>⟢ Permanent Soul-Song Weaving</div>
-                        <div style={perkStyle}>✦ Unlimited Memory Archiving</div>
-                        <div style={perkStyle}>◈ Exclusive "Founder Protocol" Watermark</div>
+                        <div style={perkStyle}>
+                            <span style={{ opacity: selected === 'base' ? 0.3 : 1 }}>⟢ Permanent Soul-Song Weaving</span>
+                        </div>
+                        <div style={perkStyle}>
+                            <span style={{ opacity: selected === 'base' ? 0.3 : 1 }}>✦ Sage-Level Guidance & Questions</span>
+                        </div>
+                        <div style={perkStyle}>
+                            <span>◈ Real-time Atmospheric Resonance</span>
+                        </div>
                     </div>
 
                     <div className="artifact-actions" style={{ flexDirection: 'column', gap: 12 }}>
-                        <button className="btn btn-primary btn-glow" style={{ width: '100%' }} onClick={() => onSponsor(selected, lifetimePrice)}>
-                            {selected === 'lifetime' ? `Claim Your $${lifetimePrice.toFixed(0)} Lifetime Sanctuary ✨` : 'Start Your Monthly Bloom ✨'}
+                        <button className="btn btn-primary btn-glow" style={{ width: '100%' }} onClick={() => onSponsor(selected)}>
+                            {selected === 'sage' ? 'Enter the Sage Path ✨' : 'Start Observation Path ✨'}
                         </button>
                         <button className="btn btn-glass btn-sm" style={{ width: '100%', color: '#999' }} onClick={onClose}>
                             Maybe Later

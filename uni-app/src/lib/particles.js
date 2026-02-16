@@ -209,9 +209,9 @@ export function createShadowPerson(canvasW, canvasH) {
         vy: 0,
         life: 1,
         maxLife: 1,
-        size: 24 + Math.random() * 12, // Toned down from 35-50
+        size: 14 + Math.random() * 10, // Significantly smaller (minute stick figures)
         opacity: 0,
-        targetOpacity: side === 'white' ? 0.08 : 0.12, // Toned down from 0.15-0.25
+        targetOpacity: 0.02 + Math.random() * 0.02, // Hyper-faded (2-4%)
         color,
         phase: Math.random() * Math.PI * 2,
         phaseSpeed: 0.02 + Math.random() * 0.03,
@@ -508,113 +508,83 @@ export function drawShadowPerson(ctx, p) {
     const sway = Math.sin(p.phase) * 2;
     const legSway = Math.sin(p.phase * 4) * (h * 0.15);
 
-    ctx.fillStyle = `rgba(${p.color}, 0.8)`;
-    ctx.shadowColor = `rgba(${p.color}, 0.4)`;
-    ctx.shadowBlur = 12;
+    ctx.strokeStyle = `rgba(${p.color}, 0.85)`;
+    ctx.lineWidth = 1; // Sketchy line weight
+    ctx.lineCap = 'round';
 
     if (p.persona === 'spy') {
         const dir = p.vx > 0 ? 1 : -1;
-        // The Iconic Proportions: Long beak, sharp hat, hunch
-        ctx.strokeStyle = `rgba(${p.color}, 0.8)`;
-        ctx.fillStyle = `rgba(${p.color}, 0.8)`;
-        ctx.lineWidth = 1.2;
-
-        // Hat
+        // Stick-Figure Spy: Triangular hat, line beak
         ctx.beginPath();
-        ctx.moveTo(0, -h);
-        ctx.lineTo(w * 0.8 * dir, -h * 0.5);
-        ctx.lineTo(-w * 0.8 * dir, -h * 0.5);
-        ctx.closePath();
-        ctx.fill();
-
-        // Face & The Beak
-        ctx.beginPath();
-        ctx.ellipse(sway, -h * 0.35, w * 0.7, h * 0.15, 0, 0, Math.PI * 2);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(sway + (w * 0.5 * dir), -h * 0.4);
-        ctx.lineTo(sway + (w * 1.5 * dir), -h * 0.25); // THE BEAK
-        ctx.lineTo(sway + (w * 0.5 * dir), -h * 0.15);
-        ctx.fill();
-
-        // Eyes (Contrasting)
-        ctx.fillStyle = p.side === 'white' ? 'rgba(0,0,0,0.8)' : 'rgba(255,255,255,0.8)';
-        ctx.beginPath();
-        ctx.arc(sway + (w * 0.3 * dir), -h * 0.35, 2, 0, Math.PI * 2);
-        ctx.fill();
-
-        if (p.hasBomb) {
-            ctx.fillStyle = `rgba(${p.color}, 0.9)`;
-            ctx.beginPath();
-            ctx.arc(sway - (w * dir), -h * 0.2, 5, 0, Math.PI * 2);
-            ctx.fill();
-            // Fuse
-            ctx.strokeStyle = `rgba(${p.color}, 0.6)`;
-            ctx.beginPath();
-            ctx.moveTo(sway - (w * dir), -h * 0.2 - 5);
-            ctx.lineTo(sway - (w * dir) + 3, -h * 0.2 - 10);
-            ctx.stroke();
-            // Spark
-            if (Math.random() > 0.5) {
-                ctx.fillStyle = '#ffb432';
-                ctx.fillRect(sway - (w * dir) + 3, -h * 0.2 - 11, 2, 2);
-            }
-        }
-    } else if (p.persona === 'mover') {
-        // Stick figure movement - classic marginalia style
-        ctx.strokeStyle = `rgba(${p.color}, 0.85)`;
-        ctx.lineWidth = 1.5;
-        ctx.lineCap = 'round';
-
-        ctx.beginPath();
-        ctx.arc(0, -h * 0.8, w * 0.45, 0, Math.PI * 2); // Head
+        // Head (Circle stroke)
+        ctx.arc(sway, -h * 0.75, w * 0.5, 0, Math.PI * 2);
+        // Beak (Simple line)
+        ctx.moveTo(sway + (w * 0.4 * dir), -h * 0.75);
+        ctx.lineTo(sway + (w * 1.2 * dir), -h * 0.75);
+        // Hat (Triangle outline)
+        ctx.moveTo(sway - w * 0.3, -h * 0.85);
+        ctx.lineTo(sway, -h * 1.1);
+        ctx.lineTo(sway + w * 0.3, -h * 0.85);
         ctx.stroke();
 
+        // Stick Body
         ctx.beginPath();
-        ctx.moveTo(0, -h * 0.7);
+        ctx.moveTo(sway, -h * 0.65);
+        ctx.lineTo(sway, -h * 0.3); // Spine
+        ctx.stroke();
+
+        if (p.hasBomb) {
+            ctx.beginPath();
+            ctx.arc(sway - (w * 0.8 * dir), -h * 0.25, 3, 0, Math.PI * 2); // Tiny stick bomb
+            ctx.stroke();
+        }
+    } else if (p.persona === 'mover') {
+        // Stick figure movement
+        ctx.beginPath();
+        ctx.arc(sway, -h * 0.8, w * 0.5, 0, Math.PI * 2); // Head
+        ctx.moveTo(sway, -h * 0.65);
         ctx.lineTo(sway, -h * 0.3); // Spine
         // Arms
         const armSway = Math.sin(p.phase * 4) * (h * 0.2);
-        ctx.moveTo(sway, -h * 0.6);
-        ctx.lineTo(sway - 10, -h * 0.5 + armSway);
-        ctx.moveTo(sway, -h * 0.6);
-        ctx.lineTo(sway + 10, -h * 0.5 - armSway);
+        ctx.moveTo(sway, -h * 0.5);
+        ctx.lineTo(sway - 8, -h * 0.45 + armSway);
+        ctx.moveTo(sway, -h * 0.5);
+        ctx.lineTo(sway + 8, -h * 0.45 - armSway);
         // Legs
         ctx.moveTo(sway, -h * 0.3);
-        ctx.lineTo(sway - legSway, 0); // Leg 1
+        ctx.lineTo(sway - legSway, 0);
         ctx.moveTo(sway, -h * 0.3);
-        ctx.lineTo(sway + legSway, 0); // Leg 2
+        ctx.lineTo(sway + legSway, 0);
         ctx.stroke();
     } else if (p.persona === 'lovers') {
-        // Two figures leaning
+        // Two stick figures leaning
         for (let i = 0; i < 2; i++) {
-            const ox = (i === 0 ? -12 : 12) + sway;
+            const ox = (i === 0 ? -6 : 6) + sway;
+            const tilt = i === 0 ? 3 : -3;
             ctx.beginPath();
             ctx.arc(ox, -h * 0.8, w * 0.4, 0, Math.PI * 2); // Head
             ctx.moveTo(ox, -h * 0.7);
-            ctx.quadraticCurveTo(ox + (i === 0 ? 5 : -5), -h * 0.3, ox, 0); // Body leaning in
-            ctx.fill();
+            ctx.lineTo(ox + tilt, -h * 0.3); // Body tilt
+            ctx.moveTo(ox + tilt, -h * 0.3);
+            ctx.lineTo(ox + (i === 0 ? -2 : 2), 0); // Legs
+            ctx.stroke();
             if (i === 0) {
-                // Little heart between them
-                ctx.fillStyle = `rgba(${p.color}, 0.7)`;
-                ctx.font = '12px serif';
+                ctx.fillStyle = `rgba(${p.color}, 0.5)`;
+                ctx.font = '8px serif';
                 ctx.fillText('♥', sway, -h * 0.9);
-                ctx.fillStyle = `rgba(${p.color}, 0.8)`;
             }
         }
     } else {
-        // Default Observer (The Classic)
+        // Stick Observer
         ctx.beginPath();
         ctx.arc(sway, -h * 0.85, w * 0.5, 0, Math.PI * 2); // Head
-        ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(-w * 0.4 + sway, -h * 0.75);
-        ctx.lineTo(w * 0.4 + sway, -h * 0.75);
-        ctx.lineTo(w * 0.8 + sway, 0);
-        ctx.lineTo(-w * 0.8 + sway, 0);
-        ctx.closePath();
-        ctx.fill();
+        ctx.moveTo(sway, -h * 0.7);
+        ctx.lineTo(sway, -h * 0.3); // Spine
+        ctx.moveTo(sway, -h * 0.3);
+        ctx.lineTo(sway - 4, 0);
+        ctx.moveTo(sway, -h * 0.3);
+        ctx.lineTo(sway + 4, 0);
+        ctx.stroke();
     }
 
     ctx.restore();

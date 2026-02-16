@@ -37,6 +37,7 @@ export default function Chat({
     user,
     userData,
     roomId,
+    tier,
     onMoodChange,
     onBubbleEmit,
     onSceneChange,
@@ -312,7 +313,7 @@ export default function Chat({
         try {
             const msgContent = trimmed || (imageUrl ? 'shared an image' : '');
             const context = messages.slice(-8).map(m => ({ text: m.text, senderName: m.senderName, isUni: m.isUni }));
-            const analysis = await analyzeMessage(msgContent, context, roomData?.isSanctified);
+            const analysis = await analyzeMessage(msgContent, context, tier);
 
             await addDoc(collection(db, 'chatRooms', roomId, 'messages'), {
                 text: trimmed,
@@ -376,7 +377,11 @@ export default function Chat({
                         <button className={`btn btn-glass btn-sm ${isPlaying ? 'resonance-active-btn' : ''}`} onClick={() => setShowVault(true)}>♫</button>
                         <button className="btn btn-glass btn-sm" onClick={() => setShowDiagnostics(true)} title="Neural Status">⋇</button>
                         <button className="btn btn-glass btn-sm" onClick={() => { setBellState('thinking'); showToast("Reading the room..."); }} disabled={sending}>⟢</button>
-                        <button className="btn btn-glass btn-sm" onClick={() => setShowMemory(true)}>✦</button>
+
+                        {(tier === 'sage' || tier === 'trial') && (
+                            <button className="btn btn-glass btn-sm" onClick={() => setShowMemory(true)}>✦</button>
+                        )}
+
                         <button className="btn btn-glass btn-icon" onClick={onLogout}>⚙</button>
                     </div>
                 )}
@@ -472,7 +477,18 @@ export default function Chat({
                 </button>
             </div>
 
-            {showMemory && <MemoryCard roomId={roomId} messages={messages} mood={mood} partnerName={partnerName} userName={user?.displayName || 'You'} onClose={() => setShowMemory(false)} onToast={(m) => { setBellState('glow'); showToast(m); setTimeout(() => setBellState('idle'), 2000); }} />}
+            {showMemory && (
+                <MemoryCard
+                    roomId={roomId}
+                    messages={messages}
+                    mood={mood}
+                    tier={tier}
+                    partnerName={partnerName}
+                    userName={user?.displayName || 'You'}
+                    onClose={() => setShowMemory(false)}
+                    onToast={(m) => { setBellState('glow'); showToast(m); setTimeout(() => setBellState('idle'), 2000); }}
+                />
+            )}
             {showArtifact && soulSong && <ArtifactFrame title={soulSong.title} lyrics={soulSong.lyrics} date={new Date().toLocaleDateString()} participants={[user.displayName || 'You', partnerName]} onClose={() => setShowArtifact(false)} />}
             {showSurvey && <FeedbackModal onClose={() => setShowSurvey(false)} onSubmit={handleFeedbackSubmit} />}
             {showVault && (

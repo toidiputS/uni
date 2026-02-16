@@ -30,7 +30,7 @@ The UNI Atmosphere Engine is a proprietary, real-time generative landscape that 
 *   **The Particle Civilization**: 
     1. **Biological Layer**: Birds, bees, and fireflies that react to the `nature` and `happy` sentiments.
     2. **Ethereal Layer**: Hearts, sparks, rain, and "morphing bubbles" that spit sentiment-specific sparks.
-    3. **The Marginalia Layer (Ghosts of MAD)**: A civilization of shadow people (Spy, Mover, Lovers) that inhabit the borders, creating a "lived-in" experience.
+    3. **The Marginalia Layer (The Witnesses of MAD)**: A civilization of minute, hyper-faded (2-4% opacity) stick figures that inhabit the borders, creating a warm, "lived-in" experience that ensures the user is never truly alone.
 
 ---
 

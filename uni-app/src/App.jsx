@@ -5,7 +5,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { auth, db } from './lib/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, onSnapshot, collection, getDocs, writeBatch, deleteDoc } from 'firebase/firestore';
+import { useMemo } from 'react';
+
 
 import Welcome from './pages/Welcome';
 import Auth from './pages/Auth';
@@ -268,6 +270,22 @@ export default function App() {
         }
     }, [user, roomId]);
 
+    const handleUnpair = useCallback(async () => {
+        if (effectiveTier === 'guest' && roomId) {
+            // DOCTRINE: Guest sessions are ephemeral. Burn the evidence.
+            try {
+                const msgs = await getDocs(collection(db, 'chatRooms', roomId, 'messages'));
+                const batch = writeBatch(db);
+                msgs.forEach(m => batch.delete(m.ref));
+                await batch.commit();
+                console.log('[UNI] Guest session dissolved and erased.');
+            } catch (err) {
+                console.error('[UNI] Failed to erase guest session:', err);
+            }
+        }
+        setView('pairing');
+    }, [effectiveTier, roomId]);
+
     const handleGlobalSponsor = useCallback(async (type) => {
         if (!user) {
             setView('auth');
@@ -290,6 +308,20 @@ export default function App() {
             </div>
         );
     }
+
+    const effectiveTier = useMemo(() => {
+        if (!userData) return 'guest';
+        if (userData.isGuest) return 'guest';
+        if (userData.tier === 'sage') return 'sage';
+        if (userData.tier === 'base') return 'base';
+
+        if (userData.trialStartedAt) {
+            const trialStart = userData.trialStartedAt.toDate ? userData.trialStartedAt.toDate() : new Date(userData.trialStartedAt);
+            const diffDays = (new Date() - trialStart.getTime()) / (1000 * 60 * 60 * 24);
+            if (diffDays < 14) return 'trial';
+        }
+        return 'base';
+    }, [userData]);
 
 
     return (
@@ -383,10 +415,11 @@ export default function App() {
                     user={user}
                     userData={userData}
                     roomId={roomId}
+                    tier={effectiveTier}
                     onMoodChange={handleAtmosphereUpdate}
                     onBubbleEmit={handleBubbleEmit}
                     onSceneChange={setSceneColors}
-                    onUnpair={() => setView('pairing')}
+                    onUnpair={handleUnpair}
                     onLogout={handleLogout}
                     isPlaying={isPlaying}
                     onToggleAudio={toggleAudio}

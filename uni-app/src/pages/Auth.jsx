@@ -59,6 +59,8 @@ export default function Auth({ onBack, onAuthed, setBellConfig }) {
                     pairedWith: null,
                     lastRoomId: null,
                     createdAt: serverTimestamp(),
+                    trialStartedAt: serverTimestamp(),
+                    tier: 'trial'
                 });
             }
             onAuthed();
@@ -128,6 +130,8 @@ export default function Auth({ onBack, onAuthed, setBellConfig }) {
                     pairedWith: null,
                     lastRoomId: null,
                     createdAt: serverTimestamp(),
+                    trialStartedAt: serverTimestamp(),
+                    tier: 'trial'
                 });
             } else {
                 await signInWithEmailAndPassword(auth, email.trim(), password);
