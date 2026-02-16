@@ -270,6 +270,20 @@ export default function App() {
         }
     }, [user, roomId]);
 
+    const effectiveTier = useMemo(() => {
+        if (!userData) return 'guest';
+        if (userData.isGuest) return 'guest';
+        if (userData.tier === 'sage') return 'sage';
+        if (userData.tier === 'base') return 'base';
+
+        if (userData.trialStartedAt) {
+            const trialStart = userData.trialStartedAt.toDate ? userData.trialStartedAt.toDate() : new Date(userData.trialStartedAt);
+            const diffDays = (new Date() - trialStart.getTime()) / (1000 * 60 * 60 * 24);
+            if (diffDays < 14) return 'trial';
+        }
+        return 'base';
+    }, [userData]);
+
     const handleUnpair = useCallback(async () => {
         if (effectiveTier === 'guest' && roomId) {
             // DOCTRINE: Guest sessions are ephemeral. Burn the evidence.
@@ -309,19 +323,6 @@ export default function App() {
         );
     }
 
-    const effectiveTier = useMemo(() => {
-        if (!userData) return 'guest';
-        if (userData.isGuest) return 'guest';
-        if (userData.tier === 'sage') return 'sage';
-        if (userData.tier === 'base') return 'base';
-
-        if (userData.trialStartedAt) {
-            const trialStart = userData.trialStartedAt.toDate ? userData.trialStartedAt.toDate() : new Date(userData.trialStartedAt);
-            const diffDays = (new Date() - trialStart.getTime()) / (1000 * 60 * 60 * 24);
-            if (diffDays < 14) return 'trial';
-        }
-        return 'base';
-    }, [userData]);
 
 
     return (
