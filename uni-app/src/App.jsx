@@ -28,11 +28,20 @@ export default function App() {
     const [userData, setOrderedUserData] = useState(null);
     const [roomId, setRoomId] = useState(null);
 
-    // Initial routing for direct addresses
+    // Initial routing for direct addresses & Invitation handling
     useEffect(() => {
         const path = window.location.pathname;
         if (path === '/privacy') setView('privacy');
         else if (path === '/tos') setView('tos');
+
+        // PRE-RESONANCE: Catch and store incoming referral codes
+        const params = new URLSearchParams(window.location.search);
+        const incomingCode = params.get('code');
+        if (incomingCode) {
+            sessionStorage.setItem('uni_partner_code', incomingCode.toUpperCase());
+            // Clean up URL to keep the sanctuary pristine
+            window.history.replaceState({}, '', window.location.pathname);
+        }
     }, []);
 
     // Helper to change view and update URL if needed

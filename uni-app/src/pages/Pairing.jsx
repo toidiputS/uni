@@ -58,7 +58,6 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
             if (userSnap.exists()) {
                 const userData = userSnap.data();
                 if (userData.pairedWith && userData.lastRoomId) {
-                    // CGEI DOCTRINE: If the signal is already there, start the resonance immediately
                     setResonance(true);
 
                     // Check room readiness
@@ -84,7 +83,16 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
                 }
             }
         });
-        return unsub;
+
+        // RECONNAISSANCE: Look for stored invitation codes
+        const storedCode = sessionStorage.getItem('uni_partner_code');
+        if (storedCode) {
+            setPartnerCode(storedCode);
+            // Clear it so it doesn't linger across different pairing attempts if unpair occurs
+            sessionStorage.removeItem('uni_partner_code');
+        }
+
+        return () => unsub();
     }, [user, onPaired]);
 
     const copyCode = () => {
@@ -116,7 +124,7 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
         const shareData = {
             title: '•UNI• Invite',
             text: `Connect with me on •UNI•. My resonance code is: ${myCode}`,
-            url: 'https://uni.itsai.chat'
+            url: `https://uni.itsai.chat?code=${myCode}`
         };
 
         if (navigator.share && navigator.canShare(shareData)) {
@@ -253,7 +261,12 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
 
                 <form onSubmit={handlePair}>
                     <div className="input-group" style={{ textAlign: 'left' }}>
-                        <label htmlFor="partnerCode">Partner's Code</label>
+                        <label htmlFor="partnerCode" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Partner's Code</span>
+                            {partnerCode.length === 6 && !error && (
+                                <span style={{ fontSize: 9, color: 'var(--emo-happy)', opacity: 0.8 }}>LINK DETECTED</span>
+                            )}
+                        </label>
                         <input
                             id="partnerCode"
                             name="partnerCode"
@@ -263,7 +276,7 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
                             value={partnerCode}
                             onChange={(e) => setPartnerCode(e.target.value.toUpperCase())}
                             maxLength={6}
-                            style={{ textAlign: 'center', letterSpacing: '0.2em', fontSize: 18, fontWeight: 600 }}
+                            style={{ textAlign: 'center', letterSpacing: '0.2em', fontSize: 18, fontWeight: 600, borderColor: (partnerCode.length === 6 && !error) ? 'var(--emo-happy)' : '' }}
                         />
                     </div>
 
