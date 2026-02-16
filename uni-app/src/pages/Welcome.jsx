@@ -162,10 +162,17 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             Your connection, immortalized in art.
                         </p>
 
-                        <div className="hero-actions">
+                        <div className="hero-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <ReflectiveButton variant="primary" onClick={startOnboarding} size="lg">
                                 Experience Resonance
                             </ReflectiveButton>
+                            <button
+                                className="ethereal-text"
+                                onClick={onGetStarted}
+                                style={{ fontSize: 11, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, letterSpacing: '0.1em', marginTop: 16 }}
+                            >
+                                ALREADY A FOUNDER? SIGN IN
+                            </button>
                             <p style={{ fontSize: 10, marginTop: 24, opacity: 0.3, letterSpacing: '0.2em' }}>
                                 A SYMPHONIC EMOTION INTERFACE
                             </p>
@@ -261,13 +268,20 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             ))}
                         </div>
 
-                        <div className="hero-actions" style={{ gap: 20, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div className="hero-actions" style={{ gap: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <ReflectiveButton variant="primary" onClick={onGetStarted} size="lg">
                                 Begin Your Resonance
                             </ReflectiveButton>
                             <button
                                 className="ethereal-text"
-                                style={{ fontSize: 12, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.6 }}
+                                style={{ fontSize: 11, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, letterSpacing: '0.1em' }}
+                                onClick={onGetStarted}
+                            >
+                                RETURNING PARTNER? SIGN IN
+                            </button>
+                            <button
+                                className="ethereal-text"
+                                style={{ fontSize: 10, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
                                 onClick={() => onShowPricing()}
                             >
                                 [ Founder's Sanctum Access ]
