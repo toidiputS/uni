@@ -385,6 +385,11 @@ body,
   user-select: none;
 }
 
+button.ethereal-text {
+  pointer-events: auto;
+  user-select: auto;
+}
+
 /* ─── BellDot: The Living Indicator ─── */
 /* The Cosmic Dot is Bell's body language in the interface */
 

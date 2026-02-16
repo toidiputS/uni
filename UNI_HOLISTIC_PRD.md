@@ -1,5 +1,5 @@
 # HOLISTIC PRD: UNI - THE RESONANCE PROTOCOL & SOVEREIGN WITNESS
-**Project:** •UNI• (Unified Network Interface)
+**Project:** •UNI• (Pronounced - "you-n-eye")(Unified Network Interface)
 **Status:** Alpha Build V1.2.5 (High Fidelity)
 **Core Engine:** CGEI (Conversational Generative Emotion Interface)
 **Classification:** Proprietary Emotional Infrastructure / Strategic Product Requirements
