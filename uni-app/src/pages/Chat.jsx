@@ -355,20 +355,6 @@ export default function Chat({
         return p ? p[1] : 'Partner';
     }, [roomData, user]);
 
-    const handleCreateArtifact = useCallback(async (song) => {
-        if (!roomId || !song) return;
-        try {
-            await addDoc(collection(db, 'chatRooms', roomId, 'artifacts'), {
-                ...song,
-                participants: [user.displayName || 'You', partnerName || 'Partner'],
-                date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-                createdAt: serverTimestamp()
-            });
-            showToast("Soul Song Archived 📜");
-        } catch (err) {
-            console.error('[UNI] Artifact save failed:', err);
-        }
-    }, [roomId, user, partnerName]);
 
     const handleKeyDown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } };
 

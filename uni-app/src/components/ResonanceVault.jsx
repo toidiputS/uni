@@ -150,31 +150,35 @@ export default function ResonanceVault({ roomId, user, onPlay, onClose, currentT
             </div>
 
             {/* Sub-modals for viewing items */}
-            {selectedMemory && (
-                <div className="modal-overlay sub-modal" onClick={() => setSelectedMemory(null)}>
-                    <div onClick={e => e.stopPropagation()}>
-                        <MemoryCard
-                            roomId={roomId}
-                            messages={selectedMemory.messages}
-                            mood={selectedMemory.mood}
-                            partnerName={selectedMemory.participants[1]}
-                            userName={selectedMemory.participants[0]}
-                            onClose={() => setSelectedMemory(null)}
-                            isViewOnly={true}
-                        />
+            {
+                selectedMemory && (
+                    <div className="modal-overlay sub-modal" onClick={() => setSelectedMemory(null)}>
+                        <div onClick={e => e.stopPropagation()}>
+                            <MemoryCard
+                                roomId={roomId}
+                                messages={selectedMemory.messages}
+                                mood={selectedMemory.mood}
+                                partnerName={selectedMemory.participants[1]}
+                                userName={selectedMemory.participants[0]}
+                                onClose={() => setSelectedMemory(null)}
+                                isViewOnly={true}
+                            />
+                        </div>
                     </div>
-                </div>
-            )}
+                )
+            }
 
-            {selectedArtifact && (
-                <ArtifactFrame
-                    title={selectedArtifact.title}
-                    lyrics={selectedArtifact.lyrics}
-                    date={selectedArtifact.date}
-                    participants={selectedArtifact.participants}
-                    onClose={() => setSelectedArtifact(null)}
-                />
-            )}
-        </div>
+            {
+                selectedArtifact && (
+                    <ArtifactFrame
+                        title={selectedArtifact.title}
+                        lyrics={selectedArtifact.lyrics}
+                        date={selectedArtifact.date}
+                        participants={selectedArtifact.participants}
+                        onClose={() => setSelectedArtifact(null)}
+                    />
+                )
+            }
+        </div >
     );
 }
