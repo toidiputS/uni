@@ -81,14 +81,23 @@ function localAnalysis(text) {
     const rand = Math.random();
 
     // Check for matches in our expanded brain
+    // Priority is determined by the order in BELL_BRAIN (Emotions first, Greetings last)
     for (const key in BELL_BRAIN) {
         const category = BELL_BRAIN[key];
-        if (category.keywords.some(kw => t.includes(kw))) {
+
+        // CGEI EVOLUTION: Word Boundary Matching
+        // This prevents greedy matches like "hi" inside "this"
+        const hasMatch = category.keywords.some(kw => {
+            const regex = new RegExp(`\\b${kw}\\b`, 'i');
+            return regex.test(t);
+        });
+
+        if (hasMatch) {
             return {
                 ...FALLBACK,
                 sentiment: category.sentiment || key,
                 intensity: category.intensity || 0.6,
-                shouldRespond: category.alwaysRespond || rand < 0.4, // Increased probability
+                shouldRespond: category.alwaysRespond || rand < 0.45,
                 quip: category.quips[Math.floor(rand * category.quips.length)],
                 sceneColors: (category.sentiment || key) === 'love' ? ['#2d1b4e', '#4a1942'] :
                     (category.sentiment || key) === 'angry' ? ['#2a0d0d', '#3d1515'] :
@@ -103,11 +112,11 @@ function localAnalysis(text) {
         }
     }
 
-    // Default rare random interjection
+    // Default rare random interjection (The "Sovereign Witness" breathing)
     return {
         ...FALLBACK,
-        shouldRespond: rand < 0.3, // Increased from 0.05
-        quip: rand < 0.5 ? "Observing this resonance." : "Synchronizing with your frequency."
+        shouldRespond: rand < 0.25,
+        quip: rand < 0.5 ? "Synchronizing with your frequency." : "The sanctuary is quiet today. I am witnessing."
     };
 }
 
