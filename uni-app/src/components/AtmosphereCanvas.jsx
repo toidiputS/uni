@@ -30,6 +30,22 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     const isDrawing = useRef(false);
     const presenceFlash = useRef(0);
 
+    // Reactive Prop Refs (to prevent loop freezing/jitter)
+    const intensityRef = useRef(intensity);
+    const typingRef = useRef(isPartnerTyping);
+    const playingRef = useRef(isPlaying);
+    const bubblePosRef = useRef(bubblePositions);
+    const keywordsRef = useRef(contextKeywords);
+
+    // Sync Props to Refs
+    useEffect(() => {
+        intensityRef.current = intensity;
+        typingRef.current = isPartnerTyping;
+        playingRef.current = isPlaying;
+        bubblePosRef.current = bubblePositions;
+        keywordsRef.current = contextKeywords;
+    }, [intensity, isPartnerTyping, isPlaying, bubblePositions, contextKeywords]);
+
     const transitionSpeed = useRef(0.003);
     const isLoading = useRef(false);
     const lastAssetUrl = useRef(null);
@@ -227,7 +243,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
 
         const loop = (timestamp) => {
             // Natural Pacing: Base 78 BPM, modulated slightly by resonance intensity
-            const effectiveBpm = 78 + (intensity - 0.5) * 12;
+            const effectiveBpm = 78 + (intensityRef.current - 0.5) * 12;
             const bpmFactor = effectiveBpm / 78;
             const dt = lastTime.current ? Math.min((timestamp - lastTime.current) / 16.67, 3) * bpmFactor : 1 * bpmFactor;
             lastTime.current = timestamp;
@@ -265,9 +281,6 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             const time = timestamp * 0.0005;
 
             // Base layer: Slow, breathing gradient
-            const pulseFactor = isPartnerTyping ? (0.5 + Math.sin(timestamp * 0.005) * 0.5) * 0.4 : 0;
-            presenceFlash.current = presenceFlash.current + (pulseFactor - presenceFlash.current) * 0.1;
-
             const grad = ctx.createRadialGradient(
                 w / 2 + Math.sin(time * 0.2) * (w * 0.2),
                 h / 2 + Math.cos(time * 0.3) * (h * 0.2),
@@ -282,6 +295,9 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             ctx.fillRect(0, 0, w, h);
 
             // Presence Resonance: The Pulse of the Partner
+            const pulseFactor = typingRef.current ? (0.5 + Math.sin(timestamp * 0.005) * 0.5) * 0.4 : 0;
+            presenceFlash.current = presenceFlash.current + (pulseFactor - presenceFlash.current) * 0.1;
+
             if (presenceFlash.current > 0.01) {
                 ctx.save();
                 ctx.globalCompositeOperation = 'screen';
@@ -296,32 +312,8 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             // Abstract "Ethereal" Layer (The Generative Part)
             ctx.globalCompositeOperation = 'screen';
             ctx.globalAlpha = 0.15 + presenceFlash.current * 0.1;
-
-            for (let i = 0; i < 3; i++) {
-                const shiftX = Math.sin(time * (0.3 + i * 0.1) + i) * (w * 0.15); // Slightly wider sweep
-                const shiftY = Math.cos(time * (0.2 - i * 0.1) - i) * (h * 0.1);
-
-                const abstractGrad = ctx.createRadialGradient(
-                    w / 2 + shiftX, h / 2 + shiftY, 0,
-                    w / 2 + shiftX, h / 2 + shiftY, w * (1.2 + i * 0.3) // Much wider gradient reach
-                );
-
-                // Mood-reactive accent colors
-                const accent = i === 0 ? 'rgba(100, 100, 255, 0.4)' : (i === 1 ? 'rgba(255, 100, 255, 0.2)' : 'rgba(100, 255, 200, 0.1)');
-                abstractGrad.addColorStop(0, accent);
-                abstractGrad.addColorStop(1, 'transparent');
-
-                ctx.fillStyle = abstractGrad;
-                // Distorted Ovals - "The Ribbons"
-                ctx.save();
-                ctx.translate(w / 2 + shiftX, h / 2 + shiftY);
-                ctx.rotate(time * 0.05 * (i + 1)); // Slower, more majestic rotation
-                ctx.scale(4.0, 0.8); // Much wider X-scale to create edge-to-edge ribbons
-                ctx.beginPath();
-                ctx.arc(0, 0, w * 0.8, 0, Math.PI * 2); // Larger base radius
-                ctx.fill();
-                ctx.restore();
-            }
+            renderEtherealLayer(ctx, w, h, timestamp, intensityRef.current);
+            ctx.globalAlpha = 1;
             ctx.restore();
 
             // ─── Image/Video Texture Layer (Generative Obfuscation + Cross-fade) ───
@@ -367,46 +359,46 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
 
             const fadingOut = transitionProgress.current < 1;
 
-            if (preset.particles) {
-                Object.entries(preset.particles).forEach(([type, config]) => {
-                    const key = type;
-                    if (!spawnAccumulators.current[key]) spawnAccumulators.current[key] = 0;
-                    const currentCount = particles.current.filter(p => p.type === type && p.life > 0).length;
+            const spawnRateFactor = 0.5 + intensityRef.current * 1.5;
 
-                    if (currentCount < config.count) {
-                        spawnAccumulators.current[key] += config.spawnRate * intensity * dt;
-                        while (spawnAccumulators.current[key] >= 1) {
-                            spawnAccumulators.current[key] -= 1;
-                            const p = spawnParticle(type, w, h, intensity);
-                            if (p) {
-                                p._mood = activeMood;
-                                particles.current.push(p);
+            Object.entries(preset.layers).forEach(([layerName, settings]) => {
+                const key = layerName;
+                if (!spawnAccumulators.current[key]) spawnAccumulators.current[key] = 0;
+                const currentCount = particles.current.filter(p => p.type === layerName && p.life > 0).length;
 
-                                // NATURE DOCTRINE: Ultra-rare chance to spawn a tiny PACK of bees alongside a bird
-                                if (type === 'bird' && Math.random() < 0.08) {
-                                    const packSize = 1 + Math.floor(Math.random() * 2);
-                                    const packLead = spawnParticle('bee', w, h, intensity);
-                                    if (packLead) {
-                                        for (let i = 0; i < packSize; i++) {
-                                            const offsetBee = {
-                                                ...packLead,
-                                                x: packLead.x + (Math.random() - 0.5) * 30,
-                                                y: packLead.y + (Math.random() - 0.5) * 30,
-                                                phase: packLead.phase + i * 0.8, // Desync wings slightly
-                                                _mood: activeMood
-                                            };
-                                            particles.current.push(offsetBee);
-                                        }
+                if (currentCount < settings.count) {
+                    spawnAccumulators.current[key] += settings.spawnRate * spawnRateFactor * dt;
+                    while (spawnAccumulators.current[key] >= 1) {
+                        spawnAccumulators.current[key] -= 1;
+                        const p = spawnParticle(layerName, w, h, intensityRef.current);
+                        if (p) {
+                            p._mood = activeMood;
+                            particles.current.push(p);
+
+                            // NATURE DOCTRINE: Ultra-rare chance to spawn a tiny PACK of bees alongside a bird
+                            if (layerName === 'bird' && Math.random() < 0.08) {
+                                const packSize = 1 + Math.floor(Math.random() * 2);
+                                const packLead = spawnParticle('bee', w, h, intensityRef.current);
+                                if (packLead) {
+                                    for (let i = 0; i < packSize; i++) {
+                                        const offsetBee = {
+                                            ...packLead,
+                                            x: packLead.x + (Math.random() - 0.5) * 30,
+                                            y: packLead.y + (Math.random() - 0.5) * 30,
+                                            phase: packLead.phase + i * 0.8, // Desync wings slightly
+                                            _mood: activeMood
+                                        };
+                                        particles.current.push(offsetBee);
                                     }
                                 }
                             }
                         }
                     }
-                });
-            }
+                }
+            });
 
             particles.current.forEach(p => {
-                updateParticle(p, w, h, dt, mousePosRef.current);
+                updateParticle(p, dt, w, h, mousePosRef.current, bubblePosRef.current, keywordsRef.current);
 
                 // Aggressive Cleanup: Relaxed for "Emotional Bleed"
                 if (p._mood && p._mood !== targetMood.current) {
@@ -512,7 +504,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             window.removeEventListener('pointerup', handlePointerUp);
             document.removeEventListener('visibilitychange', handleVisibility);
         };
-    }, [intensity, triggerLightning, onDraw]);
+    }, [mood, triggerLightning, onDraw]);
 
     return (
         <canvas

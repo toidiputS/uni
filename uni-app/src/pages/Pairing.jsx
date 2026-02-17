@@ -19,6 +19,7 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
     const [loading, setLoading] = useState(false);
     const [copied, setCopied] = useState(false);
     const [resonance, setResonance] = useState(false);
+    const [roomData, setRoomData] = useState(null);
 
     useEffect(() => {
         setBellConfig({
@@ -64,6 +65,7 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
                     const roomUnsub = onSnapshot(doc(db, 'chatRooms', userData.lastRoomId), (roomSnap) => {
                         if (roomSnap.exists()) {
                             const room = roomSnap.data();
+                            setRoomData(room);
                             const partnerId = userData.pairedWith;
 
                             // If partner already signaled connect, but I haven't yet, auto-connect me
@@ -230,7 +232,8 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
                 memberNames: { [user.uid]: user.displayName || 'You' },
                 isSolo: true,
                 createdAt: serverTimestamp(),
-                [`ready_${user.uid}`]: true
+                [`ready_${user.uid}`]: true,
+                ready_bell: true
             }, { merge: true });
 
             await updateDoc(myRef, {
@@ -250,13 +253,34 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
     if (resonance) {
         return (
             <div className="pairing-resonance">
+                {/* Resonance Player Toggle */}
+                <div style={{ position: 'fixed', top: 24, right: 24, zIndex: 100 }}>
+                    <div className={`audio-toggle ${isPlaying ? 'playing' : ''}`} onClick={onToggleAudio}>
+                        <div className="resonance-dot" />
+                        <span>{isPlaying ? 'Resonance On' : 'Silent Mode'}</span>
+                    </div>
+                </div>
+
                 <div className="resonance-ring" />
                 <div className="resonance-content">
                     <div className="wordmark">•UNI•</div>
-                    <p>Resonance Initialized</p>
+                    <p>{roomData?.isSolo ? 'Initializing Solo Space' : 'Resonance Initialized'}</p>
                     <div className="resonance-status">
-                        Waiting for partner to connect...
+                        {roomData?.isSolo ? 'Synchronizing Bell...' : 'Waiting for partner to connect...'}
                     </div>
+
+                    <button
+                        className="btn btn-glass btn-sm"
+                        style={{ marginTop: 40, opacity: 0.5 }}
+                        onClick={async () => {
+                            // Escape hatch: Clear pairing data if they want to cancel
+                            const myRef = doc(db, 'users', user.uid);
+                            await updateDoc(myRef, { pairedWith: null, lastRoomId: null });
+                            setResonance(false);
+                        }}
+                    >
+                        Cancel Resonance
+                    </button>
                 </div>
             </div>
         );
