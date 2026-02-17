@@ -1523,9 +1523,46 @@ button.ethereal-text {
   --aura-intensity: 0.15;
 }
 
-/* Emotion-specific bubble tints — REMOVED */
-/* Color Doctrine: Stay monochrome. When color finally appears, it's an EVENT. */
-/* Color appears ONLY through the scene background and Bell's glow. */
+/* Emotion-specific bubble tints — RESTORED for Deep Resonance */
+.bubble[data-sentiment="happy"] {
+  background: var(--emo-happy-bg);
+  border-color: rgba(255, 215, 0, 0.2);
+}
+
+.bubble[data-sentiment="love"] {
+  background: var(--emo-love-bg);
+  border-color: rgba(255, 107, 157, 0.2);
+}
+
+.bubble[data-sentiment="valentine"] {
+  background: var(--emo-valentine-bg);
+  border-color: rgba(255, 45, 85, 0.2);
+}
+
+.bubble[data-sentiment="sad"] {
+  background: var(--emo-sad-bg);
+  border-color: rgba(91, 134, 229, 0.2);
+}
+
+.bubble[data-sentiment="angry"] {
+  background: var(--emo-angry-bg);
+  border-color: rgba(255, 68, 68, 0.2);
+}
+
+.bubble[data-sentiment="excited"] {
+  background: var(--emo-excited-bg);
+  border-color: rgba(54, 209, 220, 0.2);
+}
+
+.bubble[data-sentiment="playful"] {
+  background: var(--emo-playful-bg);
+  border-color: rgba(168, 224, 99, 0.2);
+}
+
+.bubble[data-sentiment="tender"] {
+  background: var(--emo-tender-bg);
+  border-color: rgba(192, 132, 252, 0.2);
+}
 
 .msg-time {
   font-size: 10px;
@@ -2616,6 +2653,42 @@ button.ethereal-text {
   pointer-events: none;
   z-index: 1;
   text-transform: uppercase;
+}
+
+.marginalia {
+  position: fixed;
+  font-family: monospace;
+  font-size: 8px;
+  color: var(--uni-text-muted);
+  opacity: 0.3;
+  letter-spacing: 0.1em;
+  pointer-events: none;
+  z-index: 10;
+  text-transform: uppercase;
+}
+
+.marginalia.top-left {
+  top: 12px;
+  left: 16px;
+  text-align: left;
+}
+
+.marginalia.top-right {
+  top: 12px;
+  right: 16px;
+  text-align: right;
+}
+
+.marginalia.bottom-left {
+  bottom: 12px;
+  left: 16px;
+  text-align: left;
+}
+
+.marginalia.bottom-right {
+  bottom: 12px;
+  right: 16px;
+  text-align: right;
 }
 
 @keyframes fade-in-out-resonance {

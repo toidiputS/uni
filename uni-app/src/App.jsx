@@ -360,6 +360,8 @@ export default function App() {
                 colors={sceneColors}
                 keywords={keywords}
                 bubblePositions={bubblePositions}
+                bubbleEmit={bubbleEmit}
+                drawEmit={drawEmit}
                 isPlaying={isPlaying}
                 onBellPos={setBellPos}
                 isPartnerTyping={isPartnerTyping}

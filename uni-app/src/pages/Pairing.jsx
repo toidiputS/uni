@@ -282,6 +282,9 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
                         Cancel Resonance
                     </button>
                 </div>
+
+                <div className="marginalia top-left">• RESONANCE_INIT: {user?.uid.slice(0, 8).toUpperCase()}</div>
+                <div className="marginalia bottom-right">• SYNC_STATE: {Math.floor(Math.random() * 20 + 80)}%</div>
             </div>
         );
     }
@@ -298,6 +301,9 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
             <p style={{ color: 'var(--uni-text-dim)', fontSize: 14, marginTop: 8, marginBottom: 24 }}>
                 Connect with your person
             </p>
+
+            <div className="marginalia top-right">• PROTOCOL.v4.BASE</div>
+            <div className="marginalia bottom-left">• WAITING.FOR.INPUT</div>
 
             <div className="glass-card" style={{ textAlign: 'center' }}>
                 <p style={{ fontSize: 12, color: 'var(--uni-text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>

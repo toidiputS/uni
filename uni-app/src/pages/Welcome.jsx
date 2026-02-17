@@ -371,6 +371,15 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             .landing-scroll-container { scroll-snap-type: none; }
                         }
                     `}</style>
+                    <div className="marginalia top-left">
+                        • CGEI.PROTOCOL_v4.2 • {isPlaying ? 'RESONANCE_ACTIVE' : 'SILENT_MODE'}
+                    </div>
+                    <div className="marginalia top-right">
+                        • BUILD.2026.02.17 • FOUNDERS_RUN
+                    </div>
+                    <div className="cgei-watermark" style={{ bottom: '2vh' }}>
+                        CGEI PROTOCOL v4 • EXPERIENCE RESONANCE • SYMPHONIC EMOTION INTERFACE
+                    </div>
                 </div>
             </div>
         </div>

@@ -425,7 +425,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             }
 
             particles.current.forEach(p => {
-                updateParticle(p, dt, w, h, mousePosRef.current, bubblePosRef.current, keywordsRef.current);
+                updateParticle(p, w, h, dt, mousePosRef.current, bubblePosRef.current, keywordsRef.current);
 
                 // Aggressive Cleanup: Relaxed for "Emotional Bleed"
                 if (p._mood && p._mood !== targetMood.current) {

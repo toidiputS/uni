@@ -603,6 +603,20 @@ export default function Chat({
             )}
 
             {toast && <div className="toast">{toast}</div>}
+
+            <div className="marginalia top-left">
+                • SESSION_REF: {roomId?.slice(-8).toUpperCase()} • AD_MODE: {tier.toUpperCase()}
+            </div>
+            <div className="marginalia top-right">
+                • SYSTEM.UPTIME: {Math.floor(performance.now() / 1000)}s • LATENCY: 42MS
+            </div>
+            <div className="marginalia bottom-left">
+                • CGEI PROTOCOL v4 • {roomData?.isSanctified ? 'SANCTIFIED' : 'AUTHENTIC'}
+            </div>
+            <div className="marginalia bottom-right">
+                • RESONANCE.FLOW: {Math.round(intensity * 100)}% • EMOTION: {mood.toUpperCase()}
+            </div>
+
             <div className="cgei-watermark">{roomData?.isSanctified ? 'FOUNDER PROTOCOL v4 • ETERNAL RESONANCE' : 'CGEI PROTOCOL v4 • AUTHENTIC RESONANCE'}</div>
         </div>
     );

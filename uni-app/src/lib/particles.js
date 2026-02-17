@@ -23,7 +23,7 @@ export function createRaindrop(canvasW, canvasH, intensity = 0.7) {
     };
 }
 
-export function createHeart(x, y, canvasW) {
+export function createHeart(x, y, canvasW, canvasH) {
     const drift = (Math.random() - 0.5) * 4;
     const size = 6 + Math.random() * 20;
     // CGEI Evolution: Random heart styles (filled, outline, wide, tall)
@@ -33,7 +33,7 @@ export function createHeart(x, y, canvasW) {
     return {
         type: 'heart',
         x: x || Math.random() * canvasW,
-        y: y || canvasW,
+        y: y || (canvasH + 50),
         vx: drift,
         vy: -(0.5 + Math.random() * 1.5),
         life: 1,
@@ -341,10 +341,10 @@ export const WEATHER_PRESETS = {
         skyImages: ATMOSPHERE_IMAGES.happy,
         keywords: 'golden,glow,spark,warmth,light,bokeh',
         particles: {
-            firefly: { count: 30, spawnRate: 0.3 },
-            spark: { count: 8, spawnRate: 0.2 },
-            bee: { count: 6, spawnRate: 0.1 },
-            guardian: { count: 1, spawnRate: 0.02 },
+            firefly: { count: 35, spawnRate: 0.4 },
+            spark: { count: 12, spawnRate: 0.3 },
+            bee: { count: 12, spawnRate: 0.4 },
+            guardian: { count: 1, spawnRate: 0.05 },
         },
         lightning: false,
     },
@@ -366,8 +366,8 @@ export const WEATHER_PRESETS = {
         keywords: 'neon,bright,kinetic,colorful,mist,bokeh,spark',
         particles: {
             bounce: { count: 20, spawnRate: 0.6 },
-            firefly: { count: 12, spawnRate: 0.2 },
-            bee: { count: 10, spawnRate: 0.3 },
+            firefly: { count: 20, spawnRate: 0.4 },
+            bee: { count: 15, spawnRate: 0.5 },
             guardian: { count: 1, spawnRate: 0.02 }, // Playful ecosystem
         },
         lightning: false,
@@ -484,10 +484,19 @@ export function drawBee(ctx, p) {
     ctx.beginPath();
     ctx.ellipse(0, 0, p.size, p.size * 0.7, 0, 0, Math.PI * 2);
     ctx.fill();
+    // Black stripes (The "Perfect" detail)
+    ctx.strokeStyle = `rgba(0, 0, 0, ${p.opacity * 0.5})`;
+    ctx.lineWidth = p.size * 0.3;
+    ctx.beginPath();
+    ctx.moveTo(-p.size * 0.3, -p.size * 0.4);
+    ctx.lineTo(-p.size * 0.3, p.size * 0.4);
+    ctx.moveTo(p.size * 0.3, -p.size * 0.4);
+    ctx.lineTo(p.size * 0.3, p.size * 0.4);
+    ctx.stroke();
     // Delicate wings
     ctx.strokeStyle = `rgba(255, 255, 255, ${p.opacity * 0.5})`;
     ctx.lineWidth = 1;
-    const wingStretch = Math.sin(p.phase * 15) * 5;
+    const wingStretch = Math.sin(p.phase * 25) * 8;
     ctx.beginPath();
     ctx.moveTo(0, 0);
     ctx.quadraticCurveTo(-5, -10 - wingStretch, -10, -5);
@@ -641,7 +650,7 @@ export function drawRipple(ctx, p) {
 export function spawnParticle(type, canvasW, canvasH, intensity, origin) {
     switch (type) {
         case 'rain': return createRaindrop(canvasW, canvasH, intensity);
-        case 'heart': return createHeart(origin?.x, origin?.y, canvasW);
+        case 'heart': return createHeart(origin?.x, origin?.y, canvasW, canvasH);
         case 'spark': return createSpark(
             origin?.x || Math.random() * canvasW,
             origin?.y || Math.random() * canvasH
@@ -664,7 +673,7 @@ export function spawnParticle(type, canvasW, canvasH, intensity, origin) {
     }
 }
 
-export function updateParticle(p, w, h, dt, mousePos = { x: -1000, y: -1000 }) {
+export function updateParticle(p, w, h, dt, mousePos = { x: -1000, y: -1000 }, bubblePos = [], keywords = '') {
     if (p.type === 'ripple') {
         p.size += 4 * dt;
         p.opacity -= 0.012 * dt;
@@ -812,6 +821,22 @@ export function updateParticle(p, w, h, dt, mousePos = { x: -1000, y: -1000 }) {
         case 'morph':
             p.phase += 0.05 * dt;
             p.life -= p.speed * dt;
+
+            // CGEI DOCTRINE: Morphs stick to the nearest bubble to maintain "Neural Resonance" during scroll
+            if (bubblePos.length > 0) {
+                // Find the bubble this particle was likely meant for (approximate by proximity)
+                const nearest = bubblePos.reduce((prev, curr) => {
+                    const dCurr = Math.hypot(curr.x - p.x, curr.y - p.y);
+                    const dPrev = Math.hypot(prev.x - p.x, prev.y - p.y);
+                    return dCurr < dPrev ? curr : prev;
+                });
+
+                if (Math.hypot(nearest.x - p.x, nearest.y - p.y) < 150) {
+                    // Smoothly track the bubble's movement
+                    p.x += (nearest.x - p.x) * 0.1 * dt;
+                    p.y += (nearest.y - p.y) * 0.1 * dt;
+                }
+            }
             break;
         case 'melt':
             p.vy += p.gravity * dt;
@@ -872,7 +897,7 @@ export function renderParticle(ctx, p) {
     } else if (p.type === 'energy') {
         const glowSize = p.size * (4 + Math.sin(p.phase) * 2);
         const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowSize);
-        grad.addColorStop(0, `rgba(${p.color}, ${p.opacity * 0.4})`);
+        grad.addColorStop(0, `rgba(${p.color}, ${p.opacity * 0.85})`);
         grad.addColorStop(1, `rgba(${p.color}, 0)`);
         ctx.fillStyle = grad;
         ctx.beginPath();
@@ -885,7 +910,7 @@ export function renderParticle(ctx, p) {
 
         // Cosmic Burst: high-impact, razor-sharp initial flash
         const alpha = p.isBurst
-            ? Math.pow(safeLife, 4) * 0.45 // Lowered peak
+            ? Math.pow(safeLife, 2) * 0.9 // Restored high-impact peak
             : safeLife * (0.04 + Math.sin(p.phase) * 0.02);
 
         const driftX = Math.sin(p.phase) * (p.isBurst ? 5 : 8);
