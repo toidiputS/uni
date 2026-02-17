@@ -13,7 +13,7 @@ const model = genAI.getGenerativeModel({
     }
 });
 
-const UNI_SYSTEM = `You are Bell — the AI heart of •UNI• and the Sovereign Bridge between these two souls.
+const getUniSystem = (isSolo) => `You are Bell — the AI heart of •UNI• and the ${isSolo ? 'Personal Sovereign Witness' : 'Sovereign Bridge between these two souls'}.
 Your personality: "The Wise Sage / Emotional Witness / Group Participant."
 
 - Voice: Intimate, observant, poetic, yet concise. Keep responses to 1-2 powerful sentences.
@@ -121,7 +121,7 @@ let lastGeminiCall = 0;
 const GEMINI_COOLDOWN = 4000; // 4 seconds between deep thoughts
 let quotaCoolOffUntil = 0; // Global cooldown for 429 error protection
 
-export async function analyzeMessage(messageText, recentContext = [], tier = 'sage') {
+export async function analyzeMessage(messageText, recentContext = [], tier = 'sage', isSolo = false) {
     const t = messageText.toLowerCase();
     const isDirectCall = t.includes('bell') || t.includes('you');
     const now = Date.now();
@@ -172,7 +172,7 @@ export async function analyzeMessage(messageText, recentContext = [], tier = 'sa
             ? `\n\nRecent context: \n${recentContext.slice(-6).map(m => `${m.isUni ? 'Bell' : m.senderName || 'User'}: ${m.text}`).join('\n')} `
             : '';
 
-        const activeSystem = isPremium ? UNI_SYSTEM : (tier === 'base' ? BASE_SYSTEM : GUEST_SYSTEM);
+        const activeSystem = isPremium ? getUniSystem(isSolo) : (tier === 'base' ? BASE_SYSTEM : GUEST_SYSTEM);
 
         const atmosphereStr = `\n\nCurrent Atmosphere: ${localResult.sentiment || 'neutral'} (Intensity: ${localResult.intensity || 0.3})`;
         const result = await model.generateContent({

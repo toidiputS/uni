@@ -218,6 +218,35 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
         }
     };
 
+    const handleSoloResonance = async () => {
+        setLoading(true);
+        try {
+            const roomId = `solo_${user.uid}`;
+            const myRef = doc(db, 'users', user.uid);
+
+            await setDoc(doc(db, 'chatRooms', roomId), {
+                id: roomId,
+                members: [user.uid],
+                memberNames: { [user.uid]: user.displayName || 'You' },
+                isSolo: true,
+                createdAt: serverTimestamp(),
+                [`ready_${user.uid}`]: true
+            }, { merge: true });
+
+            await updateDoc(myRef, {
+                pairedWith: 'bell',
+                lastRoomId: roomId
+            });
+
+            setLoading(false);
+            setResonance(true);
+        } catch (err) {
+            console.error('[UNI] Solo resonance error:', err);
+            setError('Solo connection failed.');
+            setLoading(false);
+        }
+    };
+
     if (resonance) {
         return (
             <div className="pairing-resonance">
@@ -289,6 +318,15 @@ export default function Pairing({ user, onPaired, onLogout, isPlaying, onToggleA
                         style={{ width: '100%', marginBottom: 12 }}
                     >
                         {loading ? <span className="spinner" /> : 'Connect Interface'}
+                    </button>
+                    <button
+                        className="btn btn-glass btn-sm"
+                        type="button"
+                        onClick={handleSoloResonance}
+                        disabled={loading}
+                        style={{ width: '100%', marginBottom: 12, fontSize: 10, letterSpacing: '0.1em', opacity: 0.7 }}
+                    >
+                        Talk to Bell Solo
                     </button>
                 </form>
 

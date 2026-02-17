@@ -313,7 +313,7 @@ export default function Chat({
         try {
             const msgContent = trimmed || (imageUrl ? 'shared an image' : '');
             const context = messages.slice(-8).map(m => ({ text: m.text, senderName: m.senderName, isUni: m.isUni }));
-            const analysis = await analyzeMessage(msgContent, context, tier);
+            const analysis = await analyzeMessage(msgContent, context, tier, roomData?.isSolo);
 
             await addDoc(collection(db, 'chatRooms', roomId, 'messages'), {
                 text: trimmed,
@@ -351,6 +351,7 @@ export default function Chat({
     }, [text, sending, roomId, user, messages]);
 
     const partnerName = useMemo(() => {
+        if (roomData?.isSolo) return 'Bell';
         if (!roomData?.memberNames || !user) return 'Partner';
         const p = Object.entries(roomData.memberNames).find(([uid]) => uid !== user.uid);
         return p ? p[1] : 'Partner';
@@ -511,14 +512,16 @@ export default function Chat({
                                 <div className="artifact-uni-dot"></div>
                                 <span>CRITICAL DISSOLUTION</span>
                             </div>
-                            <h2 style={{ fontSize: 24, marginBottom: 20, color: '#fff' }}>Dissolve Resonance?</h2>
+                            <h2 style={{ fontSize: 24, marginBottom: 20, color: '#fff' }}>{roomData?.isSolo ? 'Leave Sanctuary?' : 'Dissolve Resonance?'}</h2>
                             <p style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 32 }}>
-                                This bridge is structural. By unpairing, you are burning this shared sanctuary.
-                                Your current resonance code will be invalidated. This cannot be undone.
+                                {roomData?.isSolo
+                                    ? "You are exiting your private sanctuary. Bell will remain, but this session's resonance field will be archived."
+                                    : "This bridge is structural. By unpairing, you are burning this shared sanctuary. Your current resonance code will be invalidated."
+                                }
                             </p>
                             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-                                <button className="btn btn-glass" onClick={() => setShowUnpairConfirm(false)}>Stay in Sanctuary</button>
-                                <button className="btn btn-primary" style={{ background: '#ff2d55', color: '#fff', border: 'none' }} onClick={onUnpair}>Burn the Bridge</button>
+                                <button className="btn btn-glass" onClick={() => setShowUnpairConfirm(false)}>{roomData?.isSolo ? 'Stay' : 'Stay in Sanctuary'}</button>
+                                <button className="btn btn-primary" style={{ background: '#ff2d55', color: '#fff', border: 'none' }} onClick={onUnpair}>{roomData?.isSolo ? 'Exit' : 'Burn the Bridge'}</button>
                             </div>
                         </div>
                     </div>

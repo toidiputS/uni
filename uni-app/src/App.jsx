@@ -175,7 +175,7 @@ export default function App() {
                     if (userDoc.exists()) {
                         const data = userDoc.data();
                         setOrderedUserData(data);
-                        if (data.pairedWith && data.lastRoomId) {
+                        if ((data.pairedWith && data.lastRoomId) || (data.lastRoomId?.startsWith('solo_'))) {
                             setRoomId(data.lastRoomId);
                             // Always go to welcome first, then chat if onboarding is done
                             setView('welcome');
@@ -225,7 +225,7 @@ export default function App() {
             if (snap.exists()) {
                 const data = snap.data();
                 setOrderedUserData(data);
-                if (data.pairedWith && data.lastRoomId) {
+                if ((data.pairedWith && data.lastRoomId) || (data.lastRoomId?.startsWith('solo_'))) {
                     setRoomId(data.lastRoomId);
                     // AUTH DOCTRINE: If already in pairing, let the Pairing component handle 
                     // the resonance animation and transition. Don't auto-switch.
