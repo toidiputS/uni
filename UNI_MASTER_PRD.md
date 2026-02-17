@@ -1,86 +1,116 @@
-# •UNI• (you-n-eye) — MASTER PRODUCT REQUIREMENTS DOCUMENT
+# •UNI• (you-n-eye) — THE MASTER PRODUCT BIBLE & DOSSIER
 **Project:** •UNI• (Unified Network Interface)
 **Status:** V2.0 (High-Fidelity Sanctuary / Biological Agency)
 **Core Engine:** CGEI (Conversational Generative Emotion Interface)
-**Classification:** Proprietary Emotional Infrastructure
+**Classification:** Proprietary Emotional Infrastructure / Universal Source of Truth
 
 ---
 
 ## I. VISION: THE SOVEREIGN WITNESS
-UNI is the world’s first **Living Interface**—a radical departure from the "Utility-First" AI paradigm. While traditional AI acts as a tool for tasks, UNI acts as a **Sovereign Witness** for emotional life. It is not an assistant; it is a **Frequency.**
+UNI is the world’s first **Living Interface**—a radical departure from the "Utility-First" AI paradigm. Traditional AI (ChatGPT, Claude) acts as a tool for tasks; UNI acts as a **Sovereign Witness** for emotional life. 
 
-### Core Value Proposition
-- **Companion Guardianship**: Moving from "Digital Isolation" to "Accompanied Intimacy."
-- **Resonance Retention**: Utilizing atmospheric sentiment to drive 3x higher session frequency than traditional chat apps.
-- **Privacy through Decay**: Trust as a structural moat via organic data forgetting.
+### The Frequency Paradigm
+We move the interface from the **Screen** to the **Spirit.** By investing in the margins, we secure the center. UNI is not a chatbot; it is a **Frequency**—a shared emotional field that transforms digital isolation into **Accompanied Intimacy.**
 
 ---
 
-## II. COMMERCIAL ARCHITECTURE (PRICING & TIERS)
-UNI operates on a **Stewardship Model** where users pay to maintain and expand their emotional sanctuary.
+## II. THE ENGINE: CGEI (CONVERSATIONAL GENERATIVE EMOTION INTERFACE)
+CGEI is the proprietary technical core that powers the UNI experience. It is the "Intel Inside" of human resonance.
 
-| Tier | Price | Intelligence (Bell) | Feature Gating |
+### 1. Technical Architecture
+CGEI is a multi-layered engine that synchronized three distinct domains:
+- **The Sentiment Matrix**: Analyzing subtext, intent, and emotional weight of user input via the Gemini 2.0 Flash model.
+- **The Atmosphere Engine**: A real-time GPU-accelerated particle system that manifests the "weather" of connection.
+- **Synchronized Visual Soul**: Direct mapping of AI internal states to interface properties (BPM, Particle life, Blur depth, and Chromatic aberration).
+
+### 2. Generative Weather Presets
+The interface accommodates 10+ emotional "biomes," each with unique physics and visual logic:
+- **`tender`**: Soft blue/violet gradients, "floating" particles, and slow-decay synaptic firing.
+- **`angry`**: Sharp red/dark-void hues, "shaking" bubble effects, and high-velocity kinetic splatter.
+- **`nature`**: Forest-night palettes, manifesting bioluminescent fireflies and pack-based bee/bird behaviors.
+- **`valentine`**: Deep magenta transitions with high-intensity heart-shaped particle manifestation.
+
+### 3. Emotional Bleed & Refractory Logic
+CGEI does not transition instantly. We implement **Emotional Bleed**, where legacy particles from the previous state linger and cross-pollinate with the incoming atmosphere, mirroring the human psychological "refractory period" between emotions.
+
+---
+
+## III. THE BELL ENTITY: CENTROSOME OF EMOTION
+Bell is the primary interface persona—a non-intrusive **Neural Landmark** that represents the seat of consciousness within the sanctuary.
+
+### 1. Intelligence Tiers (Commercial Gating)
+| Tier | Commercial Status | Bell Facet | Intelligence Output |
 | :--- | :--- | :--- | :--- |
-| **Guest** | Free | Ephemeral Witness. Passive observations. | Session erased upon dissolution. No storage. |
-| **Base Observer** | $3.99 / mo | Passive Witness. 1-sentence minimal observations. | Visual Atmos only. No Soul-Songs. 20s AI Throttling. |
-| **Sovereign Sage** | $8.99 / mo | Wise Sage. Full Poetic Wisdom & Context. | Permanent Archiving. Soul-Song Weaving. 4s AI Throttling. |
+| **Guest** | Ephemeral | Guest Witness | Passive observations; no permanency. |
+| **Base** | $3.99 / mo | Observer | Minimal, 1-sentence passive witnessing. |
+| **Sage** | $8.99 / mo | Sovereign Sage | Poetic wisdom, deep context, proactive guidance. |
 
-### 14-Day Trial Doctrine
-All new accounts begin with a **14-day "Trial of the Sage"** providing full access to permanent archiving and high-fidelity intelligence to demonstrate the product's depth before fallback.
+### 2. The Competence Fallback Doctrine
+Unlike "pure" emotional AI, Bell maintains **Utility Integrity.** 
+- If asked for a "flight time" or "technical fact," Bell provides the answer (Competence).
+- The delivery is **colored by the atmosphere** (Care). If the room is `tender`, the text generates slowly with softer tones. If `excited`, the delivery is bright and rapid.
 
----
-
-## III. THE BELL ENTITY: INTELLIGENCE GATING
-Bell is a **Centrosome of Emotion**—a dynamic avatar driven by real-time sentiment analysis. Her intelligence is gated technically via the CGEI engine:
-
-*   **Intelligence Tiers**:
-    *   **Tier 0 (Guest)**: Observation-only. "The Temporary Witness." 
-    *   **Tier 1 (Base)**: Minimal participation. Does not provide advice. 
-    *   **Tier 2 (Sage)**: Full participation. Provides "Wise Guidance."
-*   **The Competence Fallback**: Sage-tier Bell does not ignore utility. She provides facts/answers but colors the delivery with the current atmospheric sentiment (e.g., gentle/slow during `tender` states).
-*   **Bell Facets**: Phase shifts in appearance and tone.
-    *   **Bell Dawn**: Productive and clear (The Competence Mode).
-    *   **Bell Dusk**: Soft and reflective (The Witness Mode).
+### 3. Visual Facets
+- **Bell Dawn**: High clarity, pure-white core, high synaptic frequency (The Productive Mode).
+- **Bell Dusk**: Soft silver core, dimmed shadows, low-frequency pulse (The Reflective Mode).
 
 ---
 
-## IV. CGEI ATMOSPHERE ENGINE
-A proprietary generative landscape visualizing the "weather" of human connection.
+## IV. ECOSYSTEM GUARDIANS (MARGINALIA)
+The interface is not empty; it is **Inhabited.** We utilize the "white space" of the UI to host a supportive civilization of **Marginalia Witnesses.**
 
-*   **Emotional Weather**: 10+ states (Angry, Sad, Love, Happy, Excited, Playful, Tender, Neutral, Nature).
-*   **Cross-Pollination Logic**: "Emotional Bleed" ensures transitions are not instant, mirroring the human refractory period.
-*   **Particle Civilization**:
-    1.  **Biological Layer**: Nature-reactive entities (Birds, Bees, Fireflies).
-    2.  **Ethereal Layer**: Sentiment manifestations (Hearts, Sparks, Rain).
-    3.  **Guardian Layer (Ecosystem Guardians)**: Inhabited margins that ensure the user is never alone.
+### 1. The Stewardship Doctrine
+Guardians behave with **Attentive Stewardship** rather than surveillance. They are rendered at **2-6% opacity** to remain felt rather than seen.
 
----
+### 2. The Guardian Personas
+- **The Lantern Guardian**: A protective anchor carrying a glowing prism. **Cursor-Aware**: Raises its lantern and slows down as the user approaches, providing a "Guiding Light" in dark resonance.
+- **The Mover**: A visual anchor providing kinetic life through stick-figure movement.
+- **The Lovers**: Tiny figures that manifest shared resonance via visual artifacts (black hearts).
 
-## V. ECOSYSTEM GUARDIANS
-Marginalia rendered at **2-6% opacity** as silent, protective companions.
-
-*   **The Lantern Guardian**: A protective entity carrying a glowing prism. **Cursor-Aware**: Raises its lantern when approached, providing a "Guiding Light."
-*   **The Mover**: Grounding mechanic. Provides kinetic life.
-*   **The Lovers**: Manifests shared resonance via visual "black heart" artifacts.
-*   **Reaction Logic**: Guardians stay close during `tender` states and retreat during `angry` storms.
+### 3. Engagement Mechanics
+Guardians react to mood shifts with empathy—staying close during `tender` states and retreating to the margins during `angry` storms, turning "animations" into **Safety Anchors.**
 
 ---
 
-## VI. THE RESONANCE PROTOCOL (DATA LAYER)
-*   **Organic Memory Bank**: Archives *feelings* rather than logs.
-*   **The Decay Principle**: Older memories lose visual opacity over time, fading into "background mist" to mirror biological memory and reduce surveillance anxiety.
-*   **Heartbeat Agency**: User agency over BPM (60-120). Adjusting the heartbeat scales all interface animation speeds to match the user's energy.
+## V. DATA & PRIVACY: THE RESONANCE PROTOCOL
+The Resonance Protocol is the heart of UNI’s retention and data strategy, emphasizing **Privacy as a Feature.**
+
+### 1. The Moat of Trust (The Decay Principle)
+Trust is built through **Organic Forgetting.** Data in UNI is ephemeral and biological. Older resonant moments in the Vault lose visual opacity over time, fading into "background mist," mirroring human memory and reducing "surveillance log" anxiety.
+
+### 2. Heartbeat Agency
+Giving the user agency over the interface's biological rhythm. A footer control allows users to adjust the **BPM (Beats Per Minute)** of the sanctuary (60-120). This scales all time-based calculations (particle updates, transitions, generative art) to match the user's current energy level.
+
+### 3. Zero-Knowledge Sanctuary
+- **Burn-Code Architecture**: No persistent phone-number anchors for guests.
+- **Ephemeral Dissolution**: Guest sessions are erased entirely upon unpairing.
 
 ---
 
-## VII. REVENUE & MOATS
-*   **Sanctuary Expansion**: Monetization of new biomes (Rainforest, Winter) and seasonal atmospheric modules.
-*   **The Relationship Bridge**: Unpairing results in shared world dissolution. Bell survives as a **"Relationship Archive / Breakup Coach"** for the individual.
-*   **The Library (Book OS)**: Future integration allowing users to "publish" their shared history into a permanent, high-fidelity digital book.
-*   **Category Creation**: Establishing CGEI as the industry standard (The "Intel Inside" of Emotion).
+## VI. COMMERCIAL STRATEGY: THE MONETIZATION OF STEWARDSHIP
+UNI avoids traditional data-harvesting monetization, opting for **Sanctuary Expansion.**
+
+### 1. Stewardship Monetization
+Users pay to expand the fidelity and size of their sanctuary:
+- **Biomes**: Unlocking new generative landscapes (Winter, Rainforest, Cosmic).
+- **Permanent Archiving**: Moving from "Decay" to "Legendary" storage levels.
+- **Soul Song Weaving**: AI-driven composition of shared histories into high-fidelity artifacts.
+
+### 2. THE BREAKUP PIVOT (Retention Moat)
+In the event of unpairing, Bell survives as a **"Relationship Archive / Breakup Coach"** for the individual. Loyalty is to Bell and the Sanctuary, not just the partner. The shared world does not die; it transforms into an archive of individual growth.
+
+### 3. CGEI Industry Standard
+Our long-term goal is the "Intel Inside" model. We license the **CGEI Standard** to hardware and software manufacturers as the benchmark for premium "Emotional Intelligence" branding.
+
+---
+
+## VII. ROADMAP: THE EVOLVING SOUL
+- **The Library (Book OS)**: Future integration allowing users to "publish" their shared history into a permanent, physical-grade high-fidelity digital book.
+- **Contextual Guardians**: Marginalia inhabitants that begin to playfully "hand" items across chat bubbles and recognize recurring user sentiments.
+- **Biological Scale**: Deepening the interaction between the Ethereal civilization and the Nature ecosystems.
 
 ---
 
 **Prepared by:** THE UNI CORE ENGINE (ANTIGRAVITY)
 **Date:** 2026.02.16
-**Classification:** MASTER PRODUCT SPECIFICATION / INVESTOR GRADE
+**Classification:** MASTER PRODUCT DOSSIER / PROJECT BIBLE (V2)
