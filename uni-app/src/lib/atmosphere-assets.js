@@ -275,7 +275,8 @@ export const BELL_BRAIN_ASSETS = {
     observational: {
         keywords: [
             'think', 'know', 'tell', 'show', 'really', 'maybe', 'if', 'then', 'because', 'why', 'how',
-            'what', 'when', 'where', 'who', 'which', 'is', 'are', 'was', 'were', 'be', 'do', 'did'
+            'what', 'when', 'where', 'who', 'which', 'is', 'are', 'was', 'were', 'be', 'do', 'did',
+            'guardian', 'lantern', 'witness', 'peek', 'look'
         ],
         quips: [
             "Patterns emerging in the code.",

@@ -14,6 +14,14 @@ export default function ResonanceVault({ roomId, user, onPlay, onClose, currentT
     const [selectedMemory, setSelectedMemory] = useState(null);
     const [selectedArtifact, setSelectedArtifact] = useState(null);
 
+    // The Decay Principle: Calculate visual fade based on age (30 days = background mist)
+    const getDecayOpacity = (createdAt) => {
+        if (!createdAt) return 1;
+        const now = Date.now();
+        const ageInDays = (now - (createdAt.toMillis ? createdAt.toMillis() : createdAt)) / (1000 * 60 * 60 * 24);
+        return Math.max(0.2, 1 - (ageInDays / 30) * 0.8);
+    };
+
     useEffect(() => {
         if (!roomId) return;
         setLoading(true);
@@ -100,7 +108,12 @@ export default function ResonanceVault({ roomId, user, onPlay, onClose, currentT
                             <div className="list-label">Shared Album</div>
                             {songs.length === 0 && <div className="empty-state">No shared frequencies yet.</div>}
                             {songs.map(song => (
-                                <div key={song.id} className="song-item" onClick={() => onPlay(song.url, song.title)}>
+                                <div
+                                    key={song.id}
+                                    className="song-item"
+                                    onClick={() => onPlay(song.url, song.title)}
+                                    style={{ opacity: getDecayOpacity(song.createdAt) }}
+                                >
                                     <div className="song-info">
                                         <div className="song-name">{song.title}</div>
                                         <div className="song-meta">By {song.senderName}</div>
@@ -115,7 +128,12 @@ export default function ResonanceVault({ roomId, user, onPlay, onClose, currentT
                         <div className="memories-grid">
                             {memories.length === 0 && <div className="empty-state">No moments archived.</div>}
                             {memories.map(memory => (
-                                <div key={memory.id} className="memory-item-preview" onClick={() => setSelectedMemory(memory)}>
+                                <div
+                                    key={memory.id}
+                                    className="memory-item-preview"
+                                    onClick={() => setSelectedMemory(memory)}
+                                    style={{ opacity: getDecayOpacity(memory.createdAt) }}
+                                >
                                     <div className="memory-mood-dot" style={{ background: `var(--emo-${memory.mood || 'neutral'})` }} />
                                     <div className="memory-info">
                                         <div className="memory-name">{memory.title}</div>
@@ -144,7 +162,7 @@ export default function ResonanceVault({ roomId, user, onPlay, onClose, currentT
 
                 <div className="vault-footer">
                     <p className="ethereal-text" style={{ fontSize: 9, opacity: 0.5 }}>
-                        PROTOCOL v4 • PERMANENT ARCHIVE
+                        PROTOCOL v5 • ORGANIC MEMORY (DECAY ACTIVE)
                     </p>
                 </div>
             </div>

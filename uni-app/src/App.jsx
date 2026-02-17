@@ -63,6 +63,7 @@ export default function App() {
     const [keywords, setKeywords] = useState(null);
     const [bubblePositions, setBubblePositions] = useState([]);
     const [bellPos, setBellPos] = useState({ x: 0, y: 0 });
+    const [bpm, setBpm] = useState(78); // Heartbeat Agency: Default 78 BPM
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentSong, setCurrentSong] = useState('/wishes_in_the_wind.mp3');
@@ -74,6 +75,7 @@ export default function App() {
         state: 'idle',
         size: 16, // Very small, refined core
         sentiment: 'neutral',
+        facet: 'dawn',
         top: '8vh', // Middle up top
         left: '50%'
     });
@@ -148,6 +150,7 @@ export default function App() {
         if (bundle.intensity !== undefined) setIntensity(bundle.intensity);
         if (bundle.sceneColors) setSceneColors(bundle.sceneColors);
         if (bundle.keywords !== undefined) setKeywords(bundle.keywords);
+        if (bundle.facet) setBellConfig(prev => ({ ...prev, facet: bundle.facet }));
         if (bundle.showPricing !== undefined) setShowPricing(bundle.showPricing);
     }, []);
 
@@ -340,11 +343,12 @@ export default function App() {
             <AtmosphereCanvas
                 mood={mood}
                 intensity={intensity}
+                colors={sceneColors}
                 keywords={keywords}
-                bubbleEmit={bubbleEmit}
-                drawEmit={drawEmit}
-                bellPos={bellPos}
                 bubblePositions={bubblePositions}
+                isPlaying={isPlaying}
+                bpm={bpm}
+                onBellPos={setBellPos}
             />
 
             {/* Global Persistent Bell */}
@@ -360,7 +364,12 @@ export default function App() {
                 flexDirection: 'column',
                 alignItems: 'center'
             }}>
-                <BellDot state={bellConfig.state} size={bellConfig.size} sentiment={bellConfig.sentiment || mood} />
+                <BellDot
+                    state={bellConfig.state}
+                    size={bellConfig.size}
+                    sentiment={bellConfig.sentiment || mood}
+                    facet={bellConfig.facet}
+                />
                 <span className="ethereal-text" style={{ marginTop: -2 }}>Bell</span>
             </div>
 
@@ -465,7 +474,7 @@ export default function App() {
                             <h2>Share Your Thoughts</h2>
                             <p>We're building the future of emotional tech together.</p>
                             <textarea
-                                placeholder="What does UNI feel like to you?"
+                                placeholder="What does •UNI• feel like to you?"
                                 style={{ width: '100%', height: 100, background: 'rgba(0,0,0,0.05)', border: 'none', padding: 15, margin: '20px 0', borderRadius: 12 }}
                             />
                             <button className="btn btn-primary" onClick={() => setShowSurvey(false)}>Complete Study</button>
@@ -475,8 +484,20 @@ export default function App() {
             )}
 
             <audio ref={audioRef} src={currentSong} loop />
-            {view !== 'chat' && view !== 'manifesto' && <Footer setView={navigateTo} />}
+            <footer>
+                {view !== 'chat' && view !== 'manifesto' && <Footer setView={navigateTo} />}
+                <div className="heartbeat-agency">
+                    <label>Heartbeat</label>
+                    <input
+                        type="range"
+                        min="60"
+                        max="120"
+                        value={bpm}
+                        onChange={(e) => setBpm(parseInt(e.target.value))}
+                    />
+                    <span>{bpm} BPM</span>
+                </div>
+            </footer>
         </div>
     );
 }
-

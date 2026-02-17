@@ -10,6 +10,7 @@ export default function BellDot({
     state = 'idle',
     size = 22,
     sentiment = 'neutral',
+    facet = 'dawn',
     activeOverride = null
 }) {
     const isActive = activeOverride !== null ? activeOverride : (state !== 'idle' && state !== 'archived');
@@ -149,15 +150,20 @@ export default function BellDot({
                     )}
                 </circle>
 
-                {/* The Central Core — Pure White Intellect */}
+                {/* The Central Core — Pure White Intellect / Soft Dusk Witness */}
                 <circle
                     cx="50" cy="50" r="8"
-                    fill="#FFFFFF"
+                    fill={facet === 'dawn' ? 'var(--bell-dawn, #FFFFFF)' : 'var(--bell-dusk, #c0c0cf)'}
                     className="bell-core"
-                    style={{ filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.9))' }}
+                    style={{
+                        filter: facet === 'dawn'
+                            ? 'drop-shadow(0 0 12px rgba(255,255,255,0.9))'
+                            : 'drop-shadow(0 0 8px rgba(192,192,207,0.6))',
+                        transition: 'all 2s ease-in-out'
+                    }}
                 >
-                    <animate attributeName="r" values="7;9;7" dur="3.07s" repeatCount="indefinite" />
-                    <animate attributeName="fill-opacity" values="0.9;1;0.9" dur="3.07s" repeatCount="indefinite" />
+                    <animate attributeName="r" values={facet === 'dawn' ? '7;9;7' : '7.5;8.5;7.5'} dur="3.07s" repeatCount="indefinite" />
+                    <animate attributeName="fill-opacity" values={facet === 'dawn' ? '0.9;1;0.9' : '0.6;0.8;0.6'} dur="3.07s" repeatCount="indefinite" />
                 </circle>
 
                 {/* Firing Neurons (Animated Particles) */}

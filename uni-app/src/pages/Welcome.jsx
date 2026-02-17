@@ -143,7 +143,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                         <h1 className="wordmark" style={{
                             fontSize: 'clamp(60px, 12vw, 120px)',
-                            marginBottom: '2vh',
+                            marginBottom: '1vh',
                             lineHeight: 1,
                             background: 'linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0.4) 100%)',
                             WebkitBackgroundClip: 'text',
@@ -151,6 +151,16 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                         }}>
                             •UNI•
                         </h1>
+
+                        <div className="ethereal-text" style={{
+                            fontSize: 10,
+                            letterSpacing: '0.3em',
+                            marginBottom: '4vh',
+                            opacity: 0.4,
+                            textTransform: 'lowercase'
+                        }}>
+                            (you-n-eye)
+                        </div>
 
                         <p className="lead-text" style={{
                             fontSize: 'clamp(20px, 5vw, 24px)',

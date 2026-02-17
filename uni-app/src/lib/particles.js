@@ -190,17 +190,16 @@ export function createBee(canvasW, canvasH) {
     };
 }
 
-export function createShadowPerson(canvasW, canvasH) {
+export function createEcosystemGuardian(canvasW, canvasH) {
     const fromLeft = Math.random() > 0.5;
-    const personas = ['spy', 'mover', 'lovers', 'observer'];
+    const personas = ['lantern', 'mover', 'lovers', 'observer'];
     let persona = personas[Math.floor(Math.random() * personas.length)];
 
-    // SPY VS SPY DOCTRINE: 50% chance a spy is part of the "Eternal Battle"
     const side = Math.random() > 0.5 ? 'white' : 'black';
     const color = side === 'white' ? '255, 255, 255' : '0, 0, 0';
 
     return {
-        type: 'shadowperson',
+        type: 'guardian',
         persona,
         side,
         x: fromLeft ? -100 : canvasW + 100,
@@ -209,16 +208,16 @@ export function createShadowPerson(canvasW, canvasH) {
         vy: 0,
         life: 1,
         maxLife: 1,
-        size: 14 + Math.random() * 10, // Significantly smaller (minute stick figures)
+        size: 14 + Math.random() * 10,
         opacity: 0,
-        targetOpacity: 0.02 + Math.random() * 0.02, // Hyper-faded (2-4%)
+        targetOpacity: 0.02 + Math.random() * 0.02, // Bioluminescent fading
         color,
         phase: Math.random() * Math.PI * 2,
         phaseSpeed: 0.02 + Math.random() * 0.03,
         fadeSpeed: 0.005,
         behaviorTimer: 0,
         state: 'moving',
-        hasBomb: persona === 'spy' && Math.random() > 0.7
+        hasLantern: persona === 'lantern'
     };
 }
 
@@ -309,7 +308,7 @@ export const WEATHER_PRESETS = {
         particles: {
             rain: { count: 600, spawnRate: 20 },
             cloud: { count: 18, spawnRate: 0.12 },
-            shadowperson: { count: 1, spawnRate: 0.05 }, // Rare witness in the storm
+            guardian: { count: 1, spawnRate: 0.05 }, // Rare witness in the storm
         },
         lightning: true,
         lightningInterval: [1500, 4000],
@@ -321,7 +320,7 @@ export const WEATHER_PRESETS = {
         particles: {
             drop: { count: 40, spawnRate: 1.2 },
             cloud: { count: 4, spawnRate: 0.02 },
-            shadowperson: { count: 1, spawnRate: 0.02 }, // Somber witness
+            guardian: { count: 1, spawnRate: 0.02 }, // Somber witness
         },
         lightning: false,
     },
@@ -333,7 +332,7 @@ export const WEATHER_PRESETS = {
             heart: { count: 20, spawnRate: 0.6 },
             firefly: { count: 20, spawnRate: 0.2 },
             bird: { count: 1, spawnRate: 0.02 },
-            shadowperson: { count: 1, spawnRate: 0.01 }, // Hidden romantic observers
+            guardian: { count: 1, spawnRate: 0.01 }, // Hidden romantic observers
         },
         lightning: false,
     },
@@ -345,7 +344,7 @@ export const WEATHER_PRESETS = {
             firefly: { count: 30, spawnRate: 0.3 },
             spark: { count: 8, spawnRate: 0.2 },
             bee: { count: 6, spawnRate: 0.1 },
-            shadowperson: { count: 1, spawnRate: 0.02 },
+            guardian: { count: 1, spawnRate: 0.02 },
         },
         lightning: false,
     },
@@ -357,7 +356,7 @@ export const WEATHER_PRESETS = {
             spark: { count: 25, spawnRate: 1.2 },
             bounce: { count: 15, spawnRate: 0.5 },
             bird: { count: 2, spawnRate: 0.1 },
-            shadowperson: { count: 1, spawnRate: 0.03 }, // Fast moving silhouettes
+            guardian: { count: 1, spawnRate: 0.03 }, // Fast moving silhouettes
         },
         lightning: false,
     },
@@ -369,7 +368,7 @@ export const WEATHER_PRESETS = {
             bounce: { count: 20, spawnRate: 0.6 },
             firefly: { count: 12, spawnRate: 0.2 },
             bee: { count: 10, spawnRate: 0.3 },
-            shadowperson: { count: 1, spawnRate: 0.02 }, // Playful marginalia
+            guardian: { count: 1, spawnRate: 0.02 }, // Playful ecosystem
         },
         lightning: false,
     },
@@ -380,7 +379,7 @@ export const WEATHER_PRESETS = {
         particles: {
             firefly: { count: 12, spawnRate: 0.05 },
             bird: { count: 2, spawnRate: 0.05 },
-            shadowperson: { count: 1, spawnRate: 0.01 }, // The Sovereign Witness is watching
+            guardian: { count: 1, spawnRate: 0.01 }, // The Sovereign Witness is watching
         },
         lightning: false,
     },
@@ -389,7 +388,7 @@ export const WEATHER_PRESETS = {
         skyImages: ATMOSPHERE_IMAGES.neutral,
         keywords: 'stars,horizon,cosmic,galaxy,minimal,dark,space',
         particles: {
-            shadowperson: { count: 1, spawnRate: 0.01 }, // Occasional witness in the void
+            guardian: { count: 1, spawnRate: 0.01 }, // Occasional witness in the void
         },
     },
     nature: {
@@ -400,7 +399,7 @@ export const WEATHER_PRESETS = {
             bird: { count: 4, spawnRate: 0.4 },
             bee: { count: 12, spawnRate: 0.8 },
             firefly: { count: 20, spawnRate: 0.2 },
-            shadowperson: { count: 1, spawnRate: 0.02 }, // Garden ghosts
+            guardian: { count: 1, spawnRate: 0.02 }, // Garden ghosts
         },
         lightning: false,
     },
@@ -498,7 +497,7 @@ export function drawBee(ctx, p) {
     ctx.restore();
 }
 
-export function drawShadowPerson(ctx, p) {
+export function drawEcosystemGuardian(ctx, p) {
     ctx.save();
     ctx.translate(p.x, p.y);
     ctx.globalAlpha = p.opacity;
@@ -509,35 +508,48 @@ export function drawShadowPerson(ctx, p) {
     const legSway = Math.sin(p.phase * 4) * (h * 0.15);
 
     ctx.strokeStyle = `rgba(${p.color}, 0.85)`;
-    ctx.lineWidth = 1; // Sketchy line weight
+    ctx.lineWidth = 1;
     ctx.lineCap = 'round';
 
-    if (p.persona === 'spy') {
+    if (p.persona === 'lantern') {
         const dir = p.vx > 0 ? 1 : -1;
-        // Stick-Figure Spy: Triangular hat, line beak
+        const raiseHeight = p.isRaisingLantern ? (h * 0.15) : 0;
+
+        // The Lantern Guardian: Carrying a glowing prism
         ctx.beginPath();
-        // Head (Circle stroke)
-        ctx.arc(sway, -h * 0.75, w * 0.5, 0, Math.PI * 2);
-        // Beak (Simple line)
-        ctx.moveTo(sway + (w * 0.4 * dir), -h * 0.75);
-        ctx.lineTo(sway + (w * 1.2 * dir), -h * 0.75);
-        // Hat (Triangle outline)
-        ctx.moveTo(sway - w * 0.3, -h * 0.85);
-        ctx.lineTo(sway, -h * 1.1);
-        ctx.lineTo(sway + w * 0.3, -h * 0.85);
+        ctx.arc(sway, -h * 0.8 - raiseHeight, w * 0.5, 0, Math.PI * 2); // Head
+        ctx.moveTo(sway, -h * 0.65 - raiseHeight);
+        ctx.lineTo(sway, -h * 0.3); // Spine (Static base, leaning upper body)
+
+        // Arm with Lantern
+        ctx.moveTo(sway, -h * 0.5 - raiseHeight);
+        ctx.lineTo(sway + (12 * dir), -h * 0.45 - (raiseHeight * 2));
         ctx.stroke();
 
-        // Stick Body
+        // Lantern/Prism Glow
+        const flare = p.flare || 1;
+        const glow = (0.5 + Math.sin(p.phase * 5) * 0.3) * flare;
+
+        // Guiding Light Beam (Subtle volumetric cone)
+        const beamGrad = ctx.createRadialGradient(sway + (14 * dir), -h * 0.45 - (raiseHeight * 2), 0, sway + (14 * dir), -h * 0.45 - (raiseHeight * 2), size * 2);
+        beamGrad.addColorStop(0, `rgba(255, 255, 200, ${0.1 * p.opacity * flare})`);
+        beamGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = beamGrad;
         ctx.beginPath();
-        ctx.moveTo(sway, -h * 0.65);
-        ctx.lineTo(sway, -h * 0.3); // Spine
+        ctx.arc(sway + (14 * dir), -h * 0.45 - (raiseHeight * 2), size * 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = `rgba(255, 255, 180, ${glow * p.opacity})`;
+        ctx.beginPath();
+        ctx.arc(sway + (14 * dir), -h * 0.45 - (raiseHeight * 2), 4, 0, Math.PI * 2); // The Bulb
+        ctx.fill();
+
+        // Lantern frame
+        ctx.strokeStyle = `rgba(${p.color}, 0.8)`;
+        ctx.beginPath();
+        ctx.rect(sway + (10 * dir), -h * 0.6 - (raiseHeight * 2), 8, 10);
         ctx.stroke();
 
-        if (p.hasBomb) {
-            ctx.beginPath();
-            ctx.arc(sway - (w * 0.8 * dir), -h * 0.25, 3, 0, Math.PI * 2); // Tiny stick bomb
-            ctx.stroke();
-        }
     } else if (p.persona === 'mover') {
         // Stick figure movement
         ctx.beginPath();
@@ -647,12 +659,12 @@ export function spawnParticle(type, canvasW, canvasH, intensity, origin) {
         case 'melt': return createMelt(origin?.x, origin?.y, origin?.color);
         case 'pop': return createPop(origin?.x, origin?.y, origin?.color);
         case 'bee': return createBee(canvasW, canvasH);
-        case 'shadowperson': return createShadowPerson(canvasW, canvasH);
+        case 'guardian': return createEcosystemGuardian(canvasW, canvasH);
         default: return null;
     }
 }
 
-export function updateParticle(p, w, h, dt) {
+export function updateParticle(p, w, h, dt, mousePos = { x: -1000, y: -1000 }) {
     if (p.type === 'ripple') {
         p.size += 4 * dt;
         p.opacity -= 0.012 * dt;
@@ -661,7 +673,7 @@ export function updateParticle(p, w, h, dt) {
     }
 
     // Environmental particles persist until off-screen
-    const isEnvironmental = p.type === 'rain' || p.type === 'cloud' || p.type === 'bird' || p.type === 'bee' || p.type === 'shadowperson';
+    const isEnvironmental = p.type === 'rain' || p.type === 'cloud' || p.type === 'bird' || p.type === 'bee' || p.type === 'guardian';
     if (!isEnvironmental) {
         p.life -= 0.005 * dt;
     }
@@ -712,25 +724,49 @@ export function updateParticle(p, w, h, dt) {
             p.y += Math.cos(p.phase * 8) * 0.8 * dt;
             p.opacity = p.life * (0.6 + Math.sin(p.phase * 15) * 0.2);
             break;
-        case 'shadowperson':
+        case 'guardian':
+            // Behavior Logic (Peeking, Stopping, Cursor Reaction)
+            const dx = mousePos.x - p.x;
+            const dy = mousePos.y - p.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const isNear = dist < 200;
+
+            if (p.persona === 'lantern') {
+                if (isNear) {
+                    // Slow down and "investigate" the user's presence
+                    p.vx *= 0.95;
+                    p.vy *= 0.95;
+                    p.isRaisingLantern = true;
+                    // Subtly drift towards mouse (Guiding instinct)
+                    p.x += dx * 0.002 * dt;
+                    p.y += dy * 0.002 * dt;
+                } else {
+                    p.isRaisingLantern = false;
+                    // Return to normal speed
+                    const targetVx = (p.vx > 0 ? 1 : -1) * (0.4 + Math.random() * 0.2);
+                    p.vx += (targetVx - p.vx) * 0.05 * dt;
+
+                    if (p.behaviorTimer > 150) {
+                        p.vx = -p.vx;
+                        p.behaviorTimer = 0;
+                    }
+                }
+            } else if (p.persona === 'observer') {
+                if (Math.random() < 0.005 && !isNear) p.vx = 0;
+                if (isNear) p.vx = (dx > 0 ? -0.5 : 0.5) * dt; // Shy observer retreats slightly
+            }
+
             p.x += p.vx * dt;
+            p.y += p.vy * dt;
             p.phase += p.phaseSpeed * dt;
             p.behaviorTimer += dt;
 
-            // Behavior Logic (Peeking, Stopping, etc)
-            if (p.persona === 'spy') {
-                if (p.behaviorTimer > 100) {
-                    p.vx = -p.vx; // Quick peek back
-                    p.behaviorTimer = 0;
-                }
-            } else if (p.persona === 'observer') {
-                if (Math.random() < 0.005) p.vx = 0; // Occasionally just stops to watch
-            }
+            // Bioluminescent pulse depth
+            p.flare = isNear ? 1.5 + Math.sin(p.phase * 10) * 0.5 : 1;
 
-            // Ethereal fading in/out - deliberate and subtle
+            // Ethereal bioluminescent fading
             if (p.opacity < p.targetOpacity) p.opacity += p.fadeSpeed * dt;
 
-            // Auto-fade out before life ends or distance limit
             if (p.x < -150 || p.x > w + 150) p.opacity -= p.fadeSpeed * 2 * dt;
             if (p.opacity < 0) p.life = 0;
             break;
@@ -877,8 +913,9 @@ export function renderParticle(ctx, p) {
         ctx.restore();
     } else if (p.type === 'bee') {
         drawBee(ctx, p);
-    } else if (p.type === 'shadowperson') {
-        drawShadowPerson(ctx, p);
+    } else if (p.type === 'guardian') {
+        drawEcosystemGuardian(ctx, p);
+        return;
     } else if (p.type === 'melt' || p.type === 'pop') {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);

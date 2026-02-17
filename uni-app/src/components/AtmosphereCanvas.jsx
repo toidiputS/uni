@@ -9,7 +9,7 @@ import {
     drawVolumetricCloud,
 } from '../lib/particles';
 
-export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, keywords: contextKeywords, bubbleEmit, drawEmit, onDraw, bellPos, bubblePositions = [] }) {
+export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, keywords: contextKeywords, bubbleEmit, drawEmit, onDraw, bellPos, bubblePositions = [], bpm = 78 }) {
     const canvasRef = useRef(null);
     const particles = useRef([]);
     const animFrame = useRef(null);
@@ -26,6 +26,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     const targetBgVideo = useRef(null);
     const prevBgImage = useRef(null);
     const prevBgVideo = useRef(null);
+    const mousePosRef = useRef({ x: -1000, y: -1000 });
     const isDrawing = useRef(false);
 
     const transitionSpeed = useRef(0.003);
@@ -188,10 +189,13 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
         };
 
         const handlePointerMove = (e) => {
-            if (!isDrawing.current) return;
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
+
+            mousePosRef.current = { x, y };
+
+            if (!isDrawing.current) return;
 
             const p = spawnParticle('trail', canvas.width, canvas.height, intensity, { x, y });
             if (p) {
@@ -221,7 +225,8 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
         };
 
         const loop = (timestamp) => {
-            const dt = lastTime.current ? Math.min((timestamp - lastTime.current) / 16.67, 3) : 1;
+            const bpmFactor = bpm / 78;
+            const dt = lastTime.current ? Math.min((timestamp - lastTime.current) / 16.67, 3) * bpmFactor : 1 * bpmFactor;
             lastTime.current = timestamp;
 
             const w = canvas.width;
@@ -383,7 +388,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             }
 
             particles.current.forEach(p => {
-                updateParticle(p, w, h, dt);
+                updateParticle(p, w, h, dt, mousePosRef.current);
 
                 // Aggressive Cleanup: Relaxed for "Emotional Bleed"
                 if (p._mood && p._mood !== targetMood.current) {
@@ -489,7 +494,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             window.removeEventListener('pointerup', handlePointerUp);
             document.removeEventListener('visibilitychange', handleVisibility);
         };
-    }, [intensity, triggerLightning, onDraw]);
+    }, [intensity, triggerLightning, onDraw, bpm]);
 
     return (
         <canvas
