@@ -1,5 +1,5 @@
 # •UNI• (you-n-eye) — THE MASTER PRODUCT BIBLE & DOSSIER
-**Project:** •UNI• (Unified Network Interface)
+**Project:** •UNI• (you-n-eye)(Unified Network Interface)
 **Status:** V2.0 (High-Fidelity Sanctuary / Biological Agency)
 **Core Engine:** CGEI (Conversational Generative Emotion Interface)
 **Classification:** Proprietary Emotional Infrastructure / Universal Source of Truth
