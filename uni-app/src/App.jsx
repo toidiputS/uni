@@ -232,11 +232,17 @@ export default function App() {
                     // AUTH DOCTRINE: If already in pairing, let the Pairing component handle 
                     // the resonance animation and transition. Don't auto-switch.
                     if (view !== 'pairing' && view !== 'chat') {
-                        if (!hasSeenOnboarding()) {
-                            setView('welcome');
-                        } else {
-                            setView('chat');
-                        }
+                        // If we have a partner and a room, we belong in the Sanctuary.
+                        // Bypassing hasSeenOnboarding check here to ensure partner sync.
+                        setView('chat');
+                    }
+
+                    // AUTO-READY: If we are in Chat or transition to it, mark ourselves as ready in the room
+                    // This unblocks partners stuck in Pairing resonance screen.
+                    if (view === 'chat' && !data.lastRoomId.startsWith('solo_')) {
+                        updateDoc(doc(db, 'chatRooms', data.lastRoomId), {
+                            [`ready_${user.uid}`]: true
+                        }).catch(e => console.warn('[UNI] Auto-ready failed', e));
                     }
                 }
             }

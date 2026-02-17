@@ -12,8 +12,7 @@ import ArtifactFrame from '../components/ArtifactFrame';
 import PricingOverlay from '../components/PricingOverlay';
 import MemoryCard from '../components/MemoryCard';
 import BellDot from '../components/BellDot';
-import AtmosphereCanvas from '../components/AtmosphereCanvas';
-import ResonanceVault from '../components/ResonanceVault';
+import SanctuaryVault from '../components/SanctuaryVault';
 import FeedbackModal from '../components/FeedbackModal';
 import { supabase } from '../lib/supabase';
 
@@ -421,9 +420,7 @@ export default function Chat({
                             }, 1500);
                         }} disabled={sending} title="Analyze Resonance">⟢</button>
 
-                        {(tier === 'sage' || tier === 'trial') && (
-                            <button className="btn btn-glass btn-sm" onClick={() => setShowMemory(true)}>✦</button>
-                        )}
+                        <button className="btn btn-glass btn-sm" onClick={() => setShowMemory(true)}>✦</button>
 
                         <button className="btn btn-glass btn-icon" onClick={onLogout}>⚙</button>
                     </div>
@@ -533,7 +530,7 @@ export default function Chat({
             {showArtifact && soulSong && <ArtifactFrame title={soulSong.title} lyrics={soulSong.lyrics} date={new Date().toLocaleDateString()} participants={[user.displayName || 'You', partnerName]} onClose={() => setShowArtifact(false)} />}
             {showSurvey && <FeedbackModal onClose={() => setShowSurvey(false)} onSubmit={handleFeedbackSubmit} />}
             {showVault && (
-                <ResonanceVault
+                <SanctuaryVault
                     roomId={roomId}
                     user={user}
                     onPlay={playSong}

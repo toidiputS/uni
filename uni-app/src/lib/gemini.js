@@ -25,7 +25,7 @@ Your personality: "Intelligent, direct, and emotionally aware."
 
 Return ONLY valid JSON:
 {
-  "sentiment": "happy" | "sad" | "angry" | "love" | "excited" | "playful" | "tender" | "neutral",
+  "sentiment": "happy" | "sad" | "angry" | "love" | "excited" | "playful" | "tender" | "neutral" | "cosmic",
   "intensity": 0.0 to 1.0,
   "shouldRespond": true,
   "quip": "your wise, short response",
@@ -81,13 +81,10 @@ function localAnalysis(text) {
     const rand = Math.random();
 
     // Check for matches in our expanded brain
-    // Priority is determined by the order in BELL_BRAIN (Emotions first, Greetings last)
-    for (const key in BELL_BRAIN) {
-        const category = BELL_BRAIN[key];
+    for (const key in BELL_BRAIN_ASSETS) {
+        const category = BELL_BRAIN_ASSETS[key];
 
         // CGEI EMERGENCY EVOLUTION: Adaptive Matching
-        // Short keywords (hi, sup) require word boundaries to avoid collisions.
-        // Long emotional spurs (haha, love, curious) allow partial matches for pluralization/suffixes.
         const hasMatch = category.keywords.some(kw => {
             if (kw.length < 4) {
                 const regex = new RegExp(`\\b${kw}\\b`, 'i');
@@ -98,30 +95,36 @@ function localAnalysis(text) {
         });
 
         if (hasMatch) {
+            const sentiment = category.sentiment || key;
             return {
                 ...FALLBACK,
-                sentiment: category.sentiment || key,
+                sentiment: sentiment,
                 intensity: category.intensity || 0.6,
                 shouldRespond: category.alwaysRespond || rand < 0.45,
                 quip: category.quips[Math.floor(rand * category.quips.length)],
-                sceneColors: (category.sentiment || key) === 'love' ? ['#2d1b4e', '#4a1942'] :
-                    (category.sentiment || key) === 'angry' ? ['#2a0d0d', '#3d1515'] :
-                        (category.sentiment || key) === 'happy' ? ['#2d2006', '#3d2b0a'] :
-                            (category.sentiment || key) === 'sad' ? ['#0d1b2a', '#1b2838'] :
-                                (category.sentiment || key) === 'playful' ? ['#0a2a1a', '#0d3d1f'] :
-                                    (category.sentiment || key) === 'excited' ? ['#081518', '#0d1a1e'] :
-                                        (category.sentiment || key) === 'nature' ? ['#0a1f0a', '#1a2414'] : // Forest Night
-                                            ['#0d0d18', '#0a0f1a'],
+                sceneColors: sentiment === 'love' ? ['#2d1b4e', '#4a1942'] :
+                    sentiment === 'angry' ? ['#2a0d0d', '#3d1515'] :
+                        sentiment === 'happy' ? ['#2d2006', '#3d2b0a'] :
+                            sentiment === 'sad' ? ['#0d1b2a', '#1b2838'] :
+                                sentiment === 'playful' ? ['#0a2a1a', '#0d3d1f'] :
+                                    sentiment === 'tender' ? ['#1a0a2a', '#241434'] :
+                                        sentiment === 'cosmic' ? ['#0d0d18', '#0a0f1a'] :
+                                            sentiment === 'excited' ? ['#081518', '#0d1a1e'] :
+                                                sentiment === 'nature' ? ['#0a1f0a', '#1a2414'] :
+                                                    ['#0d0d18', '#0a0f1a'],
                 bubbleEffect: category.effect
             };
         }
     }
 
-    // Default rare random interjection (The "Sovereign Witness" breathing)
+    // Default: Deep Fallback Library (The "Sovereign Witness" breathing)
+    const fallback = BELL_BRAIN_ASSETS.fallback;
     return {
         ...FALLBACK,
         shouldRespond: rand < 0.25,
-        quip: rand < 0.5 ? "Synchronizing with your frequency." : "The sanctuary is quiet today. I am witnessing."
+        quip: fallback.quips[Math.floor(rand * fallback.quips.length)],
+        sentiment: fallback.sentiment,
+        bubbleEffect: fallback.effect
     };
 }
 
@@ -156,20 +159,23 @@ export async function analyzeMessage(messageText, recentContext = [], tier = 'sa
     if (isDirectCall && (now - lastGeminiCall > 2000)) {
         console.log('[Bell] Direct address. Attempting deep cloud sync.');
     } else {
-        // 3. FAST PATH: If Local Brain is highly confident
-        if (localResult.sentiment !== 'neutral' && localResult.intensity > 0.7) {
+        // 3. FAST PATH: Quota Shield
+        // If local brain is highly confident on a relatively short message, save the quota.
+        if (localResult.sentiment !== 'neutral' && localResult.intensity > 0.8 && messageText.length < 30) {
+            console.log(`[Bell] Shield Active: Local resonance for "${messageText}" (${localResult.sentiment})`);
             return localResult;
         }
 
-        // 4. TRIVIAL FILTER
-        if (messageText.length < 5) {
+        // 4. TRIVIAL FILTER (Stricter for Guests to save API)
+        const minLength = isPremium ? 5 : 15;
+        if (messageText.length < minLength) {
             return localResult;
         }
 
-        // 5. STANDARD THROTTLE (Stricter for non-premium)
-        // Reduced Guest throttle from 20s to 12s to avoid "preset" feeling
-        const throttleLimit = isPremium ? GEMINI_COOLDOWN : 12000;
-        if (now - lastGeminiCall < throttleLimit) {
+        // 5. STANDARD THROTTLE
+        // Guests: 18s (Safe for showcase, low quota burn) | Premium: 5s
+        const throttleLimit = isPremium ? GEMINI_COOLDOWN : 18000;
+        if (now - lastGeminiCall < throttleLimit && !isDirectCall) {
             return localResult;
         }
     }
@@ -187,7 +193,7 @@ export async function analyzeMessage(messageText, recentContext = [], tier = 'sa
             ? `\n\nRecent context: \n${recentContext.slice(-6).map(m => `${m.isUni ? 'Bell' : m.senderName || 'User'}: ${m.text}`).join('\n')} `
             : '';
 
-        const activeSystem = isPremium ? getUniSystem(isSolo) : (tier === 'base' ? BASE_SYSTEM : GUEST_SYSTEM);
+        const activeSystem = getUniSystem(isSolo);
 
         const atmosphereStr = `\n\nCurrent Atmosphere: ${localResult.sentiment || 'neutral'} (Intensity: ${localResult.intensity || 0.3})`;
         const result = await model.generateContent({
