@@ -36,11 +36,7 @@ export default function Auth({ onBack, onAuthed, setBellConfig }) {
         if (!auth || !googleProvider) {
             console.warn('[UNI] Google Auth services missing.');
         }
-        if (primed !== 'google') {
-            setPrimed('google');
-            setError('');
-            return;
-        }
+        setError('');
 
         setError('');
         setLoading(true);
@@ -77,11 +73,7 @@ export default function Auth({ onBack, onAuthed, setBellConfig }) {
         if (!auth) {
             console.warn('[UNI] Auth service missing for guest.');
         }
-        if (primed !== 'guest') {
-            setPrimed('guest');
-            setError('');
-            return;
-        }
+        setError('');
 
         setError('');
         setLoading(true);
@@ -172,7 +164,7 @@ export default function Auth({ onBack, onAuthed, setBellConfig }) {
                             transform: primed === 'google' ? 'scale(1.05)' : 'scale(1)'
                         }}
                     >
-                        {loading && primed === 'google' ? <span className="spinner" /> : (primed === 'google' ? 'Confirm G·' : 'G·Google')}
+                        {loading && primed === 'google' ? <span className="spinner" /> : 'G·Google'}
                     </button>
                     <button
                         className="btn btn-primary"
@@ -185,20 +177,10 @@ export default function Auth({ onBack, onAuthed, setBellConfig }) {
                             transform: primed === 'guest' ? 'scale(1.05)' : 'scale(1)'
                         }}
                     >
-                        {loading && primed === 'guest' ? <span className="spinner" /> : (primed === 'guest' ? 'Confirm 🚀' : '🚀 Guest')}
+                        {loading && primed === 'guest' ? <span className="spinner" /> : '🚀 Guest'}
                     </button>
                 </div>
 
-                <p style={{
-                    fontSize: '10px',
-                    textAlign: 'center',
-                    color: 'var(--uni-chrome)',
-                    marginBottom: 20,
-                    opacity: primed ? 1 : 0,
-                    transition: 'opacity 0.3s'
-                }}>
-                    Tap again to enter the interface
-                </p>
 
                 <div className="divider" style={{ margin: '0 0 20px' }}><span>OR USE EMAIL</span></div>
 

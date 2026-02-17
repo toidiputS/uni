@@ -312,7 +312,32 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             // Abstract "Ethereal" Layer (The Generative Part)
             ctx.globalCompositeOperation = 'screen';
             ctx.globalAlpha = 0.15 + presenceFlash.current * 0.1;
-            renderEtherealLayer(ctx, w, h, timestamp, intensityRef.current);
+
+            for (let i = 0; i < 3; i++) {
+                const shiftX = Math.sin(time * (0.3 + i * 0.1) + i) * (w * 0.15); // Slightly wider sweep
+                const shiftY = Math.cos(time * (0.2 - i * 0.1) - i) * (h * 0.1);
+
+                const abstractGrad = ctx.createRadialGradient(
+                    w / 2 + shiftX, h / 2 + shiftY, 0,
+                    w / 2 + shiftX, h / 2 + shiftY, w * (1.2 + i * 0.3) // Much wider gradient reach
+                );
+
+                // Mood-reactive accent colors
+                const accent = i === 0 ? 'rgba(100, 100, 255, 0.4)' : (i === 1 ? 'rgba(255, 100, 255, 0.2)' : 'rgba(100, 255, 200, 0.1)');
+                abstractGrad.addColorStop(0, accent);
+                abstractGrad.addColorStop(1, 'transparent');
+
+                ctx.fillStyle = abstractGrad;
+                // Distorted Ovals - "The Ribbons"
+                ctx.save();
+                ctx.translate(w / 2 + shiftX, h / 2 + shiftY);
+                ctx.rotate(time * 0.05 * (i + 1)); // Slower, more majestic rotation
+                ctx.scale(4.0, 0.8); // Much wider X-scale to create edge-to-edge ribbons
+                ctx.beginPath();
+                ctx.arc(0, 0, w * 0.8, 0, Math.PI * 2); // Larger base radius
+                ctx.fill();
+                ctx.restore();
+            }
             ctx.globalAlpha = 1;
             ctx.restore();
 
@@ -361,41 +386,43 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
 
             const spawnRateFactor = 0.5 + intensityRef.current * 1.5;
 
-            Object.entries(preset.layers).forEach(([layerName, settings]) => {
-                const key = layerName;
-                if (!spawnAccumulators.current[key]) spawnAccumulators.current[key] = 0;
-                const currentCount = particles.current.filter(p => p.type === layerName && p.life > 0).length;
+            if (preset.particles) {
+                Object.entries(preset.particles).forEach(([type, config]) => {
+                    const key = type;
+                    if (!spawnAccumulators.current[key]) spawnAccumulators.current[key] = 0;
+                    const currentCount = particles.current.filter(p => p.type === type && p.life > 0).length;
 
-                if (currentCount < settings.count) {
-                    spawnAccumulators.current[key] += settings.spawnRate * spawnRateFactor * dt;
-                    while (spawnAccumulators.current[key] >= 1) {
-                        spawnAccumulators.current[key] -= 1;
-                        const p = spawnParticle(layerName, w, h, intensityRef.current);
-                        if (p) {
-                            p._mood = activeMood;
-                            particles.current.push(p);
+                    if (currentCount < config.count) {
+                        spawnAccumulators.current[key] += config.spawnRate * spawnRateFactor * dt;
+                        while (spawnAccumulators.current[key] >= 1) {
+                            spawnAccumulators.current[key] -= 1;
+                            const p = spawnParticle(type, w, h, intensityRef.current);
+                            if (p) {
+                                p._mood = activeMood;
+                                particles.current.push(p);
 
-                            // NATURE DOCTRINE: Ultra-rare chance to spawn a tiny PACK of bees alongside a bird
-                            if (layerName === 'bird' && Math.random() < 0.08) {
-                                const packSize = 1 + Math.floor(Math.random() * 2);
-                                const packLead = spawnParticle('bee', w, h, intensityRef.current);
-                                if (packLead) {
-                                    for (let i = 0; i < packSize; i++) {
-                                        const offsetBee = {
-                                            ...packLead,
-                                            x: packLead.x + (Math.random() - 0.5) * 30,
-                                            y: packLead.y + (Math.random() - 0.5) * 30,
-                                            phase: packLead.phase + i * 0.8, // Desync wings slightly
-                                            _mood: activeMood
-                                        };
-                                        particles.current.push(offsetBee);
+                                // NATURE DOCTRINE: Ultra-rare chance to spawn a tiny PACK of bees alongside a bird
+                                if (type === 'bird' && Math.random() < 0.08) {
+                                    const packSize = 1 + Math.floor(Math.random() * 2);
+                                    const packLead = spawnParticle('bee', w, h, intensityRef.current);
+                                    if (packLead) {
+                                        for (let i = 0; i < packSize; i++) {
+                                            const offsetBee = {
+                                                ...packLead,
+                                                x: packLead.x + (Math.random() - 0.5) * 30,
+                                                y: packLead.y + (Math.random() - 0.5) * 30,
+                                                phase: packLead.phase + i * 0.8, // Desync wings slightly
+                                                _mood: activeMood
+                                            };
+                                            particles.current.push(offsetBee);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
-            });
+                });
+            }
 
             particles.current.forEach(p => {
                 updateParticle(p, dt, w, h, mousePosRef.current, bubblePosRef.current, keywordsRef.current);

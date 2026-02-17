@@ -40,7 +40,32 @@ export default function PricingOverlay({ onClose, onSponsor, hasDiscount, onOpen
                             <div style={priceStyle}>$8.99<span>/mo</span></div>
                             <div style={descStyle}>Full poetic wisdom.<br />Permanent Archiving.</div>
                         </div>
+
+                        <div
+                            className={`pricing-card ${selected === 'lifetime' ? 'active' : ''}`}
+                            onClick={() => setSelected('lifetime')}
+                            style={cardStyle(selected === 'lifetime')}
+                        >
+                            <div style={labelStyle}>FOUNDER LIFETIME</div>
+                            <div style={priceStyle}>$24.99<span>/flat</span></div>
+                            <div style={descStyle}>One-time payment.<br />Infinite Resonance.</div>
+                        </div>
                     </div>
+
+                    {hasDiscount && (
+                        <div style={{
+                            background: 'rgba(50, 255, 150, 0.1)',
+                            border: '1px solid rgba(50, 255, 150, 0.2)',
+                            borderRadius: 8,
+                            padding: '10px',
+                            marginBottom: 20,
+                            fontSize: 12,
+                            textAlign: 'center',
+                            color: '#2b8a5d'
+                        }}>
+                            ✨ Founder Discount Active: $5.00 OFF applied at checkout.
+                        </div>
+                    )}
 
                     <div className="pricing-perks" style={{ marginBottom: 30 }}>
                         <div style={perkStyle}>

@@ -162,21 +162,19 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             (you-n-eye)
                         </div>
 
-                        1:1 presence synchronization, visualized.
+                        <p className="hero-tagline">
+                            Experience Resonance
+                        </p>
 
                         <div className="hero-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <ReflectiveButton variant="primary" onClick={startOnboarding} size="lg">
                                 Sync with a Partner
                             </ReflectiveButton>
-                            <button
-                                className="ethereal-text"
-                                onClick={onGetStarted}
-                                style={{ fontSize: 11, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, letterSpacing: '0.1em', marginTop: 16 }}
-                            >
+                            <p className="founder-cta">
                                 ALREADY A FOUNDER? SIGN IN
-                            </button>
-                            <p style={{ fontSize: 10, marginTop: 24, opacity: 0.3, letterSpacing: '0.2em' }}>
-                                A REAL-TIME EMOTIONAL INTERFACE
+                            </p>
+                            <p className="lead" style={{ marginTop: 60, fontSize: 10, letterSpacing: '0.4em', opacity: 0.5 }}>
+                                CGEI: A SYMPHONIC EMOTION INTERFACE
                             </p>
                         </div>
                     </section>
@@ -258,7 +256,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                         ref={el => sectionRefs.current[SEQUENCE.length + 2] = el}
                     >
                         <div className="vday-badge" style={{ margin: '0 auto 30px', cursor: 'pointer' }} onClick={() => onShowPricing()}>
-                            {icon} Founder's Run — Ends 03.17
+                            ✨ Founder's Run — Ends 03.17
                         </div>
 
                         <div className="vday-timer flex justify-center items-center w-full mx-auto" style={{ gap: '24px', marginBottom: '40px' }}>

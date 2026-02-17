@@ -301,7 +301,20 @@ export default function App() {
                 console.error('[UNI] Failed to erase guest session:', err);
             }
         }
-        setView('pairing');
+
+        // DOCTRINE: Clear the user's connection state in Firestore to break the loop
+        if (user) {
+            try {
+                await updateDoc(doc(db, 'users', user.uid), {
+                    pairedWith: null,
+                    lastRoomId: null
+                });
+            } catch (err) {
+                console.error('[UNI] Failed to clear pairing state:', err);
+            }
+        }
+
+        setView('welcome');
     }, [effectiveTier, roomId]);
 
     const handleGlobalSponsor = useCallback(async (type) => {
