@@ -78,8 +78,8 @@ The Resonance Protocol is the heart of UNI’s retention and data strategy, emph
 ### 1. The Moat of Trust (The Decay Principle)
 Trust is built through **Organic Forgetting.** Data in UNI is ephemeral and biological. Older resonant moments in the Vault lose visual opacity over time, fading into "background mist," mirroring human memory and reducing "surveillance log" anxiety.
 
-### 2. Heartbeat Agency
-Giving the user agency over the interface's biological rhythm. A footer control allows users to adjust the **BPM (Beats Per Minute)** of the sanctuary (60-120). This scales all time-based calculations (particle updates, transitions, generative art) to match the user's current energy level.
+### 2. Natural Pacing
+The interface adheres to a core **78-BPM anchor**—the "resting heart rate" of the sanctuary. We do not expose this control to the user; it is an immutable truth of the architecture. Pacing scales procedurally based on conversation intensity and resonance, ensuring the rhythm feels biological rather than mechanical.
 
 ### 3. Zero-Knowledge Sanctuary
 - **Burn-Code Architecture**: No persistent phone-number anchors for guests.

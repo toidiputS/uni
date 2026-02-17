@@ -9,7 +9,7 @@ import {
     drawVolumetricCloud,
 } from '../lib/particles';
 
-export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, keywords: contextKeywords, bubbleEmit, drawEmit, onDraw, bellPos, bubblePositions = [], bpm = 78 }) {
+export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, keywords: contextKeywords, bubbleEmit, drawEmit, onDraw, bellPos, bubblePositions = [] }) {
     const canvasRef = useRef(null);
     const particles = useRef([]);
     const animFrame = useRef(null);
@@ -225,7 +225,9 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
         };
 
         const loop = (timestamp) => {
-            const bpmFactor = bpm / 78;
+            // Natural Pacing: Base 78 BPM, modulated slightly by resonance intensity
+            const effectiveBpm = 78 + (intensity - 0.5) * 12;
+            const bpmFactor = effectiveBpm / 78;
             const dt = lastTime.current ? Math.min((timestamp - lastTime.current) / 16.67, 3) * bpmFactor : 1 * bpmFactor;
             lastTime.current = timestamp;
 

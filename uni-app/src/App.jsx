@@ -63,7 +63,6 @@ export default function App() {
     const [keywords, setKeywords] = useState(null);
     const [bubblePositions, setBubblePositions] = useState([]);
     const [bellPos, setBellPos] = useState({ x: 0, y: 0 });
-    const [bpm, setBpm] = useState(78); // Heartbeat Agency: Default 78 BPM
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentSong, setCurrentSong] = useState('/wishes_in_the_wind.mp3');
@@ -347,7 +346,6 @@ export default function App() {
                 keywords={keywords}
                 bubblePositions={bubblePositions}
                 isPlaying={isPlaying}
-                bpm={bpm}
                 onBellPos={setBellPos}
             />
 
@@ -486,17 +484,6 @@ export default function App() {
             <audio ref={audioRef} src={currentSong} loop />
             <footer>
                 {view !== 'chat' && view !== 'manifesto' && <Footer setView={navigateTo} />}
-                <div className="heartbeat-agency">
-                    <label>Heartbeat</label>
-                    <input
-                        type="range"
-                        min="60"
-                        max="120"
-                        value={bpm}
-                        onChange={(e) => setBpm(parseInt(e.target.value))}
-                    />
-                    <span>{bpm} BPM</span>
-                </div>
             </footer>
         </div>
     );
