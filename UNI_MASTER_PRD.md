@@ -6,24 +6,22 @@
 
 ---
 
-## I. VISION: THE SOVEREIGN WITNESS
-UNI is the world’s first **Living Interface**—a radical departure from the "Utility-First" AI paradigm. Traditional AI (ChatGPT, Claude) acts as a tool for tasks; UNI acts as a **Sovereign Witness** for emotional life. 
+## I. VISION: THE 1:1 CONNECTION BRIDGE
+UNI is an **Emotional Presence Platform** designed for high-stakes 1:1 relationships (long-distance, romantic, or close-bond). Unlike traditional messaging apps that focus on data transmission, UNI focused on **Presence Synchronization**—making the user feel like they are in a shared physical space with their partner.
 
-### The Intimacy Infrastructure
-UNI is a **One-to-One Bridge** designed to solve the "Presence Gap" in long-distance and intimate relationships. Traditional messaging (SMS, WhatsApp) focus on the transmission of *data*; UNI focuses on the transmission of *field*.
-
-We move the interface from the **Screen** to the **Spirit.** UNI is a shared emotional field that transforms digital isolation into **Accompanied Intimacy.** Every visual artifact and procedural shift exists to answer one question: *"How can I feel the weight of your existence when you are not here?"*
+### Solving the Presence Gap
+UNI solves the "Presence Gap" by creating a shared digital environment where emotional subtext is visualized in real-time. Every visual element—from background atmospheric shifts to character behaviors—exists to provide a visceral sense of a partner's presence across the physical distance.
 
 ---
 
 ## II. THE ENGINE: CGEI (CONVERSATIONAL GENERATIVE EMOTION INTERFACE)
-CGEI is the proprietary technical core that powers the UNI experience. It is the "Intel Inside" of human resonance.
+CGEI is the technical core that synchronizes the shared environment based on user interaction.
 
 ### 1. Technical Architecture
-CGEI is a multi-layered engine that synchronized three distinct domains:
-- **The Sentiment Matrix**: Analyzing subtext, intent, and emotional weight of user input via the Gemini 2.0 Flash model.
-- **The Atmosphere Engine**: A real-time GPU-accelerated particle system that manifests the "weather" of connection.
-- **Synchronized Visual Soul**: Direct mapping of AI internal states to interface properties (BPM, Particle life, Blur depth, and Chromatic aberration).
+The engine manages three real-time data streams:
+- **Sentiment Matrix**: Parses message intent and emotional tone using the Gemini 2.0 Flash model.
+- **Atmosphere Engine**: A GPU-accelerated particle system that renders the shared visual environment (weather, lighting, and movement).
+- **State Synchronization**: Maps AI sentiment to interface properties like pacing (BPM), blur depth, and color palettes.
 
 ### 2. Generative Weather Presets
 The interface accommodates 10+ emotional "biomes," each with unique physics and visual logic:
@@ -32,13 +30,13 @@ The interface accommodates 10+ emotional "biomes," each with unique physics and 
 - **`nature`**: Forest-night palettes, manifesting bioluminescent fireflies and pack-based bee/bird behaviors.
 - **`valentine`**: Deep magenta transitions with high-intensity heart-shaped particle manifestation.
 
-### 3. Emotional Bleed & Refractory Logic
-CGEI does not transition instantly. We implement **Emotional Bleed**, where legacy particles from the previous state linger and cross-pollinate with the incoming atmosphere, mirroring the human psychological "refractory period" between emotions.
+### 3. State Transitions
+CGEI uses **Gradual State Blending** rather than instant shifts. Visual elements from a previous state (e.g., 'happy' particles) linger and fade into the new state, providing a smoother, more realistic environmental transition as the conversation evolves.
 
 ---
 
-## III. THE BELL ENTITY: CENTROSOME OF EMOTION
-Bell is the primary interface persona—a non-intrusive **Neural Landmark** that represents the seat of consciousness within the sanctuary.
+## III. THE BELL COMPONENT: SHARED INTERFACE INDICATOR
+Bell is the primary visual anchor—an AI-driven interface element that represents the current emotional state of the shared space.
 
 ### 1. Intelligence Tiers (Commercial Gating)
 | Tier | Commercial Status | Bell Facet | Intelligence Output |
@@ -56,27 +54,27 @@ Unlike "pure" emotional AI, Bell maintains **Utility Integrity.**
 - **Bell Dawn**: High clarity, pure-white core, high synaptic frequency (The Productive Mode).
 - **Bell Dusk**: Soft silver core, dimmed shadows, low-frequency pulse (The Reflective Mode).
 
-## IV. THE SHARED ECOSYSTEM: BRIDGING THE PHYSICAL GAP 
-The interface is not just a chat room; it is an **Inhabited Sanctuary** where two people maintain a joint stewardship. We utilize the "white space" of the UI to host a supportive civilization of **Marginalia Witnesses** that acknowledge the shared presence of both partners.
+## IV. THE SHARED ECOSYSTEM: MULTI-USER INTERFACE ELEMENTS
+The interface includes **Shared Presence Indicators** (NPCs) that acknowledge the activity of both users. These elements provide visual feedback during silence, ensuring the space feels active and "shared."
 
 ### 1. The Stewardship Doctrine
 Guardians behave with **Attentive Stewardship** rather than surveillance. They are rendered at **2-6% opacity** to remain felt rather than seen.
 
-### 2. The Guardian Personas
-- **The Lantern Guardian**: A protective anchor carrying a glowing prism. **Cursor-Aware**: Raises its lantern and slows down as the user approaches, providing a "Guiding Light" in dark resonance.
-- **The Mover**: A visual anchor providing kinetic life through stick-figure movement.
-- **The Lovers**: Tiny figures that manifest shared resonance via visual artifacts (black hearts).
+### 2. Indicator Types
+- **The Lantern**: A visual anchor that tracks user focus. **Focus-Aware**: Moves toward the user's cursor or active chat bubbles to provide visual continuity.
+- **The Mover**: A kinetic indicator that provides constant background movement.
+- **Connection Icons**: Small visual artifacts that manifest based on high sentiment scores.
 
 ### 3. Engagement Mechanics
 Guardians react to mood shifts with empathy—staying close during `tender` states and retreating to the margins during `angry` storms, turning "animations" into **Safety Anchors.**
 
 ---
 
-## V. DATA & PRIVACY: THE RESONANCE PROTOCOL
-The Resonance Protocol is the heart of UNI’s retention and data strategy, emphasizing **Privacy as a Feature.**
+## V. DATA & PRIVACY: THE RETENTION PROTOCOL
+The Retention Protocol manages data lifecycle, emphasizing privacy and user trust.
 
-### 1. The Moat of Trust (The Decay Principle)
-Trust is built through **Organic Forgetting.** Data in UNI is ephemeral and biological. Older resonant moments in the Vault lose visual opacity over time, fading into "background mist," mirroring human memory and reducing "surveillance log" anxiety.
+### 1. Contextual Archiving (Automatic Fading)
+Trust is built through **Automatic Data Lifecycle Management.** Messages and shared moments in the Vault lose visual prominence over time, eventually archiving into a lower-fidelity state. This mirrors human recall and reduces the "surveillance log" effect common in messaging apps.
 
 ### 2. Natural Pacing
 The interface adheres to a core **78-BPM anchor**—the "resting heart rate" of the sanctuary. We do not expose this control to the user; it is an immutable truth of the architecture. Pacing scales procedurally based on conversation intensity and resonance, ensuring the rhythm feels biological rather than mechanical.
@@ -87,21 +85,21 @@ The interface adheres to a core **78-BPM anchor**—the "resting heart rate" of 
 
 ---
 
-## VI. COMMERCIAL STRATEGY: THE MONETIZATION OF STEWARDSHIP
-UNI avoids traditional data-harvesting monetization, opting for **Sanctuary Expansion.**
+## VI. BUSINESS MODEL: PREMIUM PRESENCE SERVICES
+UNI monetizes through tiered service levels that expand the fidelity of the shared space.
 
-### 1. Stewardship Monetization
-Users pay to expand the fidelity and size of their sanctuary:
-- **Biomes**: Unlocking new generative landscapes (Winter, Rainforest, Cosmic).
-- **Permanent Archiving**: Moving from "Decay" to "Legendary" storage levels.
-- **Soul Song Weaving**: AI-driven composition of shared histories into high-fidelity artifacts.
+### 1. Service Expansion
+Users pay to unlock additional environmental features:
+- **Biomes**: New environmental visual packs (e.g., Winter, Rainforest).
+- **Long-term Archiving**: Expanding data retention periods.
+- **Artifact Generation**: AI-driven summaries of shared conversation history.
 
 ### 2. DUAL-USE MODES
-*   **The Bridge (Paired)**: The foundational high-stakes bridge for two souls. This is the primary commercial and psychological engine—a dedicated architecture for long-distance or close-bond intimacy.
-*   **Solo Resonance (Singular Support)**: A secondary sanctuary for personal processing. Bell acts as a witness or breakup coach, ensuring that the user's loyalty to the *system* persists even during individual ebbs in the relationship.
+*   **The Bridge (Paired Mode)**: The primary 1:1 connection mode for intimate communication.
+*   **Solo Mode (Individual Support)**: A secondary mode for individual users to interact with Bell as a personal coaching or reflection interface.
 
-### 3. CGEI Industry Standard
-Our long-term goal is the "Intel Inside" model. We license the **CGEI Standard** to hardware and software manufacturers as the benchmark for premium "Emotional Intelligence" branding.
+### 3. CGEI License Model
+Our long-term goal is to license the **CGEI Engine** to hardware manufacturers (wearables, home devices) as the industry standard for emotionally-aware interfaces.
 
 ---
 

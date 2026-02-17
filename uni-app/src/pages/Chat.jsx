@@ -545,18 +545,16 @@ export default function Chat({
                         <div className="artifact-paper" style={{ padding: 40, textAlign: 'center', minHeight: 'auto' }}>
                             <div className="artifact-header" style={{ marginBottom: 30 }}>
                                 <div className="artifact-uni-dot"></div>
-                                <span>CRITICAL DISSOLUTION</span>
+                                <span>DISCONNECT SESSION</span>
                             </div>
-                            <h2 style={{ fontSize: 24, marginBottom: 20, color: '#fff' }}>{roomData?.isSolo ? 'Leave Sanctuary?' : 'Dissolve Resonance?'}</h2>
-                            <p style={{ color: 'rgba(255,255,255,0.6)', lineHeight: 1.6, marginBottom: 32 }}>
-                                {roomData?.isSolo
-                                    ? "You are exiting your private sanctuary. Bell will remain, but this session's resonance field will be archived."
-                                    : "This bridge is structural. By unpairing, you are burning this shared sanctuary. Your current resonance code will be invalidated."
-                                }
-                            </p>
+                            <h2 style={{ fontSize: 24, marginBottom: 20, color: '#fff' }}>{roomData?.isSolo ? 'End Session?' : 'Disconnect Partner?'}</h2>
+                            {roomData?.isSolo
+                                ? "You are ending this session. Your individual history will be archived, but this active space will close."
+                                : "By disconnecting, you are ending this shared session. Both partners will need to re-synchronize to establish a new connection."
+                            }
                             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-                                <button className="btn btn-glass" onClick={() => setShowUnpairConfirm(false)}>{roomData?.isSolo ? 'Stay' : 'Stay in Sanctuary'}</button>
-                                <button className="btn btn-primary" style={{ background: '#ff2d55', color: '#fff', border: 'none' }} onClick={onUnpair}>{roomData?.isSolo ? 'Exit' : 'Burn the Bridge'}</button>
+                                <button className="btn btn-glass" onClick={() => setShowUnpairConfirm(false)}>{roomData?.isSolo ? 'Return' : 'Stay Connected'}</button>
+                                <button className="btn btn-primary" style={{ background: '#ff2d55', color: '#fff', border: 'none' }} onClick={onUnpair}>{roomData?.isSolo ? 'End' : 'Disconnect'}</button>
                             </div>
                         </div>
                     </div>

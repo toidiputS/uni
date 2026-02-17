@@ -512,7 +512,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             window.removeEventListener('pointerup', handlePointerUp);
             document.removeEventListener('visibilitychange', handleVisibility);
         };
-    }, [intensity, triggerLightning, onDraw, bpm]);
+    }, [intensity, triggerLightning, onDraw]);
 
     return (
         <canvas

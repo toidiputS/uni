@@ -1,4 +1,4 @@
-// •UNI• Global Landing — Sovereign Reflection Edition
+// •UNI• Global Landing — Shared Presence Protocol
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { ReflectiveButton } from '../components/ReflectiveButton';
 import ReviewTicker from '../components/ReviewTicker';
@@ -122,7 +122,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                     size="sm"
                     onClick={onToggleAudio}
                 >
-                    {isPlaying ? 'Resonance On' : 'Silent Mode'}
+                    {isPlaying ? 'Atmosphere On' : 'Silent Mode'}
                 </ReflectiveButton>
             </div>
 
@@ -162,19 +162,11 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             (you-n-eye)
                         </div>
 
-                        <p className="lead-text" style={{
-                            fontSize: 'clamp(20px, 5vw, 24px)',
-                            fontWeight: 200,
-                            letterSpacing: '-0.02em',
-                            color: 'rgba(255,255,255,0.9)',
-                            marginBottom: '8vh'
-                        }}>
-                            Your connection, immortalized in art.
-                        </p>
+                        1:1 presence synchronization, visualized.
 
                         <div className="hero-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <ReflectiveButton variant="primary" onClick={startOnboarding} size="lg">
-                                Experience Resonance
+                                Sync with a Partner
                             </ReflectiveButton>
                             <button
                                 className="ethereal-text"
@@ -184,7 +176,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                                 ALREADY A FOUNDER? SIGN IN
                             </button>
                             <p style={{ fontSize: 10, marginTop: 24, opacity: 0.3, letterSpacing: '0.2em' }}>
-                                A SYMPHONIC EMOTION INTERFACE
+                                A REAL-TIME EMOTIONAL INTERFACE
                             </p>
                         </div>
                     </section>
@@ -250,11 +242,11 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                         data-idx={SEQUENCE.length}
                         ref={el => sectionRefs.current[SEQUENCE.length + 1] = el}
                     >
-                        <h2 className="section-title" style={{ marginBottom: 40, fontWeight: 200, fontSize: 40 }}>The Resonance Echo</h2>
+                        <h2 className="section-title" style={{ marginBottom: 40, fontWeight: 200, fontSize: 40 }}>Member Feedback</h2>
                         <ReviewTicker />
                         <div style={{ marginTop: 60 }}>
                             <ReflectiveButton variant="primary" onClick={() => scrollTo(SEQUENCE.length + 1)}>
-                                Join the Founder's Run
+                                Start Your Trial
                             </ReflectiveButton>
                         </div>
                     </section>
@@ -280,7 +272,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
 
                         <div className="hero-actions" style={{ gap: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <ReflectiveButton variant="primary" onClick={onGetStarted} size="lg">
-                                Begin Your Resonance
+                                Start Synchronization
                             </ReflectiveButton>
                             <button
                                 className="ethereal-text"
@@ -294,7 +286,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                                 style={{ fontSize: 10, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
                                 onClick={() => onShowPricing()}
                             >
-                                [ Founder's Sanctum Access ]
+                                [ View Premium Tiers ]
                             </button>
                         </div>
                     </section>
@@ -321,7 +313,7 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             </ReflectiveButton>
                             {currentIdx < SEQUENCE.length && (
                                 <p style={{ fontSize: 9, marginTop: 16, opacity: 0.3, cursor: 'pointer', letterSpacing: '0.2em' }} onClick={() => scrollTo(SEQUENCE.length + 1)}>
-                                    SKIP JOURNEY
+                                    SKIP DEMO
                                 </p>
                             )}
                         </div>
