@@ -9,7 +9,7 @@ import {
     drawVolumetricCloud,
 } from '../lib/particles';
 
-export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, keywords: contextKeywords, bubbleEmit, drawEmit, onDraw, bellPos, bubblePositions = [], isPartnerTyping = false }) {
+export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, keywords: contextKeywords, bubbleEmit, drawEmit, onDraw, bellPos, bubblePositions = [], isPartnerTyping = false, isPlaying = false }) {
     const canvasRef = useRef(null);
     const particles = useRef([]);
     const animFrame = useRef(null);
