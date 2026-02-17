@@ -166,14 +166,16 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                             Experience Resonance
                         </p>
 
-                        <div className="hero-actions" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <ReflectiveButton variant="primary" onClick={startOnboarding} size="lg">
-                                Sync with a Partner
-                            </ReflectiveButton>
-                            <p className="founder-cta">
+                        <div className="hero-actions">
+                            <div style={{ marginBottom: 60 }}>
+                                <ReflectiveButton variant="primary" onClick={startOnboarding} size="lg">
+                                    Sync with a Partner
+                                </ReflectiveButton>
+                            </div>
+                            <p className="founder-cta" onClick={onGetStarted}>
                                 ALREADY A FOUNDER? SIGN IN
                             </p>
-                            <p className="lead" style={{ marginTop: 60, fontSize: 10, letterSpacing: '0.4em', opacity: 0.5 }}>
+                            <p className="lead-tagline">
                                 CGEI: A SYMPHONIC EMOTION INTERFACE
                             </p>
                         </div>
@@ -269,19 +271,21 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                         </div>
 
                         <div className="hero-actions" style={{ gap: 12, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <ReflectiveButton variant="primary" onClick={onGetStarted} size="lg">
-                                Start Synchronization
-                            </ReflectiveButton>
+                            <div style={{ marginBottom: 60 }}>
+                                <ReflectiveButton variant="primary" onClick={onGetStarted} size="lg">
+                                    Start Synchronization
+                                </ReflectiveButton>
+                            </div>
                             <button
-                                className="ethereal-text"
-                                style={{ fontSize: 11, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, letterSpacing: '0.1em' }}
+                                className="founder-cta"
+                                style={{ background: 'none', border: 'none', cursor: 'pointer' }}
                                 onClick={onGetStarted}
                             >
                                 RETURNING PARTNER? SIGN IN
                             </button>
                             <button
                                 className="ethereal-text"
-                                style={{ fontSize: 10, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.4 }}
+                                style={{ fontSize: 9, background: 'none', border: 'none', cursor: 'pointer', opacity: 0.3 }}
                                 onClick={() => onShowPricing()}
                             >
                                 [ View Premium Tiers ]
@@ -376,9 +380,6 @@ export default function Welcome({ onGetStarted, onMoodChange, isPlaying, onToggl
                     </div>
                     <div className="marginalia top-right">
                         • BUILD.2026.02.17 • FOUNDERS_RUN
-                    </div>
-                    <div className="cgei-watermark" style={{ bottom: '2vh' }}>
-                        CGEI PROTOCOL v4 • EXPERIENCE RESONANCE • SYMPHONIC EMOTION INTERFACE
                     </div>
                 </div>
             </div>
