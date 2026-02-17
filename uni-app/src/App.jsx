@@ -80,6 +80,7 @@ export default function App() {
     });
     const [showPricing, setShowPricing] = useState(false);
     const [showSurvey, setShowSurvey] = useState(false);
+    const [isPartnerTyping, setIsPartnerTyping] = useState(false);
 
     const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
     const [wanderPos, setWanderPos] = useState({ x: 0, y: 0 });
@@ -151,6 +152,7 @@ export default function App() {
         if (bundle.keywords !== undefined) setKeywords(bundle.keywords);
         if (bundle.facet) setBellConfig(prev => ({ ...prev, facet: bundle.facet }));
         if (bundle.showPricing !== undefined) setShowPricing(bundle.showPricing);
+        if (bundle.isPartnerTyping !== undefined) setIsPartnerTyping(bundle.isPartnerTyping);
     }, []);
 
     const handleBubbleEmit = useCallback((emission) => {
@@ -347,6 +349,7 @@ export default function App() {
                 bubblePositions={bubblePositions}
                 isPlaying={isPlaying}
                 onBellPos={setBellPos}
+                isPartnerTyping={isPartnerTyping}
             />
 
             {/* Global Persistent Bell */}

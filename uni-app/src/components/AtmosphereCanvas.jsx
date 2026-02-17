@@ -9,7 +9,7 @@ import {
     drawVolumetricCloud,
 } from '../lib/particles';
 
-export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, keywords: contextKeywords, bubbleEmit, drawEmit, onDraw, bellPos, bubblePositions = [] }) {
+export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, keywords: contextKeywords, bubbleEmit, drawEmit, onDraw, bellPos, bubblePositions = [], isPartnerTyping = false }) {
     const canvasRef = useRef(null);
     const particles = useRef([]);
     const animFrame = useRef(null);
@@ -28,6 +28,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     const prevBgVideo = useRef(null);
     const mousePosRef = useRef({ x: -1000, y: -1000 });
     const isDrawing = useRef(false);
+    const presenceFlash = useRef(0);
 
     const transitionSpeed = useRef(0.003);
     const isLoading = useRef(false);
@@ -264,6 +265,9 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             const time = timestamp * 0.0005;
 
             // Base layer: Slow, breathing gradient
+            const pulseFactor = isPartnerTyping ? (0.5 + Math.sin(timestamp * 0.005) * 0.5) * 0.4 : 0;
+            presenceFlash.current = presenceFlash.current + (pulseFactor - presenceFlash.current) * 0.1;
+
             const grad = ctx.createRadialGradient(
                 w / 2 + Math.sin(time * 0.2) * (w * 0.2),
                 h / 2 + Math.cos(time * 0.3) * (h * 0.2),
@@ -277,9 +281,21 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, w, h);
 
+            // Presence Resonance: The Pulse of the Partner
+            if (presenceFlash.current > 0.01) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'screen';
+                const pulseGrad = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.max(w, h) * 0.8);
+                pulseGrad.addColorStop(0, `rgba(255, 255, 255, ${presenceFlash.current * 0.15})`);
+                pulseGrad.addColorStop(1, 'transparent');
+                ctx.fillStyle = pulseGrad;
+                ctx.fillRect(0, 0, w, h);
+                ctx.restore();
+            }
+
             // Abstract "Ethereal" Layer (The Generative Part)
             ctx.globalCompositeOperation = 'screen';
-            ctx.globalAlpha = 0.15;
+            ctx.globalAlpha = 0.15 + presenceFlash.current * 0.1;
 
             for (let i = 0; i < 3; i++) {
                 const shiftX = Math.sin(time * (0.3 + i * 0.1) + i) * (w * 0.15); // Slightly wider sweep

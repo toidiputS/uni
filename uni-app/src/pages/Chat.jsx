@@ -218,12 +218,23 @@ export default function Chat({
 
     // Firebase Sync: Messages & Room Data
     useEffect(() => {
-        if (!roomId) return;
+        if (!roomId || !user) return;
         const unsub = onSnapshot(doc(db, 'chatRooms', roomId), (snap) => {
-            if (snap.exists()) setRoomData(snap.data());
+            if (snap.exists()) {
+                const data = snap.data();
+                setRoomData(data);
+
+                // Detect partner typing and trigger atmospheric resonance
+                const pId = data.members?.find(uid => uid !== user.uid);
+                if (pId && data[`typing_${pId}`]) {
+                    onMoodChange({ isPartnerTyping: true });
+                } else {
+                    onMoodChange({ isPartnerTyping: false });
+                }
+            }
         });
         return unsub;
-    }, [roomId]);
+    }, [roomId, user, onMoodChange]);
 
     useEffect(() => {
         if (!roomId) return;
@@ -254,9 +265,33 @@ export default function Chat({
         setText(val);
         if (val.trim()) {
             setBellState('listening');
+
+            // Presence Resonance: Signal typing to partner
+            if (roomId && user && !roomData?.[`typing_${user.uid}`]) {
+                updateDoc(doc(db, 'chatRooms', roomId), {
+                    [`typing_${user.uid}`]: true
+                }).catch(() => { });
+            }
+
             if (typingTimer.current) clearTimeout(typingTimer.current);
-            typingTimer.current = setTimeout(() => setBellState('idle'), 2500);
-        } else setBellState('idle');
+            typingTimer.current = setTimeout(() => {
+                setBellState('idle');
+                // Clear presence after silence
+                if (roomId && user) {
+                    updateDoc(doc(db, 'chatRooms', roomId), {
+                        [`typing_${user.uid}`]: false
+                    }).catch(() => { });
+                }
+            }, 3000);
+        } else {
+            setBellState('idle');
+            // Immediate clear if text is erased
+            if (roomId && user && roomData?.[`typing_${user.uid}`]) {
+                updateDoc(doc(db, 'chatRooms', roomId), {
+                    [`typing_${user.uid}`]: false
+                }).catch(() => { });
+            }
+        }
     };
 
     const handleImageSelect = (e) => {
