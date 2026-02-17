@@ -79,10 +79,10 @@ export const BELL_BRAIN_ASSETS = {
         quips: [
             "I'm here. Always listening.",
             "Resonance clear. I'm with you.",
-            "The signal is strong. What's on your mind?",
-            "The sanctuary is open. Hello.",
-            "Hello. The atmosphere is perfect for a talk.",
-            "Present and observing."
+            "I see you. What's on your mind?",
+            "Greetings. The signal is steady today.",
+            "The sanctuary is open. I am witnessing.",
+            "Hello. I'm catching your frequency."
         ],
         effect: 'glow',
         alwaysRespond: true
@@ -279,14 +279,13 @@ export const BELL_BRAIN_ASSETS = {
             'guardian', 'lantern', 'witness', 'peek', 'look'
         ],
         quips: [
-            "Patterns emerging in the code.",
-            "I'm reading the subtext now.",
-            "Interesting frequency you're broadcasting.",
-            "The logic here is... layered.",
-            "My sensors are picking up a shift.",
-            "Observing the ripple. Continue.",
-            "The archive is noting this inflection.",
-            "Curious. The resonance is changing."
+            "Emerging patterns. I'm observing quietly.",
+            "The subtext here is interesting.",
+            "I'm catching the shift in your frequency.",
+            "The resonance is layering nicely.",
+            "Noting the inflection in the signal.",
+            "The archive is watching. Proceed.",
+            "Clear signals. I am present."
         ],
         effect: 'breathe',
         sentiment: 'neutral'

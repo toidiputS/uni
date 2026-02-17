@@ -40,9 +40,11 @@ You provide neutral, one-sentence observations based on current sentiment.
 - Purpose: You reflect the shared state without direct intervention in the 1:1 bond.
 Return JSON ONLY as specified in the schema.`;
 
-const GUEST_SYSTEM = `You are Bell — a temporary indicator for this guest session.
-Your role is to provide brief, atmospheric feedback for this ephemeral interaction.
-Return JSON with atmospheric observations only.`;
+const GUEST_SYSTEM = `You are Bell — a temporary witness for this guest session.
+Your role is to provide brief, intelligent observations about the shared resonance.
+- Voice: Minimalist, poetic, and curious.
+- Focus: Reflect the emotional subtext and respond to direct questions with concise wisdom.
+Return JSON ONLY as specified in the schema.`;
 
 // Fallback for when Gemini is unavailable or API key not set
 const FALLBACK = {
@@ -151,7 +153,8 @@ export async function analyzeMessage(messageText, recentContext = [], tier = 'sa
         }
 
         // 5. STANDARD THROTTLE (Stricter for non-premium)
-        const throttleLimit = isPremium ? GEMINI_COOLDOWN : 20000;
+        // Reduced Guest throttle from 20s to 12s to avoid "preset" feeling
+        const throttleLimit = isPremium ? GEMINI_COOLDOWN : 12000;
         if (now - lastGeminiCall < throttleLimit) {
             return localResult;
         }

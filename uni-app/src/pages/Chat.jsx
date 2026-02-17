@@ -482,7 +482,6 @@ export default function Chat({
                     {isUploading ? '...' : '📸'}
                 </button>
 
-                <label htmlFor="mediaUpload" className="sr-only">Upload Media</label>
                 <input
                     id="mediaUpload"
                     name="mediaUpload"
@@ -491,10 +490,9 @@ export default function Chat({
                     onChange={handleImageSelect}
                     accept="image/*,video/*"
                     hidden
-                    capture="environment" // Allows camera option on mobile
+                    capture="environment"
                 />
 
-                <label htmlFor="messageInput" className="sr-only">Message</label>
                 <input
                     id="messageInput"
                     name="messageInput"
