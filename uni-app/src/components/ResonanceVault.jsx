@@ -107,20 +107,30 @@ export default function ResonanceVault({ roomId, user, onPlay, onClose, currentT
 
                             <div className="list-label">Shared Album</div>
                             {songs.length === 0 && <div className="empty-state">No shared frequencies yet.</div>}
-                            {songs.map(song => (
-                                <div
-                                    key={song.id}
-                                    className="song-item"
-                                    onClick={() => onPlay(song.url, song.title)}
-                                    style={{ opacity: getDecayOpacity(song.createdAt) }}
-                                >
-                                    <div className="song-info">
-                                        <div className="song-name">{song.title}</div>
-                                        <div className="song-meta">By {song.senderName}</div>
-                                    </div>
+                            <div
+                                key={song.id}
+                                className="song-item"
+                                onClick={() => onPlay(song.url, song.title)}
+                                style={{ opacity: getDecayOpacity(song.createdAt) }}
+                            >
+                                <div className="song-info">
+                                    <div className="song-name">{song.title}</div>
+                                    <div className="song-meta">By {song.senderName}</div>
+                                </div>
+                                <div className="song-actions" onClick={e => e.stopPropagation()}>
+                                    <a
+                                        href={song.url}
+                                        download={song.title}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="vault-download-btn"
+                                        title="Save Frequency"
+                                    >
+                                        💾
+                                    </a>
                                     <div className="play-indicator">▶</div>
                                 </div>
-                            ))}
+                            </div>
                         </div>
                     )}
 

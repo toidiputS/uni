@@ -412,7 +412,14 @@ export default function Chat({
                         <button className="btn btn-glass btn-sm" onClick={() => setShowSurvey(true)}>★</button>
                         <button className={`btn btn-glass btn-sm ${isPlaying ? 'resonance-active-btn' : ''}`} onClick={() => setShowVault(true)}>♫</button>
                         <button className="btn btn-glass btn-sm" onClick={() => setShowDiagnostics(true)} title="Neural Status">⋇</button>
-                        <button className="btn btn-glass btn-sm" onClick={() => { setBellState('thinking'); showToast("Reading the room..."); }} disabled={sending}>⟢</button>
+                        <button className="btn btn-glass btn-sm" onClick={() => {
+                            setBellState('thinking');
+                            showToast("Reading the room...");
+                            setTimeout(() => {
+                                setShowMemory(true);
+                                setBellState('idle');
+                            }, 1500);
+                        }} disabled={sending} title="Analyze Resonance">⟢</button>
 
                         {(tier === 'sage' || tier === 'trial') && (
                             <button className="btn btn-glass btn-sm" onClick={() => setShowMemory(true)}>✦</button>

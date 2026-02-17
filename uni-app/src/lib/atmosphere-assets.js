@@ -173,7 +173,7 @@ export const BELL_BRAIN_ASSETS = {
     sad: {
         keywords: [
             'sad', 'cry', 'sorry', 'lonely', 'dark', 'heavy', 'tired', 'sigh', 'lost',
-            'grief', 'alone', 'empty', 'blue', 'tears', 'ache', 'broken', 'crying', 'sadness'
+            'grief', 'alone', 'empty', 'blue', 'tears', 'ache', 'broken', 'crying', 'sadness', 'rain'
         ],
         quips: [
             "I'm holding this space for you.",
@@ -194,7 +194,7 @@ export const BELL_BRAIN_ASSETS = {
     angry: {
         keywords: [
             'hate', 'mad', 'angry', 'stop', 'no', 'break', 'hurt', 'pain', 'fight', 'ugh', 'stfu', 'shut',
-            'furious', 'rage', 'annoyed', 'pissed', 'bitter', 'sharp', 'shouting', 'hell', 'dumb', 'clash'
+            'furious', 'rage', 'annoyed', 'pissed', 'bitter', 'sharp', 'shouting', 'hell', 'dumb', 'clash', 'storm'
         ],
         intensity: 0.9,
         quips: [

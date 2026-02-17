@@ -85,11 +85,16 @@ function localAnalysis(text) {
     for (const key in BELL_BRAIN) {
         const category = BELL_BRAIN[key];
 
-        // CGEI EVOLUTION: Word Boundary Matching
-        // This prevents greedy matches like "hi" inside "this"
+        // CGEI EMERGENCY EVOLUTION: Adaptive Matching
+        // Short keywords (hi, sup) require word boundaries to avoid collisions.
+        // Long emotional spurs (haha, love, curious) allow partial matches for pluralization/suffixes.
         const hasMatch = category.keywords.some(kw => {
-            const regex = new RegExp(`\\b${kw}\\b`, 'i');
-            return regex.test(t);
+            if (kw.length < 4) {
+                const regex = new RegExp(`\\b${kw}\\b`, 'i');
+                return regex.test(t);
+            } else {
+                return t.includes(kw.toLowerCase());
+            }
         });
 
         if (hasMatch) {

@@ -281,6 +281,9 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             const activeMood = transitionProgress.current >= 1 ? currentMood.current : targetMood.current;
             const preset = WEATHER_PRESETS[activeMood] || WEATHER_PRESETS.neutral;
 
+            // OPTIMIZATION: Moving heavy filters to CSS class .atmosphere-canvas
+            // ctx.filter = '...'; // REMOVED to stop stuttering
+
             ctx.save();
             const time = timestamp * 0.0005;
 
@@ -353,10 +356,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
                 const drift = Math.sin(time * 0.05 + (isPrev ? 1.5 : 0)) * 15;
                 const scaleRes = 1.02 + Math.cos(time * 0.1 + (isPrev ? 1.5 : 0)) * 0.01;
 
-                // PERFORMANCE FIX: Set a constant filter string. 
-                // Updating this dynamically every frame (with Math.sin) kills the hardware acceleration.
-                ctx.filter = 'brightness(0.5) contrast(1.1) saturate(1.1) blur(6px)';
-
+                // PERFORMANCE FIX: Filters moved to CSS. JS-based filters in render loop cause hitching.
                 ctx.globalAlpha = alpha * 0.6;
                 ctx.globalCompositeOperation = 'source-over';
 
