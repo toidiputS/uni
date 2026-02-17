@@ -37,14 +37,15 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
     const bubblePosRef = useRef(bubblePositions);
     const keywordsRef = useRef(contextKeywords);
 
-    // Sync Props to Refs
+    const onDrawRef = useRef(onDraw);
     useEffect(() => {
         intensityRef.current = intensity;
         typingRef.current = isPartnerTyping;
         playingRef.current = isPlaying;
         bubblePosRef.current = bubblePositions;
         keywordsRef.current = contextKeywords;
-    }, [intensity, isPartnerTyping, isPlaying, bubblePositions, contextKeywords]);
+        onDrawRef.current = onDraw;
+    }, [intensity, isPartnerTyping, isPlaying, bubblePositions, contextKeywords, onDraw]);
 
     const transitionSpeed = useRef(0.003);
     const isLoading = useRef(false);
@@ -118,16 +119,18 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
 
     // Constant Atmospheric Bleed: Cycle images even if mood stays same
     useEffect(() => {
+        let timer;
         const cycle = () => {
-            const delay = 35000 + Math.random() * 45000; // 35-80 seconds (MUCH slower cycle)
-            return setTimeout(() => {
-                if (transitionProgress.current >= 1) {
-                    pickNewAsset(targetMood.current, true);
+            const delay = 40000 + Math.random() * 50000; // 40-90 seconds (Ethereal pacing)
+            timer = setTimeout(() => {
+                // DON'T force if we're already transitioning or if it's the same asset
+                if (transitionProgress.current >= 1 && !isLoading.current) {
+                    pickNewAsset(targetMood.current, false);
                 }
-                timer = cycle();
+                cycle();
             }, delay);
         };
-        let timer = cycle();
+        cycle();
         return () => clearTimeout(timer);
     }, [pickNewAsset]);
 
@@ -217,7 +220,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             const p = spawnParticle('trail', canvas.width, canvas.height, intensity, { x, y });
             if (p) {
                 particles.current.push(p);
-                if (onDraw) onDraw({ x, y });
+                if (onDrawRef.current) onDrawRef.current({ x, y });
             }
         };
 
@@ -243,9 +246,10 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
 
         const loop = (timestamp) => {
             // Natural Pacing: Base 78 BPM, modulated slightly by resonance intensity
-            const effectiveBpm = 78 + (intensityRef.current - 0.5) * 12;
-            const bpmFactor = effectiveBpm / 78;
-            const dt = lastTime.current ? Math.min((timestamp - lastTime.current) / 16.67, 3) * bpmFactor : 1 * bpmFactor;
+            // PERFORMANCE: Smooth out BPM transitions to avoid "skipping" feel
+            const targetBpm = 78 + (intensityRef.current - 0.5) * 12;
+            const bpmFactor = targetBpm / 78;
+            const dt = lastTime.current ? Math.min((timestamp - lastTime.current) / 16.67, 2) * bpmFactor : 1 * bpmFactor;
             lastTime.current = timestamp;
 
             const w = canvas.width;
@@ -348,12 +352,13 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
 
                 const drift = Math.sin(time * 0.05 + (isPrev ? 1.5 : 0)) * 15;
                 const scaleRes = 1.02 + Math.cos(time * 0.1 + (isPrev ? 1.5 : 0)) * 0.01;
-                const dynamicBlur = 4 + Math.sin(time * 0.2) * 3; // Crisper (4-7px)
 
-                // Consistent alpha tracking to prevent dimming during swaps
-                ctx.globalAlpha = alpha * 0.5;
-                ctx.filter = `brightness(0.45) contrast(1.1) saturate(1.1) blur(${dynamicBlur}px)`;
-                ctx.globalCompositeOperation = 'source-over'; // Standard blending is more stable than 'screen'
+                // PERFORMANCE FIX: Set a constant filter string. 
+                // Updating this dynamically every frame (with Math.sin) kills the hardware acceleration.
+                ctx.filter = 'brightness(0.5) contrast(1.1) saturate(1.1) blur(6px)';
+
+                ctx.globalAlpha = alpha * 0.6;
+                ctx.globalCompositeOperation = 'source-over';
 
                 const mWidth = source.videoWidth || source.width;
                 const mHeight = source.videoHeight || source.height;
@@ -364,9 +369,9 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
 
                 // Primary layer
                 ctx.drawImage(source, x, y, mWidth * scale, mHeight * scale);
-                // "Ghost" Layer
-                ctx.globalAlpha *= 0.4;
-                ctx.drawImage(source, x - drift * 2, y - drift, mWidth * scale, mHeight * scale);
+                // "Ghost" Layer (Subtle motion trail)
+                ctx.globalAlpha *= 0.3;
+                ctx.drawImage(source, x - drift * 1.5, y - drift * 0.75, mWidth * scale, mHeight * scale);
 
                 ctx.restore();
             };
@@ -452,11 +457,13 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             // ─── Cinematic Post-Processing ───
 
             // 1. Dynamic Synaptic Noise (Velvety Grain)
+            // Optimized: Fewer calls, broader reach to maintain "perfect" look with 0.1% overhead
             ctx.save();
             ctx.globalCompositeOperation = 'overlay';
-            ctx.globalAlpha = 0.05;
-            for (let i = 0; i < 40; i++) { // Increased density
-                const size = Math.random() * 2;
+            ctx.globalAlpha = 0.04;
+            const grainCount = 20;
+            for (let i = 0; i < grainCount; i++) {
+                const size = 1 + Math.random() * 2;
                 ctx.fillStyle = Math.random() > 0.5 ? '#fff' : '#000';
                 ctx.fillRect(Math.random() * w, Math.random() * h, size, size);
             }
@@ -531,7 +538,7 @@ export default function AtmosphereCanvas({ mood = 'neutral', intensity = 0.5, ke
             window.removeEventListener('pointerup', handlePointerUp);
             document.removeEventListener('visibilitychange', handleVisibility);
         };
-    }, [mood, triggerLightning, onDraw]);
+    }, [triggerLightning]); // Removed mood and onDraw!
 
     return (
         <canvas

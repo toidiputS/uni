@@ -540,12 +540,12 @@ export function drawEcosystemGuardian(ctx, p) {
         const glow = (0.5 + Math.sin(p.phase * 5) * 0.3) * flare;
 
         // Guiding Light Beam (Subtle volumetric cone)
-        const beamGrad = ctx.createRadialGradient(sway + (14 * dir), -h * 0.45 - (raiseHeight * 2), 0, sway + (14 * dir), -h * 0.45 - (raiseHeight * 2), size * 2);
+        const beamGrad = ctx.createRadialGradient(sway + (14 * dir), -h * 0.45 - (raiseHeight * 2), 0, sway + (14 * dir), -h * 0.45 - (raiseHeight * 2), h * 2);
         beamGrad.addColorStop(0, `rgba(255, 255, 200, ${0.1 * p.opacity * flare})`);
         beamGrad.addColorStop(1, 'transparent');
         ctx.fillStyle = beamGrad;
         ctx.beginPath();
-        ctx.arc(sway + (14 * dir), -h * 0.45 - (raiseHeight * 2), size * 2, 0, Math.PI * 2);
+        ctx.arc(sway + (14 * dir), -h * 0.45 - (raiseHeight * 2), h * 2, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.fillStyle = `rgba(255, 255, 180, ${glow * p.opacity})`;
